@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>llamaagent Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        nav {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        nav ul li {
+            margin-right: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .example {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>llamaagent Documentation</h1>
+        <p>A comprehensive guide to using the llamaagent library for agent operations.</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#api-reference">API Reference</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#advanced-usage">Advanced Usage</a></li>
+        </ul>
+    </nav>
+    
+    <section id="introduction">
+        <h2>Introduction</h2>
+        <p>
+            llamaagent is a powerful and flexible library designed to simplify working with agent data. 
+            It provides a clean, intuitive API that makes complex operations straightforward.
+        </p>
+    </section>
+    
+    <section id="installation">
+        <h2>Installation</h2>
+        <p>You can install llamaagent using pip:</p>
+        <pre>pip install llamaagent</pre>
+        
+        <p>Or clone the repository and install from source:</p>
+        <pre>git clone https://github.com/hypocrite/llamaagent.git
+cd llamaagent
+pip install -e .</pre>
+    </section>
+    
+    <section id="getting-started">
+        <h2>Getting Started</h2>
+        <p>Here's a simple example to get you started with llamaagent:</p>
+        <div class="example">
+            <pre>from llamaagent import Client
+
+# Initialize the client
+client = Client(api_key="your_api_key")
+
+# Use the client to perform operations
+result = client.process_data("example data")
+print(result)</pre>
+        </div>
+    </section>
+    
+    <section id="api-reference">
+        <h2>API Reference</h2>
+        <h3>Client</h3>
+        <p>The main class for interacting with the llamaagent API.</p>
+        <pre>class Client:
+    def __init__(self, api_key=None, base_url=None):
+        """
+        Initialize a new Client.
+        
+        Args:
+            api_key (str, optional): Your API key. Defaults to None.
+            base_url (str, optional): Base URL for API requests. Defaults to None.
+        """
+        pass
+        
+    def process_data(self, data, options=None):
+        """
+        Process the provided data.
+        
+        Args:
+            data (str): The data to process.
+            options (dict, optional): Additional options. Defaults to None.
+            
+        Returns:
+            dict: The processed result.
+        """
+        pass</pre>
+    </section>
+    
+    <section id="examples">
+        <h2>Examples</h2>
+        <p>Here are some examples of common use cases:</p>
+        
+        <h3>Basic Usage</h3>
+        <div class="example">
+            <pre>from llamaagent import Client
+
+client = Client(api_key="your_api_key")
+result = client.process_data("example data")
+print(result)</pre>
+        </div>
+        
+        <h3>Advanced Configuration</h3>
+        <div class="example">
+            <pre>from llamaagent import Client, Config
+
+config = Config(
+    timeout=30,
+    retries=3,
+    verbose=True
+)
+
+client = Client(
+    api_key="your_api_key",
+    config=config
+)
+
+result = client.process_data(
+    "complex data",
+    options={"format": "json", "filter": "important"}
+)
+print(result)</pre>
+        </div>
+    </section>
+    
+    <section id="advanced-usage">
+        <h2>Advanced Usage</h2>
+        <p>
+            llamaagent supports more advanced usage patterns for complex scenarios.
+            Here are some tips and techniques for getting the most out of the library.
+        </p>
+        
+        <h3>Batch Processing</h3>
+        <p>For processing multiple items efficiently:</p>
+        <div class="example">
+            <pre>from llamaagent import Client
+
+client = Client(api_key="your_api_key")
+
+data_items = ["item1", "item2", "item3"]
+results = client.batch_process(data_items)
+
+for item, result in zip(data_items, results):
+    print(f"Item: {item}, Result: {result}")</pre>
+        </div>
+        
+        <h3>Custom Callbacks</h3>
+        <p>You can provide custom callbacks for processing events:</p>
+        <div class="example">
+            <pre>from llamaagent import Client
+
+def on_progress(progress):
+    print(f"Progress: {progress}%")
+
+def on_complete(result):
+    print(f"Processing complete: {result}")
+
+client = Client(api_key="your_api_key")
+client.process_data_async(
+    "large data",
+    on_progress=on_progress,
+    on_complete=on_complete
+)</pre>
+        </div>
+    </section>
+    
+    <footer>
+        <p>Copyright © 2025 LlamaSearch AI. Released under the MIT License.</p>
+        <p>
+            <a href="https://github.com/hypocrite/llamaagent">GitHub Repository</a> |
+            <a href="https://github.com/hypocrite/llamaagent/issues">Report an Issue</a>
+        </p>
+    </footer>
+</body>
+</html>
