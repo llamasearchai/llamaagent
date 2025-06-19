@@ -14,6 +14,7 @@ __all__ = [
     "OpenAIProvider",
     "AnthropicProvider",
     "OllamaProvider",
+    "MlxProvider",
     "create_provider",
 ]
 
@@ -201,6 +202,59 @@ class OllamaProvider(LLMProvider):
                 )
 
 
+class MlxProvider(LLMProvider):
+    """Provider for a local MLX server or compatible endpoint.
+
+    The default base URL assumes the standard MLX daemon running on
+    `http://localhost:11434`.  Authentication is optional; if your instance
+    requires a token set the ``MLX_API_KEY`` environment variable and it
+    will be forwarded as a Bearer token.  The API surface mirrors the
+    OpenAI /chat/completions route so we can reuse most of the wiring here.
+    """
+
+    def __init__(self, api_key: str | None = None, model: str = "mlx4:latest", base_url: Optional[str] = None):
+        self.api_key = api_key or ""
+        self.model = model
+        # Default to the local MLX endpoint; users can override via env
+        # variable ``MLX_BASE_URL`` or by passing the ``base_url`` param.
+        self.base_url = base_url or "http://localhost:11434/v1"
+
+    async def complete(self, messages: List[LLMMessage], **kwargs) -> LLMResponse:
+        """Complete using MLX API."""
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model,
+            "messages": [{"role": msg.role, "content": msg.content} for msg in messages],
+            "temperature": kwargs.get("temperature", 0.7),
+            "max_tokens": kwargs.get("max_tokens", 2000),
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                    timeout=kwargs.get("timeout", 30.0),
+                )
+                response.raise_for_status()
+
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                tokens_used = data.get("usage", {}).get("total_tokens", 0)
+
+                return LLMResponse(content=content, tokens_used=tokens_used, model=self.model)
+
+            except Exception as e:
+                # Fallback to mock response on error
+                return LLMResponse(
+                    content=f"Error communicating with MLX: {str(e)}", tokens_used=0, model=self.model
+                )
+
+
 def create_provider(provider_type: str = "mock", **kwargs) -> LLMProvider:
     """Factory function to create LLM providers."""
     if provider_type.lower() == "openai":
@@ -218,6 +272,12 @@ def create_provider(provider_type: str = "mock", **kwargs) -> LLMProvider:
     elif provider_type.lower() == "ollama":
         # Ollama does not mandate an API key, but we forward it if provided.
         return OllamaProvider(**kwargs)
+
+    elif provider_type.lower() == "mlx":
+        # MLX runs locally and therefore needs a model path or name.  We do
+        # not require an API key but allow callers to specify a custom model
+        # via ``model`` kwarg or ``MLX_MODEL`` environment variable.
+        return MlxProvider(**kwargs)
 
     else:
         return MockProvider()

@@ -13,6 +13,7 @@ LlamaAgent is a production-ready autonomous multi-agent framework that introduce
 - **Strategic Planning**: Pre-Act inspired task decomposition with structured execution
 - **Resource Assessment**: SEM-based efficiency optimization for tool usage
 - **Production Ready**: Complete with database persistence, Docker, and Kubernetes deployment
+- **Multi-Backend LLM Support**: Seamless switching between OpenAI, Ollama, and Apple MLX back-ends via a single environment variable
 - **Comprehensive Tools**: Calculator, Python REPL, dynamic tool synthesis
 - **Scientific Evaluation**: Rigorous benchmarking with statistical significance testing
 - **Multiple Interfaces**: CLI, FastAPI server, and programmatic SDK
@@ -407,6 +408,13 @@ latency_histogram = Histogram('llamaagent_task_duration_seconds', 'Task duration
 ```bash
 # LLM Configuration
 export OPENAI_API_KEY="your-key-here"
+export OLLAMA_API_KEY="optional-if-secured"
+export MLX_API_KEY="optional-if-secured"
+export MLX_BASE_URL="http://localhost:11434"   # Override if MLX gateway differs
+
+# Select provider: openai | ollama | mlx | mock
+export LLAMAAGENT_LLM_PROVIDER="openai"
+
 export ANTHROPIC_API_KEY="your-key-here"
 export OLLAMA_BASE_URL="http://localhost:11434"
 
