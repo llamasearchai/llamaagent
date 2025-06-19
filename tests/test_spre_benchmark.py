@@ -57,16 +57,16 @@ class TestGAIABenchmark:
         """Test GAIA benchmark initialization."""
         from llamaagent.benchmarks.gaia_benchmark import GAIABenchmark
         
-        benchmark = GAIABenchmark(temp_output_dir / "gaia_tasks.json")
+        benchmark = GAIABenchmark(data_file=temp_output_dir / "gaia_tasks.json")
         
         assert len(benchmark.tasks) > 0
-        assert benchmark.data_path.exists()
+        assert benchmark.data_file.exists()
     
     def test_gaia_benchmark_filtering(self, temp_output_dir):
         """Test task filtering functionality."""
         from llamaagent.benchmarks.gaia_benchmark import GAIABenchmark
         
-        benchmark = GAIABenchmark(temp_output_dir / "gaia_tasks.json")
+        benchmark = GAIABenchmark(data_file=temp_output_dir / "gaia_tasks.json")
         
         # Test difficulty filtering
         easy_tasks = benchmark.get_tasks(difficulty="easy")

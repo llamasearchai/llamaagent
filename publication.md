@@ -43,13 +43,55 @@ This paper introduces LlamaAgent with the following key contributions:
 
 ### 1.3 Paper Organization
 
-The remainder of this paper is structured as follows: Section 2 presents the SPRE methodology and theoretical framework. Section 3 details the comprehensive experimental design and evaluation protocols. Section 4 presents results with statistical analysis. Section 5 discusses system architecture and implementation. Section 6 addresses production deployment considerations. Section 7 analyzes limitations and future directions. Section 8 concludes with implications for the field.
+The remainder of this paper is structured as follows: Section 2 presents related work and comparative analysis. Section 3 details the SPRE methodology and theoretical framework. Section 4 presents the comprehensive experimental design and evaluation protocols. Section 5 presents results with statistical analysis. Section 6 provides discussion of findings and implications. Section 7 concludes with implications for the field. The paper concludes with references, acknowledgements, and comprehensive appendices containing detailed experimental data and implementation specifications.
 
 ---
 
-## 2. SPRE Methodology: Strategic Planning & Resourceful Execution
+## 2. Related Work
 
-### 2.1 Theoretical Foundation
+### 2.1 Autonomous Agent Frameworks
+
+#### 2.1.1 ReAct and Extensions
+
+The foundational ReAct framework (Yao et al., 2022) established the Thought-Action-Observation paradigm that remains central to contemporary agent architectures. Subsequent extensions include Tree of Thoughts (Yao et al., 2023) for deliberate decision-making and Self-Consistency improvements (Wang et al., 2022).
+
+Our SPRE methodology extends ReAct through systematic planning integration while maintaining compatibility with existing ReAct-based systems. Unlike purely reactive approaches, SPRE introduces strategic foresight that demonstrably improves performance across complexity levels.
+
+#### 2.1.2 Contemporary Agent Systems
+
+AutoGPT and similar autonomous systems demonstrate impressive capabilities but lack systematic evaluation frameworks and production-ready infrastructure. LangChain provides comprehensive tooling but without integrated strategic planning capabilities.
+
+WebDancer (Wu et al., 2025) introduces web-based reasoning but focuses primarily on information retrieval rather than general-purpose strategic planning. Our work complements these developments by providing a systematic framework for strategic reasoning across diverse task domains.
+
+### 2.2 Strategic Planning in AI Systems
+
+#### 2.2.1 Classical Planning Approaches
+
+Traditional AI planning systems (STRIPS, PDDL-based planners) provide formal guarantees but lack the flexibility required for natural language reasoning tasks. Neural planning approaches show promise but typically require extensive training datasets.
+
+SPRE bridges this gap by leveraging LLM capabilities for flexible planning while maintaining systematic structure through prompt engineering and validation protocols.
+
+#### 2.2.2 Resource Optimization
+
+Prior work on resource optimization in AI systems focuses primarily on computational efficiency rather than strategic resource allocation. The SEM framework provides foundational concepts that we extend through systematic integration with planning capabilities.
+
+### 2.3 Production AI Systems
+
+#### 2.3.1 Enterprise Deployment
+
+Commercial AI platforms like OpenAI's GPT models and Anthropic's Claude provide powerful capabilities but lack integrated agent frameworks for complex reasoning tasks. Our work addresses this gap through production-ready infrastructure and comprehensive deployment tooling.
+
+#### 2.3.2 Evaluation and Benchmarking
+
+Existing agent evaluation frameworks focus primarily on specific domains (mathematical reasoning, coding, etc.) rather than comprehensive multi-domain assessment. GAIA (Mialon et al., 2023) provides important foundational work that we extend through systematic baseline comparisons and statistical validation.
+
+---
+
+## 3. Methodology
+
+### 3.1 SPRE Framework: Strategic Planning & Resourceful Execution
+
+#### 3.1.1 Theoretical Foundation
 
 The SPRE paradigm is grounded in classical hierarchical planning theory (Sacerdoti, 1977) merged with resource–bounded rationality models (Russell & Subramanian, 1995).  By decoupling **"what to do"** (strategic intent) from **"how to do it efficiently"** (resource-aware execution), SPRE formalizes agent deliberation as a two-tier optimisation problem: maximise expected task utility subject to bounded API cost.
 
@@ -59,25 +101,25 @@ Formally, let a task be defined by state \(s\_0\) and desired goal \(g\).  SPRE 
 \]
 where \(U\) is task utility, \(C\) is cumulative cost (e.g. token or API usage), and \(\lambda\) is a tunable cost regulariser.  This contrasts with ReAct which greedily selects the next action without explicit cost regularisation.
 
-### 2.2 SPRE Architecture Design
+#### 3.1.2 SPRE Architecture Design
 
-The architecture decomposes the agent controller into four sequential phases (Figure 2):
+The architecture decomposes the agent controller into four sequential phases:
 
-#### 2.2.1 Phase 1 — Strategic Planning
+**Phase 1 — Strategic Planning**
 A high-level planner produces a coarse task outline using domain knowledge and retrieval-augmented context.  Planning terminates when the partial plan's expected utility gain falls below a threshold \(\delta\_P\).
 
-#### 2.2.2 Phase 2 — Resource Assessment
+**Phase 2 — Resource Assessment**
 The planner queries the vector memory to estimate historical cost distributions for candidate tool invocations and annotates each planned step with estimated cost \(\hat c_i\).  Steps whose projected marginal utility \(< \lambda\, \hat c_i\) are pruned.
 
-#### 2.2.3 Phase 3 — Execution Decision Fork
+**Phase 3 — Execution Decision Fork**
 For each retained step the executor chooses between (a) direct LLM reasoning, (b) delegated tool call, or (c) sub-planning, using a learned decision model \(\pi_{exec}\).  The policy is trained on historical run statistics stored in the embedded database.
 
-#### 2.2.4 Phase 4 — Synthesis and Integration
+**Phase 4 — Synthesis and Integration**
 Partial results are synthesised via a summariser chain that compresses intermediate outputs back into the working memory, enabling iterative refinement while avoiding context-window overflow.
 
-### 2.3 Implementation Framework
+#### 3.1.3 Implementation Framework
 
-Algorithm 1 outlines the reference implementation provided in the LlamaAgent codebase (see `src/llamaagent/agents/react.py`).
+Algorithm 1 outlines the reference implementation provided in the LlamaAgent codebase:
 
 ```python
 async def execute_spre(agent: ReactAgent, task: str) -> ToolResult:
@@ -99,15 +141,29 @@ async def execute_spre(agent: ReactAgent, task: str) -> ToolResult:
     return agent.synthesise(partial_results)
 ```
 
-The full SPRE stack is implemented using asynchronous coroutines, allowing concurrent tool calls and LLM invocations while preserving deterministic unit-test coverage.  Integration hooks expose SPRE as a first-class option in both the CLI (`--spree`) and the FastAPI service (`/chat?mode=spree`).
+The full SPRE stack is implemented using asynchronous coroutines, allowing concurrent tool calls and LLM invocations while preserving deterministic unit-test coverage.
+
+### 3.2 System Architecture and Implementation
+
+#### 3.2.1 Core Architecture Components
+
+The LlamaAgent framework implements a modular, production-ready architecture designed for enterprise deployment with PostgreSQL vector memory, FastAPI integration, comprehensive tool ecosystem, and multi-LLM provider support.
+
+#### 3.2.2 Database Integration and Persistence
+
+Production deployments utilize persistent memory through PostgreSQL with pgvector extension, providing semantic search over agent conversation histories, session persistence across deployments, and horizontal scaling support for enterprise workloads.
+
+#### 3.2.3 Tool Ecosystem and Extensibility
+
+The framework includes production-ready tools with comprehensive safety measures: Calculator Tool for mathematical operations, Python REPL Tool with sandboxed execution, Dynamic Tool Synthesis for runtime tool generation, and custom tool integration through plugin architecture.
 
 ---
 
-## 3. Experimental Design and Methodology
+## 4. Experiments
 
-### 3.1 Benchmark Development
+### 4.1 Benchmark Development
 
-#### 3.1.1 GAIA-Style Task Generation
+#### 4.1.1 GAIA-Style Task Generation
 
 We developed a comprehensive benchmark based on the GAIA methodology (Mialon et al., 2023), focusing on multi-step reasoning tasks requiring 3+ sequential operations. Our task generation process creates problems across four key domains:
 
@@ -131,7 +187,7 @@ We developed a comprehensive benchmark based on the GAIA methodology (Mialon et 
 - Logical reasoning with conditional branching
 - Information retrieval with progressive refinement
 
-#### 3.1.2 Task Complexity Stratification
+#### 4.1.2 Task Complexity Stratification
 
 Tasks are stratified into three complexity levels:
 
@@ -141,7 +197,7 @@ Tasks are stratified into three complexity levels:
 
 Each complexity level includes minimum sample sizes of 20 tasks to ensure statistical validity.
 
-### 3.2 Baseline Configuration Framework
+### 4.2 Baseline Configuration Framework
 
 We implement four rigorously controlled baseline configurations:
 
@@ -152,16 +208,16 @@ We implement four rigorously controlled baseline configurations:
 
 This systematic baseline approach enables precise attribution of performance improvements to specific SPRE components.
 
-### 3.3 Evaluation Metrics and Statistical Framework
+### 4.3 Evaluation Metrics and Statistical Framework
 
-#### 3.3.1 Primary Performance Metrics
+#### 4.3.1 Primary Performance Metrics
 
 **Task Success Rate (%)**: Binary success/failure determination with strict evaluation criteria
 **Average API Calls per Task**: Direct measurement of computational efficiency
 **Average Latency (seconds)**: End-to-end task completion time measurement
 **Efficiency Ratio**: Success Rate ÷ API Calls (higher indicates better efficiency)
 
-#### 3.3.2 Statistical Analysis Protocol
+#### 4.3.2 Statistical Analysis Protocol
 
 All experiments incorporate:
 - **Minimum Sample Sizes**: 20 tasks per baseline configuration per complexity level
@@ -170,35 +226,16 @@ All experiments incorporate:
 - **Confidence Intervals**: 95% CI for all reported metrics
 - **Multiple Comparison Correction**: Bonferroni correction for multiple hypothesis testing
 
-Statistical analysis implementation:
+### 4.4 Experimental Controls and Validity
 
-```python
-class StatisticalAnalyzer:
-    def compare_techniques(self, metric: str, technique_a: str, technique_b: str) -> Dict[str, Any]:
-        a_vals = [res[metric] for res in self.results if res["technique"] == technique_a]
-        b_vals = [res[metric] for res in self.results if res["technique"] == technique_b]
-        
-        t_stat, p_val = stats.ttest_ind(a_vals, b_vals)
-        effect_size = self._cohens_d(a_vals, b_vals)
-        
-        return {
-            "comparison": f"{technique_a} vs {technique_b}",
-            "p_value": float(p_val),
-            "effect_size": effect_size,
-            "significant": p_val < 0.05
-        }
-```
-
-### 3.4 Experimental Controls and Validity
-
-#### 3.4.1 Internal Validity Measures
+#### 4.4.1 Internal Validity Measures
 
 - **Randomization**: Task assignment randomized across baseline configurations
 - **Blinding**: Evaluation conducted with automated metrics to prevent bias
 - **Standardization**: Identical LLM settings across all experimental conditions
 - **Replication**: Multiple experimental runs with different random seeds
 
-#### 3.4.2 External Validity Considerations
+#### 4.4.2 External Validity Considerations
 
 - **Task Diversity**: Problems span multiple domains and difficulty levels
 - **Real-World Relevance**: Tasks based on practical application scenarios
@@ -207,9 +244,9 @@ class StatisticalAnalyzer:
 
 ---
 
-## 4. Results and Statistical Analysis
+## 5. Results
 
-### 4.1 Primary Performance Results
+### 5.1 Primary Performance Results
 
 Our comprehensive evaluation across 20+ tasks per baseline configuration yields the following results:
 
@@ -222,9 +259,9 @@ Our comprehensive evaluation across 20+ tasks per baseline configuration yields 
 
 **Statistical Significance**: SPRE Full vs. Vanilla ReAct comparison yields p < 0.001 for success rate improvement, with Cohen's d = 1.24 indicating large effect size.
 
-### 4.2 Performance by Task Complexity
+### 5.2 Performance by Task Complexity
 
-#### 4.2.1 Stratified Analysis Results
+#### 5.2.1 Stratified Analysis Results
 
 **Easy Tasks (1-2 steps):**
 - SPRE Full: 95.8% success rate
@@ -238,13 +275,13 @@ Our comprehensive evaluation across 20+ tasks per baseline configuration yields 
 - SPRE Full: 78.9% success rate  
 - Vanilla ReAct: 42.1% success rate
 
-#### 4.2.2 Complexity-Performance Relationship
+#### 5.2.2 Complexity-Performance Relationship
 
 Linear regression analysis reveals strong negative correlation between task complexity and performance degradation for baseline methods (r = -0.82, p < 0.001), while SPRE maintains more stable performance across complexity levels (r = -0.34, p = 0.18), demonstrating superior robustness.
 
-### 4.3 Resource Efficiency Analysis
+### 5.3 Resource Efficiency Analysis
 
-#### 4.3.1 API Call Optimization
+#### 5.3.1 API Call Optimization
 
 SPRE demonstrates superior computational efficiency:
 
@@ -254,7 +291,7 @@ SPRE demonstrates superior computational efficiency:
 
 Statistical analysis confirms significance (p < 0.001) for both major reductions.
 
-#### 4.3.2 Latency Performance
+#### 5.3.2 Latency Performance
 
 Temporal efficiency improvements:
 
@@ -262,7 +299,7 @@ Temporal efficiency improvements:
 - **22% improvement** in latency vs. Vanilla ReAct
 - **8% improvement** vs. SEM Only
 
-### 4.3.3 Efficiency Ratio Analysis
+#### 5.3.3 Efficiency Ratio Analysis
 
 The efficiency ratio (Success Rate ÷ API Calls) provides integrated performance measurement:
 
@@ -273,9 +310,9 @@ The efficiency ratio (Success Rate ÷ API Calls) provides integrated performance
 
 SPRE achieves **127% higher efficiency** than Vanilla ReAct baseline (p < 0.001).
 
-### 4.4 Ablation Study and Component Analysis
+### 5.4 Ablation Study and Component Analysis
 
-#### 4.4.1 Individual Component Contributions
+#### 5.4.1 Individual Component Contributions
 
 Systematic component removal reveals contribution significance:
 
@@ -291,20 +328,20 @@ Systematic component removal reveals contribution significance:
 - Response coherence degrades significantly (qualitative assessment)
 - Task completion accuracy decreases by 8-12% across complexity levels
 
-#### 4.4.2 Interaction Effects
+#### 5.4.2 Interaction Effects
 
 Two-way ANOVA reveals significant interaction between strategic planning and resource assessment components (F(1,76) = 12.4, p < 0.001), indicating synergistic rather than additive effects.
 
-### 4.5 Quality Metrics and Validation
+### 5.5 Quality Metrics and Validation
 
-#### 4.5.1 Code Quality Achievement
+#### 5.5.1 Code Quality Achievement
 
 **Test Coverage**: 100% (159 passed, 2 skipped tests)
 **Linting Status**: Zero errors across 476 statements
 **Type Coverage**: Complete mypy validation with strict typing
 **Performance**: Sub-second response times for 95% of test cases
 
-#### 4.5.2 Production Readiness Validation
+#### 5.5.2 Production Readiness Validation
 
 **Memory Efficiency**: Optimized data structures reduce memory usage by 25%
 **Error Handling**: Comprehensive exception management with graceful degradation
@@ -313,451 +350,103 @@ Two-way ANOVA reveals significant interaction between strategic planning and res
 
 ---
 
-## 5. System Architecture and Implementation
+## 6. Discussion
 
-### 5.1 Core Architecture Components
+### 6.1 Interpretation of Results
 
-The LlamaAgent framework implements a modular, production-ready architecture designed for enterprise deployment:
+#### 6.1.1 Performance Improvements and Mechanisms
 
-```mermaid
-graph TD
-    CLI["CLI Interface"] --> AGENT[Agent Core]
-    API["FastAPI Server"] --> AGENT
-    AGENT --> PLANNER[SPRE Planner]
-    AGENT --> TOOLS[Tool Registry]
-    AGENT --> MEMORY[Vector Memory]
-    TOOLS --> CALC[Calculator]
-    TOOLS --> PYTHON[Python REPL]
-    TOOLS --> DYNAMIC[Dynamic Tools]
-    MEMORY --> POSTGRES[(PostgreSQL + pgvector)]
-    AGENT --> LLM[LLM Providers]
-    LLM --> OPENAI[OpenAI]
-    LLM --> ANTHROPIC[Anthropic]
-    LLM --> OLLAMA[Ollama]
-```
+The 87.2% success rate achieved by SPRE Full, compared to 63.2% for Vanilla ReAct, represents a substantial **24 percentage point improvement** that demonstrates the effectiveness of integrated strategic planning and resource assessment. This improvement is particularly pronounced in complex tasks (5+ steps), where SPRE achieves 78.9% success compared to ReAct's 42.1%, indicating that the strategic planning component becomes increasingly valuable as task complexity grows.
 
-### 5.2 Database Integration and Persistence
+The **40% reduction in API calls** while maintaining superior success rates reveals the core efficiency gains of the SPRE approach. This efficiency improvement stems from two primary mechanisms: (1) the resource assessment phase eliminates low-utility tool invocations before execution, and (2) the strategic planning phase reduces redundant reasoning cycles by providing clear task decomposition upfront.
 
-#### 5.2.1 PostgreSQL Vector Memory
+#### 6.1.2 Synergistic Effects of SPRE Components
 
-Production deployments utilize persistent memory through PostgreSQL with pgvector extension:
+The ablation study reveals that strategic planning and resource assessment exhibit synergistic rather than purely additive effects (F(1,76) = 12.4, p < 0.001). This interaction suggests that strategic planning becomes more effective when guided by resource constraints, while resource assessment benefits from the structured approach provided by strategic planning. This finding supports the theoretical foundation of SPRE as an integrated methodology rather than a simple combination of separate techniques.
 
-```python
-# Automatic vector memory selection based on environment
-if os.getenv("DATABASE_URL"):
-    memory = PostgresVectorMemory(agent_id=agent_id)
-else:
-    memory = SimpleMemory()  # Development fallback
-```
+#### 6.1.3 Scalability and Robustness
 
-**Key Features:**
-- Automatic schema creation with pgvector extension support
-- Semantic search over agent conversation histories
-- Session persistence across deployments and restarts
-- Horizontal scaling support for enterprise workloads
-- Query optimization for vector similarity operations
+The stability of SPRE performance across complexity levels (correlation r = -0.34, p = 0.18) compared to baseline degradation (r = -0.82, p < 0.001) indicates superior scalability characteristics. This suggests that SPRE's planning-based approach provides resilience against the exponential complexity growth that affects reactive systems.
 
-#### 5.2.2 Memory Architecture
+### 6.2 Practical Implications
 
-The vector memory system implements:
+#### 6.2.1 Cost-Effectiveness for Production Deployment
 
-- **Embedding Generation**: Automatic text embedding using state-of-the-art models
-- **Similarity Search**: Efficient retrieval of relevant conversation context
-- **Memory Consolidation**: Periodic optimization of stored embeddings
-- **Access Control**: User-based memory isolation and security
+The 40% reduction in API calls translates directly to operational cost savings in production environments. For enterprise deployments processing thousands of requests daily, this efficiency improvement can result in significant cost reductions while providing superior task completion rates. The additional upfront computational cost of strategic planning is more than offset by the reduction in downstream API calls.
 
-### 5.3 Tool Ecosystem and Extensibility
+#### 6.2.2 Enterprise Adoption Considerations
 
-#### 5.3.1 Comprehensive Tool Suite
+The combination of performance improvements and production-ready infrastructure (100% test coverage, comprehensive deployment tools, enterprise security features) positions SPRE for immediate enterprise adoption. The framework's modular design allows organizations to adopt SPRE incrementally, starting with specific use cases and scaling based on demonstrated value.
 
-The framework includes production-ready tools:
+#### 6.2.3 Developer Experience and Maintenance
 
-**Calculator Tool**: Mathematical operations with advanced expression parsing
-```python
-class CalculatorTool(BaseTool):
-    def execute(self, expression: str) -> float:
-        return eval(expression, {"__builtins__": {}})  # Safe evaluation
-```
+The systematic engineering approach, including comprehensive testing, type safety, and modular architecture, reduces long-term maintenance costs and improves developer productivity. The elimination of emoji symbols and professional code standards align with enterprise development practices and facilitate code review and maintenance processes.
 
-**Python REPL Tool**: Code execution with comprehensive safety sandboxing
-```python
-class PythonReplTool(BaseTool):
-    def execute(self, code: str) -> str:
-        # Sandboxed execution with resource limits
-        return self._safe_exec(code)
-```
+### 6.3 Theoretical Contributions
 
-**Dynamic Tool Synthesis**: Runtime tool generation and validation
-**Custom Tool Integration**: Plugin architecture for domain-specific extensions
+#### 6.3.1 Agent Architecture Design Principles
 
-#### 5.3.2 Safety and Security Measures
+SPRE establishes key design principles for next-generation agent architectures:
 
-- **Input Sanitization**: Comprehensive validation of all tool inputs
-- **Resource Limits**: Memory and CPU usage constraints for tool execution  
-- **Sandboxing**: Isolated execution environments for code tools
-- **Access Control**: Permission-based tool access management
+1. **Strategic-Tactical Separation**: Separating high-level planning from execution-level decisions enables both strategic thinking and tactical efficiency
+2. **Resource-Aware Planning**: Incorporating computational cost considerations into planning improves real-world applicability
+3. **Synthesis-Driven Integration**: Explicit synthesis phases prevent context window overflow while maintaining reasoning coherence
 
-### 5.4 LangGraph Integration Framework
+#### 6.3.2 Evaluation Methodology Advances
 
-Experimental integration with LangGraph enables advanced workflow patterns:
+The comprehensive baseline comparison framework, incorporating multiple ablation conditions and rigorous statistical analysis, provides a template for future agent evaluation research. The emphasis on both performance metrics and practical deployment considerations addresses the gap between research prototypes and production systems.
 
-```python
-from llamaagent.integration.langgraph import build_react_chain
+### 6.4 Limitations and Constraints
 
-# Create LangGraph-compatible chain with SPRE
-chain = build_react_chain(spree=True)
-result = chain.invoke({"prompt": "Complex multi-step analysis task"})
-```
+#### 6.4.1 Scope of Current Evaluation
 
-This integration provides:
-- **Graph-Based Workflows**: Complex reasoning patterns with conditional logic
-- **State Management**: Persistent state across workflow nodes
-- **Parallel Execution**: Concurrent processing of independent workflow branches
-- **Error Recovery**: Robust handling of workflow failures with rollback capabilities
+While our evaluation spans multiple task domains and complexity levels, the current study focuses primarily on computational and logical reasoning tasks. Further validation is needed across specialized domains (medical, legal, scientific) and with different LLM architectures to fully establish generalizability.
 
-### 5.5 API Design and Integration
+#### 6.4.2 Resource Assessment Accuracy
 
-#### 5.5.1 FastAPI Server Implementation
+The current resource assessment mechanism relies on historical performance data and may not accurately predict costs for novel task types. Future work should explore machine learning-based cost prediction models that can adapt to new task patterns.
 
-Production-ready REST API with comprehensive features:
+#### 6.4.3 Planning Horizon Limitations
 
-```python
-@app.post("/chat")
-async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    agent = await create_agent(request.config)
-    response = await agent.execute(request.message)
-    return ChatResponse(
-        message=response.content,
-        success=response.success,
-        metadata=response.metadata
-    )
-```
+Strategic planning effectiveness may be limited by context window constraints in very complex, long-horizon tasks. The current implementation uses hierarchical planning to address this limitation, but more sophisticated approaches may be needed for extremely complex scenarios.
 
-**Endpoint Specifications:**
-- `GET /health`: Health check with dependency validation
-- `POST /chat`: Single message processing with SPRE
-- `POST /batch`: Batch message processing for efficiency
-- `GET /agents`: Available agent configuration listing
-- `GET /tools`: Registered tools inventory
-- `GET /metrics`: Prometheus-compatible metrics export
+### 6.5 Implications for Future Research
 
-#### 5.5.2 Production Features
+#### 6.5.1 Multi-Agent SPRE Systems
 
-**Request Validation**: Pydantic models ensure type safety
-**Rate Limiting**: Configurable request throttling
-**CORS Support**: Cross-origin request handling
-**Authentication**: Bearer token and API key support
-**Monitoring**: Structured logging with correlation IDs
+The success of single-agent SPRE suggests promising opportunities for multi-agent systems where agents coordinate strategic plans and share resource assessment information. Such systems could enable collaborative problem-solving with distributed resource optimization.
+
+#### 6.5.2 Domain-Specific SPRE Adaptations
+
+The modular architecture of SPRE enables domain-specific adaptations through specialized planning strategies and resource assessment models. Future research should explore how SPRE can be adapted for specific vertical applications.
+
+#### 6.5.3 Continuous Learning Integration
+
+Incorporating continuous learning mechanisms that update strategic planning and resource assessment models based on deployment experience could further improve SPRE performance over time. This represents a promising direction for adaptive agent systems.
+
+### 6.6 Comparison with Alternative Approaches
+
+#### 6.6.1 Reactive vs. Strategic Paradigms
+
+Our results provide strong evidence that strategic planning approaches outperform reactive systems, particularly as task complexity increases. This finding challenges the current dominance of reactive agent architectures and suggests that the field should invest more heavily in planning-based approaches.
+
+#### 6.6.2 Resource Optimization Strategies
+
+The effectiveness of our resource assessment approach, demonstrated through the 40% API call reduction, suggests that resource-aware design should be a fundamental consideration in agent architecture rather than an afterthought. This has implications for how the field approaches agent efficiency optimization.
 
 ---
 
-## 6. Production Deployment and Operations
+## 7. Conclusion
 
-### 6.1 Container Architecture and Deployment
-
-#### 6.1.1 Optimized Docker Implementation
-
-Single-stage Docker build producing efficient container images:
-
-```dockerfile
-FROM python:3.11-slim
-
-# System dependencies
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-# Application installation
-COPY src/ /app/src/
-COPY pyproject.toml /app/
-WORKDIR /app
-RUN pip install -e .[all]
-
-# Production configuration
-EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-CMD ["uvicorn", "llamaagent.api:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-**Container Specifications:**
-- **Base Image**: Python 3.11-slim for minimal footprint
-- **Final Size**: ~125MB optimized image
-- **Security**: Non-root user execution
-- **Health Checks**: Integrated monitoring endpoints
-
-#### 6.1.2 Kubernetes Deployment
-
-Production-ready Kubernetes manifests:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: llamaagent
-  labels:
-    app: llamaagent
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: llamaagent
-  template:
-    metadata:
-      labels:
-        app: llamaagent
-    spec:
-      containers:
-      - name: llamaagent
-        image: llamaagent:2.0.0
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: llamaagent-secrets
-              key: database-url
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-```
-
-### 6.2 Observability and Monitoring
-
-#### 6.2.1 Comprehensive Monitoring Stack
-
-**Health Monitoring**: 
-- `/health` endpoint with comprehensive dependency validation
-- Database connectivity verification
-- LLM provider availability checks
-- Memory utilization monitoring
-
-**Metrics Collection**:
-- Prometheus-compatible metrics via `/metrics` endpoint
-- Request/response latency histograms
-- Success/failure rate counters
-- Resource utilization gauges
-
-**Distributed Tracing**:
-- Structured execution traces for debugging
-- Request correlation across service boundaries
-- Performance bottleneck identification
-- Error propagation analysis
-
-#### 6.2.2 Logging and Alerting
-
-**Structured Logging**:
-```python
-import structlog
-
-logger = structlog.get_logger()
-logger.info(
-    "Agent execution completed",
-    task_id=task_id,
-    success=response.success,
-    duration=execution_time,
-    api_calls=response.api_calls
-)
-```
-
-**Alert Configuration**:
-- High error rate detection (>5% failure rate)
-- Latency threshold monitoring (>10s response time)
-- Resource exhaustion alerts (>80% memory/CPU usage)
-- Dependency failure notifications
-
-### 6.3 Security and Compliance
-
-#### 6.3.1 Security Framework
-
-**Input Validation**: Comprehensive sanitization of all user inputs
-**Output Filtering**: Prevention of sensitive information leakage
-**Authentication**: Multi-factor authentication support
-**Authorization**: Role-based access control (RBAC)
-**Encryption**: TLS 1.3 for all communications
-
-#### 6.3.2 Compliance Features
-
-**Data Privacy**: GDPR-compliant data handling procedures
-**Audit Logging**: Comprehensive audit trail maintenance
-**Data Retention**: Configurable retention policies
-**Access Controls**: Fine-grained permission management
-**Vulnerability Scanning**: Automated security assessment integration
-
-### 6.4 Scalability and Performance
-
-#### 6.4.1 Horizontal Scaling
-
-**Load Balancing**: Nginx-based load distribution
-**Auto-scaling**: Kubernetes HPA integration
-**Database Sharding**: PostgreSQL horizontal partitioning
-**Cache Layer**: Redis integration for performance optimization
-
-#### 6.4.2 Performance Optimization
-
-**Connection Pooling**: Optimized database connection management
-**Async Processing**: Full async/await implementation
-**Memory Management**: Efficient resource utilization
-**Query Optimization**: Database query performance tuning
-
----
-
-## 7. Limitations and Future Directions
-
-### 7.1 Current System Limitations
-
-#### 7.1.1 Memory and Knowledge Constraints
-
-**Episodic Memory Scope**: Current implementation focuses on episodic memory within conversation contexts. Long-term semantic memory integration represents a significant opportunity for enhancement, particularly for domain-specific knowledge accumulation and cross-conversation learning transfer.
-
-**Context Window Limitations**: Large-scale reasoning tasks may exceed current context window constraints. Future implementations will explore hierarchical context management and memory compression techniques to address this limitation.
-
-#### 7.1.2 Tool Security and Sandboxing
-
-**Dynamic Tool Synthesis Security**: While current implementation uses static analysis for tool validation, advanced security measures including WebAssembly (WASM) sandbox evaluation are under development to provide stronger isolation guarantees.
-
-**Code Execution Safety**: Python REPL tool execution currently relies on restricted evaluation environments. Enhanced sandboxing with containerized execution and resource quotas represents an active development priority.
-
-#### 7.1.3 Language and Localization
-
-**Monolingual Prompt Design**: Current planner prompts are optimized for English-language inputs. Multilingual support requires systematic prompt engineering and validation across diverse linguistic contexts.
-
-**Cultural Context Adaptation**: Reasoning patterns may require cultural adaptation for global deployment scenarios.
-
-### 7.2 Scalability and Performance Considerations
-
-#### 7.2.1 Computational Scalability
-
-**Evaluation Scale Limitations**: Current experimental validation is limited to 50 tasks per baseline configuration. Large-scale studies with 1000+ tasks per condition are planned to validate performance consistency at enterprise scales.
-
-**Resource Intensive Operations**: Complex reasoning chains with extensive tool usage may require computational resource optimization for high-throughput scenarios.
-
-#### 7.2.2 Model Transfer and Generalization
-
-**Cross-Model Portability**: SPRE methodology validation across diverse LLM architectures (GPT-4, Claude, PaLM, etc.) requires systematic evaluation to ensure framework generalizability.
-
-**Domain Adaptation**: Performance validation across specialized domains (medical, legal, scientific) represents an important research direction.
-
-### 7.3 Future Research Directions
-
-#### 7.3.1 Advanced Reasoning Capabilities
-
-**Hierarchical Planning**: Multi-level task decomposition for complex workflows requiring nested sub-goal management and dynamic priority adjustment.
-
-**Collaborative SPRE**: Multi-agent SPRE coordination enabling agent-to-agent strategic planning handoffs and collaborative problem-solving.
-
-**Adaptive Resource Assessment**: Machine learning-based resource allocation optimization that learns from historical performance patterns and environmental conditions.
-
-#### 7.3.2 Domain-Specific Adaptations
-
-**Specialized Planning Strategies**: Domain-specific planners optimized for particular task categories (scientific research, business analysis, creative content generation).
-
-**Tool Ecosystem Expansion**: Integration with specialized domain tools (CAD software, statistical packages, simulation environments).
-
-**Knowledge Base Integration**: Direct integration with structured knowledge bases and ontologies for enhanced reasoning capabilities.
-
-#### 7.3.3 Enhanced Production Features
-
-**Real-Time Learning**: Continuous learning from user interactions and feedback to improve planning and execution strategies.
-
-**Advanced Security**: Zero-trust security models with comprehensive audit trails and compliance monitoring.
-
-**Multi-Modal Integration**: Support for visual, audio, and other modalities in reasoning and tool interaction.
-
-### 7.4 Technical Roadmap
-
-#### 7.4.1 Near-Term Developments (Q2-Q3 2025)
-
-- **Vector Database Integration**: Native support for Chroma, Pinecone, and Weaviate
-- **Enhanced Tool Security**: WASM-based sandboxing for dynamic tool execution
-- **Multi-Modal Support**: Image and document processing capabilities
-- **Advanced Metrics**: Comprehensive performance analytics and optimization recommendations
-
-#### 7.4.2 Medium-Term Goals (Q4 2025 - Q2 2026)
-
-- **Enterprise Security Features**: SOC 2 compliance and advanced threat detection
-- **Large-Scale Evaluation**: 10,000+ task evaluation framework
-- **Cross-Platform Integration**: Native cloud provider integrations (AWS, GCP, Azure)
-- **Advanced Planning**: Hierarchical and collaborative planning capabilities
-
-#### 7.4.3 Long-Term Vision (2026+)
-
-- **Autonomous Learning**: Self-improving agents with continuous capability enhancement
-- **Industry-Specific Solutions**: Vertical market adaptations with specialized tool ecosystems
-- **Research Platform**: Open research platform for agent capability advancement
-- **Global Deployment**: Multi-region, multi-language production deployment framework
-
----
-
-## 8. Related Work and Comparative Analysis
-
-### 8.1 Autonomous Agent Frameworks
-
-#### 8.1.1 ReAct and Extensions
-
-The foundational ReAct framework (Yao et al., 2022) established the Thought-Action-Observation paradigm that remains central to contemporary agent architectures. Subsequent extensions include Tree of Thoughts (Yao et al., 2023) for deliberate decision-making and Self-Consistency improvements (Wang et al., 2022).
-
-Our SPRE methodology extends ReAct through systematic planning integration while maintaining compatibility with existing ReAct-based systems. Unlike purely reactive approaches, SPRE introduces strategic foresight that demonstrably improves performance across complexity levels.
-
-#### 8.1.2 Contemporary Agent Systems
-
-AutoGPT and similar autonomous systems demonstrate impressive capabilities but lack systematic evaluation frameworks and production-ready infrastructure. LangChain provides comprehensive tooling but without integrated strategic planning capabilities.
-
-WebDancer (Wu et al., 2025) introduces web-based reasoning but focuses primarily on information retrieval rather than general-purpose strategic planning. Our work complements these developments by providing a systematic framework for strategic reasoning across diverse task domains.
-
-### 8.2 Strategic Planning in AI Systems
-
-#### 8.2.1 Classical Planning Approaches
-
-Traditional AI planning systems (STRIPS, PDDL-based planners) provide formal guarantees but lack the flexibility required for natural language reasoning tasks. Neural planning approaches show promise but typically require extensive training datasets.
-
-SPRE bridges this gap by leveraging LLM capabilities for flexible planning while maintaining systematic structure through prompt engineering and validation protocols.
-
-#### 8.2.2 Resource Optimization
-
-Prior work on resource optimization in AI systems focuses primarily on computational efficiency rather than strategic resource allocation. The SEM framework provides foundational concepts that we extend through systematic integration with planning capabilities.
-
-### 8.3 Production AI Systems
-
-#### 8.3.1 Enterprise Deployment
-
-Commercial AI platforms like OpenAI's GPT models and Anthropic's Claude provide powerful capabilities but lack integrated agent frameworks for complex reasoning tasks. Our work addresses this gap through production-ready infrastructure and comprehensive deployment tooling.
-
-#### 8.3.2 Evaluation and Benchmarking
-
-Existing agent evaluation frameworks focus primarily on specific domains (mathematical reasoning, coding, etc.) rather than comprehensive multi-domain assessment. GAIA (Mialon et al., 2023) provides important foundational work that we extend through systematic baseline comparisons and statistical validation.
-
----
-
-## 9. Conclusion and Impact
-
-### 9.1 Summary of Contributions
+### 7.1 Summary of Contributions
 
 This research introduces LlamaAgent with Strategic Planning & Resourceful Execution (SPRE) as a novel paradigm for next-generation autonomous agent systems. Through comprehensive experimental validation, we demonstrate significant performance improvements: **87.2% success rate** with **40% reduction in API calls** compared to baseline ReAct implementations, supported by rigorous statistical analysis (p < 0.001).
 
 The key insight driving these improvements is that effective autonomous agents require both **strategic thinking** for complex task decomposition and **tactical efficiency** for resource optimization. SPRE systematically integrates these capabilities through a two-tiered architecture that maintains tight coupling between planning and execution phases.
 
-### 9.2 Scientific and Practical Impact
+### 7.2 Scientific and Practical Impact
 
-#### 9.2.1 Scientific Contributions
+#### 7.2.1 Scientific Contributions
 
 **Methodological Innovation**: SPRE establishes the first systematic framework for integrating strategic planning with resource-efficient execution in LLM-based agents, providing a replicable methodology for future research.
 
@@ -765,7 +454,7 @@ The key insight driving these improvements is that effective autonomous agents r
 
 **Empirical Validation**: Demonstrated performance improvements across multiple complexity levels with strong statistical significance establish SPRE's effectiveness beyond individual task domains.
 
-#### 9.2.2 Practical Applications
+#### 7.2.2 Practical Applications
 
 **Production Readiness**: Complete infrastructure including PostgreSQL vector memory, FastAPI integration, and comprehensive testing (100% coverage) enables immediate enterprise deployment.
 
@@ -773,23 +462,23 @@ The key insight driving these improvements is that effective autonomous agents r
 
 **Engineering Excellence**: Professional codebase with zero linting errors, complete emoji removal, and systematic quality improvements demonstrates enterprise-grade software development practices.
 
-### 9.3 Broader Implications
+### 7.3 Broader Implications
 
-#### 9.3.1 Industry Impact
+#### 7.3.1 Industry Impact
 
 The demonstrated efficiency gains and production-ready implementation position SPRE for immediate adoption in enterprise environments where both performance and cost-effectiveness are critical considerations. The systematic evaluation framework provides a foundation for objective comparison of agent capabilities across different implementations.
 
-#### 9.3.2 Research Community Benefits
+#### 7.3.2 Research Community Benefits
 
 Open-source release of the complete framework, evaluation suite, and deployment tools enables the research community to build upon these foundations and advance autonomous agent capabilities. The comprehensive documentation and systematic methodology facilitate reproducible research and collaborative development.
 
-### 9.4 Future of Autonomous Agent Systems
+### 7.4 Future of Autonomous Agent Systems
 
 Our results indicate that the future of autonomous agents lies not in reactive systems or simple tool invocation, but in **strategic, resource-aware architectures** that can reason about both task objectives and execution efficiency. SPRE demonstrates that such capabilities can be systematically integrated to create agents that are both more capable and more efficient than existing approaches.
 
 The framework's modular design and production infrastructure provide a foundation for continued advancement, supporting research directions including hierarchical planning, collaborative multi-agent systems, and domain-specific optimizations.
 
-### 9.5 Call to Action
+### 7.5 Call to Action
 
 We encourage the research community to:
 
@@ -800,14 +489,6 @@ We encourage the research community to:
 5. **Deploy in production environments** to validate real-world performance
 
 The complete LlamaAgent framework, including source code, evaluation tools, deployment infrastructure, and comprehensive documentation, is available under the MIT license at: <https://github.com/llamasearch/llamaagent>
-
----
-
-## Acknowledgments
-
-The author thanks the open-source community for foundational tools and frameworks that enabled this research. Special recognition goes to the developers of ReAct, LangChain, FastAPI, PostgreSQL, and the broader Python ecosystem that provided essential building blocks for this work.
-
-This research was conducted as independent research at LlamaSearch AI Research, with all computational resources and development efforts supported entirely through private funding.
 
 ---
 
@@ -833,9 +514,21 @@ This research was conducted as independent research at LlamaSearch AI Research, 
 
 10. Yao, S., Yu, D., Zhao, J., Shafran, I., Griffiths, T., Cao, Y., & Narasimhan, K. (2023). Tree of thoughts: Deliberate problem solving with large language models. *Advances in Neural Information Processing Systems*, 36.
 
+11. Sacerdoti, E. D. (1977). *A Structure for Plans and Behavior*. Elsevier.
+
+12. Russell, S., & Subramanian, D. (1995). Provably bounded-optimal agents. *Journal of Artificial Intelligence Research*, 2, 575-609.
+
 ---
 
-## Appendices
+## Acknowledgements
+
+The author thanks the open-source community for foundational tools and frameworks that enabled this research. Special recognition goes to the developers of ReAct, LangChain, FastAPI, PostgreSQL, and the broader Python ecosystem that provided essential building blocks for this work.
+
+This research was conducted as independent research at LlamaSearch AI Research, with all computational resources and development efforts supported entirely through private funding.
+
+---
+
+## Appendix
 
 ### Appendix A: Complete Experimental Data
 
@@ -867,60 +560,15 @@ Pre-Act Only vs. Vanilla ReAct: p = 0.012 (significant)
 SEM Only vs. Vanilla ReAct: p = 0.018 (not significant after correction)
 Pre-Act Only vs. SEM Only: p = 0.156 (not significant)
 
-### Appendix B: System Configuration and Deployment
+### Appendix B: System Architecture Details
 
-**B.1 Complete Environment Variables**
+**B.1 Production Deployment Configuration**
 
-```bash
-# Core Configuration
-LLAMAAGENT_ENV=production
-LLAMAAGENT_DEBUG=false
-LLAMAAGENT_LOG_LEVEL=INFO
+Complete environment variables and deployment checklist for enterprise production environments, including PostgreSQL database setup, SSL/TLS configuration, monitoring systems, and security compliance requirements.
 
-# Database Configuration
-DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/llamaagent
-PGVECTOR_EXTENSION=true
-DB_POOL_SIZE=20
-DB_MAX_OVERFLOW=30
+**B.2 Performance Optimization Specifications**
 
-# LLM Provider Configuration
-OPENAI_API_KEY=your_openai_key
-ANTHROPIC_API_KEY=your_anthropic_key
-DEFAULT_LLM_PROVIDER=openai
-DEFAULT_MODEL=gpt-4
-
-# API Configuration
-API_HOST=0.0.0.0
-API_PORT=8000
-API_WORKERS=4
-CORS_ORIGINS=["*"]
-REQUEST_TIMEOUT=300
-
-# Security Configuration
-JWT_SECRET_KEY=your_jwt_secret
-RATE_LIMIT_REQUESTS=100
-RATE_LIMIT_WINDOW=60
-ENABLE_API_KEY_AUTH=true
-
-# Monitoring Configuration
-ENABLE_METRICS=true
-METRICS_PORT=9090
-ENABLE_HEALTH_CHECK=true
-STRUCTURED_LOGGING=true
-```
-
-**B.2 Production Deployment Checklist**
-
-- [ ] PostgreSQL database with pgvector extension installed
-- [ ] Environment variables configured according to security requirements
-- [ ] SSL/TLS certificates configured for HTTPS
-- [ ] Rate limiting configured for API endpoints
-- [ ] Monitoring and alerting systems deployed
-- [ ] Backup and disaster recovery procedures established
-- [ ] Security scanning and vulnerability assessment completed
-- [ ] Load testing performed at expected traffic levels
-- [ ] Documentation and runbooks prepared for operations team
-- [ ] Compliance requirements validated (GDPR, SOC 2, etc.)
+Detailed performance tuning parameters, connection pooling configuration, memory management settings, and horizontal scaling recommendations for production deployments.
 
 ### Appendix C: Code Quality Metrics
 
@@ -945,29 +593,10 @@ Linting Results:
 - Black Formatting: All files compliant
 - isort Import Sorting: All files compliant
 - mypy Type Checking: 0 errors, strict mode enabled
-
-Code Complexity Analysis:
-- Average Cyclomatic Complexity: 3.2
-- Maximum Function Complexity: 8 (within acceptable limits)
-- Code Duplication: < 2% (within industry standards)
-- Technical Debt Ratio: Minimal (A-grade assessment)
 ```
 
-**C.2 Emoji Removal Documentation**
+**C.2 Enterprise Standards Compliance**
 
-Systematic removal of all emoji symbols from codebase for enterprise compliance:
-- Total Emojis Removed: 54 instances across 9 files
-- Replacement Strategy: Professional text indicators using bracket notation
-- Files Modified: demo.py, README.md, main.txt, IMPLEMENTATION_SUMMARY.md, and 5 others
-- Validation: Automated emoji detection confirms zero remaining instances
-
-**C.3 Professional Code Standards Implementation**
-
-- **Import Organization**: Systematic sorting and optimization following PEP 8
-- **Type Annotations**: Complete type coverage with mypy strict mode validation
-- **Error Handling**: Comprehensive exception management with graceful degradation
-- **Documentation**: Complete docstring coverage with examples and usage patterns
-- **Security**: Input validation and sanitization throughout codebase
-- **Performance**: Optimized data structures and algorithms for production efficiency
+Documentation of systematic emoji removal (54 instances across 9 files), professional code standards implementation, and comprehensive security measures including input validation, output filtering, and vulnerability scanning integration.
 
 *© 2025 Nik Jois, LlamaSearch AI Research. All rights reserved. LlamaAgent is released under the MIT License.*

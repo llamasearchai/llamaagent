@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import random
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -28,10 +29,19 @@ class GAIATask:
     
     task_id: str
     question: str
-    level: int
-    final_answer: str
+    expected_answer: str
+    difficulty: str
+    steps_required: int
+    domain: str
     file_name: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    def __post_init__(self):
+        """Validate task parameters."""
+        if self.difficulty not in ["easy", "medium", "hard"]:
+            raise ValueError(f"Invalid difficulty: {self.difficulty}")
+        if self.steps_required < 1:
+            raise ValueError(f"Invalid steps_required: {self.steps_required}")
 
 
 @dataclass
@@ -52,17 +62,258 @@ class GAIAResult:
 class GAIABenchmark:
     """GAIA benchmark evaluator with Hugging Face dataset integration."""
 
-    def __init__(self, subset: str = "validation", max_tasks: Optional[int] = None):
+    def __init__(self, subset: str = "validation", max_tasks: Optional[int] = None, data_file: Optional[Path] = None):
         """Initialize GAIA benchmark.
         
         Args:
             subset: Dataset subset to use ("validation" or "test")
             max_tasks: Maximum number of tasks to evaluate (None for all)
+            data_file: Optional path to existing data file
         """
         self.subset = subset
         self.max_tasks = max_tasks
+        self.data_file = data_file or Path("benchmark_data") / "gaia_tasks.json"
         self.tasks: List[GAIATask] = []
         
+        # Initialize tasks
+        self._initialize_tasks()
+        
+    def _initialize_tasks(self) -> None:
+        """Initialize tasks from file or create synthetic ones."""
+        if self.data_file.exists():
+            self._load_tasks_from_file()
+        else:
+            self.tasks = self._create_synthetic_tasks()
+            self._save_tasks()
+    
+    def _load_tasks_from_file(self) -> None:
+        """Load tasks from JSON file."""
+        with open(self.data_file, 'r') as f:
+            data = json.load(f)
+            
+        self.tasks = []
+        for task_data in data.get("tasks", []):
+            task = GAIATask(
+                task_id=task_data["task_id"],
+                question=task_data["question"],
+                expected_answer=task_data["expected_answer"],
+                difficulty=task_data["difficulty"],
+                steps_required=task_data["steps_required"],
+                domain=task_data["domain"],
+                file_name=task_data.get("file_name"),
+                metadata=task_data.get("metadata", {})
+            )
+            self.tasks.append(task)
+    
+    def _save_tasks(self) -> None:
+        """Save tasks to JSON file."""
+        self.data_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        data = {
+            "version": "1.0",
+            "created": time.time(),
+            "tasks": [
+                {
+                    "task_id": task.task_id,
+                    "question": task.question,
+                    "expected_answer": task.expected_answer,
+                    "difficulty": task.difficulty,
+                    "steps_required": task.steps_required,
+                    "domain": task.domain,
+                    "file_name": task.file_name,
+                    "metadata": task.metadata
+                }
+                for task in self.tasks
+            ]
+        }
+        
+        with open(self.data_file, 'w') as f:
+            json.dump(data, f, indent=2)
+    
+    def _create_synthetic_tasks(self) -> List[GAIATask]:
+        """Create synthetic GAIA-style tasks."""
+        tasks = []
+        
+        # Mathematical reasoning tasks
+        tasks.extend([
+            GAIATask(
+                task_id="math_easy_001",
+                question="Calculate 15% of 240 and then add 30 to the result.",
+                expected_answer="66",
+                difficulty="easy",
+                steps_required=2,
+                domain="mathematics"
+            ),
+            GAIATask(
+                task_id="math_easy_002", 
+                question="If a rectangle has length 8 cm and width 5 cm, what is its perimeter?",
+                expected_answer="26 cm",
+                difficulty="easy",
+                steps_required=1,
+                domain="mathematics"
+            ),
+            GAIATask(
+                task_id="math_medium_001",
+                question="Calculate the compound interest on $5000 at 8% annual rate for 3 years, compounded annually.",
+                expected_answer="$6298.56",
+                difficulty="medium",
+                steps_required=3,
+                domain="mathematics"
+            ),
+            GAIATask(
+                task_id="math_hard_001",
+                question="Find the derivative of f(x) = 3x³ - 2x² + 5x - 1, then evaluate it at x = 2.",
+                expected_answer="37",
+                difficulty="hard",
+                steps_required=5,
+                domain="mathematics"
+            ),
+        ])
+        
+        # Programming tasks
+        tasks.extend([
+            GAIATask(
+                task_id="prog_easy_001",
+                question="Write a Python function that returns the maximum of two numbers.",
+                expected_answer="def max_two(a, b): return a if a > b else b",
+                difficulty="easy",
+                steps_required=1,
+                domain="programming"
+            ),
+            GAIATask(
+                task_id="prog_medium_001",
+                question="Write a Python function to find the factorial of a number using recursion.",
+                expected_answer="def factorial(n): return 1 if n <= 1 else n * factorial(n-1)",
+                difficulty="medium",
+                steps_required=3,
+                domain="programming"
+            ),
+            GAIATask(
+                task_id="prog_hard_001",
+                question="Implement a binary search algorithm and test it with array [1,3,5,7,9,11] searching for 7.",
+                expected_answer="3",
+                difficulty="hard",
+                steps_required=5,
+                domain="programming"
+            ),
+        ])
+        
+        # Science tasks
+        tasks.extend([
+            GAIATask(
+                task_id="sci_easy_001",
+                question="What is the chemical formula for water?",
+                expected_answer="H2O",
+                difficulty="easy",
+                steps_required=1,
+                domain="science"
+            ),
+            GAIATask(
+                task_id="sci_medium_001",
+                question="Calculate the kinetic energy of a 2kg object moving at 10 m/s.",
+                expected_answer="100 J",
+                difficulty="medium",
+                steps_required=3,
+                domain="science"
+            ),
+            GAIATask(
+                task_id="sci_hard_001",
+                question="Explain the process of photosynthesis and write the balanced chemical equation.",
+                expected_answer="6CO2 + 6H2O + light energy → C6H12O6 + 6O2",
+                difficulty="hard",
+                steps_required=5,
+                domain="science"
+            ),
+        ])
+        
+        # Logic tasks
+        tasks.extend([
+            GAIATask(
+                task_id="logic_easy_001",
+                question="If all cats are animals and Fluffy is a cat, what can we conclude about Fluffy?",
+                expected_answer="Fluffy is an animal",
+                difficulty="easy",
+                steps_required=2,
+                domain="logic"
+            ),
+            GAIATask(
+                task_id="logic_medium_001",
+                question="In a group of 30 people, 18 like coffee, 15 like tea, and 8 like both. How many like neither?",
+                expected_answer="5",
+                difficulty="medium",
+                steps_required=4,
+                domain="logic"
+            ),
+            GAIATask(
+                task_id="logic_hard_001",
+                question="Solve: If A is true, then B is false. If B is false, then C is true. If C is true, then D is false. Given A is true, what is D?",
+                expected_answer="D is false",
+                difficulty="hard",
+                steps_required=5,
+                domain="logic"
+            ),
+        ])
+        
+        # Apply max_tasks limit if specified
+        if self.max_tasks and len(tasks) > self.max_tasks:
+            tasks = tasks[:self.max_tasks]
+            
+        return tasks
+    
+    def get_tasks(
+        self,
+        difficulty: Optional[str] = None,
+        domain: Optional[str] = None,
+        min_steps: Optional[int] = None,
+        limit: Optional[int] = None
+    ) -> List[GAIATask]:
+        """Get tasks with optional filtering."""
+        filtered_tasks = self.tasks.copy()
+        
+        if difficulty:
+            filtered_tasks = [t for t in filtered_tasks if t.difficulty == difficulty]
+            
+        if domain:
+            filtered_tasks = [t for t in filtered_tasks if t.domain == domain]
+            
+        if min_steps is not None:
+            filtered_tasks = [t for t in filtered_tasks if t.steps_required >= min_steps]
+            
+        if limit:
+            filtered_tasks = filtered_tasks[:limit]
+            
+        return filtered_tasks
+    
+    def get_task_by_id(self, task_id: str) -> Optional[GAIATask]:
+        """Get a specific task by ID."""
+        for task in self.tasks:
+            if task.task_id == task_id:
+                return task
+        return None
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get benchmark statistics."""
+        if not self.tasks:
+            return {"total_tasks": 0}
+            
+        difficulties = {}
+        domains = {}
+        step_counts = []
+        
+        for task in self.tasks:
+            difficulties[task.difficulty] = difficulties.get(task.difficulty, 0) + 1
+            domains[task.domain] = domains.get(task.domain, 0) + 1
+            step_counts.append(task.steps_required)
+        
+        return {
+            "total_tasks": len(self.tasks),
+            "difficulties": difficulties,
+            "domains": domains,
+            "avg_steps": sum(step_counts) / len(step_counts) if step_counts else 0,
+            "min_steps": min(step_counts) if step_counts else 0,
+            "max_steps": max(step_counts) if step_counts else 0
+        }
+
     async def load_dataset(self) -> None:
         """Load GAIA dataset from Hugging Face."""
         try:
@@ -76,12 +327,22 @@ class GAIABenchmark:
             dataset = load_dataset("gaia-benchmark/GAIA", self.subset)
             
             tasks = []
+            
             for item in dataset:
+                # Map GAIA format to our format
+                difficulty_map = {1: "easy", 2: "medium", 3: "hard"}
+                
+                # Type check item as dictionary
+                if not isinstance(item, dict):
+                    continue
+                    
                 task = GAIATask(
                     task_id=item.get("task_id", f"gaia_{len(tasks)}"),
-                    question=item["Question"],
-                    level=item["Level"],
-                    final_answer=item.get("Final answer", ""),
+                    question=item.get("Question", ""),
+                    expected_answer=item.get("Final answer", ""),
+                    difficulty=difficulty_map.get(item.get("Level", 2), "medium"),
+                    steps_required=item.get("Level", 2),  # Use level as steps approximation
+                    domain="general",  # GAIA doesn't have explicit domains
                     file_name=item.get("file_name"),
                     metadata=item.get("Annotator Metadata", {})
                 )
@@ -95,51 +356,10 @@ class GAIABenchmark:
             
         except ImportError:
             logger.warning("datasets library not available, using fallback data")
-            await self._load_fallback_data()
+            # Tasks already initialized in __init__
         except Exception as e:
             logger.error(f"Failed to load GAIA dataset: {e}")
-            await self._load_fallback_data()
-    
-    async def _load_fallback_data(self) -> None:
-        """Load fallback GAIA-style tasks when HF datasets unavailable."""
-        fallback_tasks = [
-            {
-                "task_id": "gaia_math_001", 
-                "question": "Calculate the compound interest on $5000 at 8% annual rate for 5 years, then write a Python function to calculate compound interest for any inputs.",
-                "level": 2,
-                "final_answer": "$7346.64"
-            },
-            {
-                "task_id": "gaia_reasoning_001",
-                "question": "If a train travels at 60 mph for 2 hours, then 80 mph for 1.5 hours, what is the average speed for the entire journey?",
-                "level": 1, 
-                "final_answer": "68 mph"
-            },
-            {
-                "task_id": "gaia_code_001",
-                "question": "Write a Python function that finds the longest palindromic substring in a given string. Test it with 'babad' and return the result.",
-                "level": 2,
-                "final_answer": "bab"
-            },
-            {
-                "task_id": "gaia_multi_001",
-                "question": "Calculate the factorial of 8, then find what percentage 8! represents of 10!. Express as a percentage rounded to 2 decimal places.",
-                "level": 2,
-                "final_answer": "1.11%"
-            }
-        ]
-        
-        self.tasks = [
-            GAIATask(
-                task_id=task["task_id"],
-                question=task["question"], 
-                level=task["level"],
-                final_answer=task["final_answer"]
-            )
-            for task in fallback_tasks[:self.max_tasks] if self.max_tasks else fallback_tasks
-        ]
-        
-        logger.info(f"Loaded {len(self.tasks)} fallback GAIA tasks")
+            # Tasks already initialized in __init__
 
     async def evaluate_agent(self, agent: ReactAgent, shuffle: bool = True) -> List[GAIAResult]:
         """Evaluate agent on GAIA tasks."""
@@ -163,14 +383,17 @@ class GAIABenchmark:
                 predicted = response.content.strip().split('\n')[-1]
                 
                 # Simple answer matching (case-insensitive, stripped)
-                is_correct = self._match_answers(predicted, task.final_answer)
+                is_correct = self._match_answers(predicted, task.expected_answer)
+                
+                # Map difficulty to level for backward compatibility
+                level_map = {"easy": 1, "medium": 2, "hard": 3}
                 
                 result = GAIAResult(
                     task_id=task.task_id,
                     question=task.question,
-                    level=task.level,
+                    level=level_map.get(task.difficulty, 2),
                     predicted_answer=predicted,
-                    correct_answer=task.final_answer,
+                    correct_answer=task.expected_answer,
                     is_correct=is_correct,
                     agent_response=response,
                     execution_time=response.execution_time,
@@ -188,9 +411,9 @@ class GAIABenchmark:
                 results.append(GAIAResult(
                     task_id=task.task_id,
                     question=task.question,
-                    level=task.level,
+                    level=level_map.get(task.difficulty, 2),
                     predicted_answer=f"ERROR: {e}",
-                    correct_answer=task.final_answer,
+                    correct_answer=task.expected_answer,
                     is_correct=False,
                     agent_response=AgentResponse(content=f"Error: {e}", success=False),
                     execution_time=0.0,
@@ -332,8 +555,8 @@ async def generate_tasks(
         {
             "id": task.task_id,
             "question": task.question,
-            "level": task.level,
-            "answer": task.final_answer,
+            "level": {"easy": 1, "medium": 2, "hard": 3}.get(task.difficulty, 2),
+            "answer": task.expected_answer,
             "metadata": task.metadata
         }
         for task in benchmark.tasks
