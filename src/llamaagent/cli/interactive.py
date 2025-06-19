@@ -102,10 +102,11 @@ class InteractiveExperiment:
             ("2", "SPRE Planning Demo", "Hierarchical planning"),
             ("3", "Dataset Generation", "Create SPRE dataset"),
             ("4", "Performance Benchmarks", "Compare agents"),
-            ("5", "Full Experiment", "End-to-end pipeline"),
-            ("6", "View Results", "Last run"),
-            ("7", "API Demo", "FastAPI smoke-test"),
-            ("8", "Exit", "Quit"),
+            ("5", "GAIA Evaluation", "Official GAIA benchmark"),
+            ("6", "Full Experiment", "End-to-end pipeline"),
+            ("7", "View Results", "Last run"),
+            ("8", "API Demo", "FastAPI smoke-test"),
+            ("9", "Exit", "Quit"),
         ]
         if self.console:
             table = Table(show_header=False, box=box.ROUNDED)  # type: ignore[arg-type]
@@ -181,9 +182,43 @@ class InteractiveExperiment:
         self.results["benchmarks"] = results
         self._print(json.dumps(results, indent=2))
 
+    async def gaia_evaluation(self, spree_enabled: bool = False) -> None:
+        self._print("\n[bold yellow]GAIA Benchmark Evaluation[/bold yellow]")
+        try:
+            from ..benchmarks.gaia_benchmark import GAIABenchmark
+            
+            # Create SPRE-enabled agent
+            config = AgentConfig(
+                name="GAIA-Agent",
+                role=AgentRole.PLANNER,
+                spree_enabled=spree_enabled
+            )
+            agent = await self._build_agent(config, spree_enabled=spree_enabled)
+            
+            # Run GAIA evaluation on subset
+            benchmark = GAIABenchmark(subset="validation", max_tasks=5)
+            self._print("Loading GAIA dataset...")
+            await benchmark.load_dataset()
+            
+            self._print(f"Evaluating {len(benchmark.tasks)} GAIA tasks...")
+            results = await benchmark.evaluate_agent(agent, shuffle=True)
+            
+            # Generate report
+            report = benchmark.generate_report(results)
+            self._print(f"GAIA Results: {report['correct_answers']}/{report['total_tasks']} correct ({report['overall_accuracy']:.1%})")
+            
+            # Store results
+            self.results["gaia"] = report
+            
+        except ImportError:
+            self._print("[red]GAIA benchmark requires 'datasets' library. Install with: pip install datasets[/red]")
+        except Exception as e:
+            self._print(f"[red]GAIA evaluation failed: {e}[/red]")
+
     async def full_experiment(self) -> None:
         await self.dataset_demo()
         await self.benchmark()
+        await self.gaia_evaluation()
         Path("experiment_results.json").write_text(json.dumps(self.results, indent=2))
         self._print("[green]Experiment complete.[/green]  Results → experiment_results.json")
 
@@ -221,17 +256,19 @@ class InteractiveExperiment:
                 elif choice == "4":
                     await self.benchmark(spree_enabled)
                 elif choice == "5":
-                    await self.full_experiment()
+                    await self.gaia_evaluation(spree_enabled)
                 elif choice == "6":
-                    self.view_results()
+                    await self.full_experiment()
                 elif choice == "7":
-                    await self.api_demo()
+                    self.view_results()
                 elif choice == "8":
+                    await self.api_demo()
+                elif choice == "9":
                     self._print("Goodbye!")
                     break
                 else:
                     self._print("Invalid choice.")
-                if self.console and choice != "8":
+                if self.console and choice != "9":
                     _ = _prompt("\n[dim]Enter to continue[/dim]", [""])  # noqa: F841
                     self.console.clear()
                     self.display_banner()

@@ -1,230 +1,340 @@
 from __future__ import annotations
 
-"""GAIA benchmark implementation for multi-step reasoning evaluation.
-
-Based on the GAIA benchmark from WebDancer paper (arXiv:2505.22648v1), this
-module provides a comprehensive evaluation framework for testing agent
-performance on complex, multi-step reasoning tasks.
-"""
+"""GAIA benchmark integration for LlamaAgent evaluation."""
 
 import json
-import time
+import logging
+import random
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-__all__ = ["GAIATask", "GAIABenchmark"]
+try:
+    from datasets import load_dataset  # type: ignore
+except ImportError:
+    load_dataset = None
+
+from ..agents import AgentConfig, AgentResponse, ReactAgent
+from ..tools import ToolRegistry
+
+# ─────────────────────────────── GAIA integration ───────────────────────────
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class GAIATask:
-    """Individual GAIA benchmark task."""
-
+    """Individual GAIA task."""
+    
     task_id: str
     question: str
-    expected_answer: str
-    difficulty: str  # "easy", "medium", "hard"
-    steps_required: int
-    domain: str
+    level: int
+    final_answer: str
+    file_name: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def __post_init__(self):
-        """Validate task data."""
-        if self.difficulty not in ["easy", "medium", "hard"]:
-            raise ValueError(f"Invalid difficulty: {self.difficulty}")
-        if self.steps_required < 1:
-            raise ValueError(f"Invalid steps_required: {self.steps_required}")
+
+@dataclass
+class GAIAResult:
+    """Result from GAIA evaluation."""
+    
+    task_id: str
+    question: str
+    level: int
+    predicted_answer: str
+    correct_answer: str
+    is_correct: bool
+    agent_response: AgentResponse
+    execution_time: float
+    tokens_used: int
 
 
 class GAIABenchmark:
-    """GAIA benchmark dataset manager and evaluator."""
+    """GAIA benchmark evaluator with Hugging Face dataset integration."""
 
-    def __init__(self, data_path: Optional[Path] = None):
-        self.data_path = data_path or Path(__file__).parent / "data" / "gaia_tasks.json"
+    def __init__(self, subset: str = "validation", max_tasks: Optional[int] = None):
+        """Initialize GAIA benchmark.
+        
+        Args:
+            subset: Dataset subset to use ("validation" or "test")
+            max_tasks: Maximum number of tasks to evaluate (None for all)
+        """
+        self.subset = subset
+        self.max_tasks = max_tasks
         self.tasks: List[GAIATask] = []
-        self._load_tasks()
+        
+    async def load_dataset(self) -> None:
+        """Load GAIA dataset from Hugging Face."""
+        try:
+            # Try to import datasets library
+            if load_dataset is None:
+                raise ImportError("datasets library not available")
+            
+            logger.info(f"Loading GAIA dataset subset: {self.subset}")
+            
+            # Load the official GAIA dataset
+            dataset = load_dataset("gaia-benchmark/GAIA", self.subset)
+            
+            tasks = []
+            for item in dataset:
+                task = GAIATask(
+                    task_id=item.get("task_id", f"gaia_{len(tasks)}"),
+                    question=item["Question"],
+                    level=item["Level"],
+                    final_answer=item.get("Final answer", ""),
+                    file_name=item.get("file_name"),
+                    metadata=item.get("Annotator Metadata", {})
+                )
+                tasks.append(task)
+                
+                if self.max_tasks and len(tasks) >= self.max_tasks:
+                    break
+                    
+            self.tasks = tasks
+            logger.info(f"Loaded {len(self.tasks)} GAIA tasks")
+            
+        except ImportError:
+            logger.warning("datasets library not available, using fallback data")
+            await self._load_fallback_data()
+        except Exception as e:
+            logger.error(f"Failed to load GAIA dataset: {e}")
+            await self._load_fallback_data()
+    
+    async def _load_fallback_data(self) -> None:
+        """Load fallback GAIA-style tasks when HF datasets unavailable."""
+        fallback_tasks = [
+            {
+                "task_id": "gaia_math_001", 
+                "question": "Calculate the compound interest on $5000 at 8% annual rate for 5 years, then write a Python function to calculate compound interest for any inputs.",
+                "level": 2,
+                "final_answer": "$7346.64"
+            },
+            {
+                "task_id": "gaia_reasoning_001",
+                "question": "If a train travels at 60 mph for 2 hours, then 80 mph for 1.5 hours, what is the average speed for the entire journey?",
+                "level": 1, 
+                "final_answer": "68 mph"
+            },
+            {
+                "task_id": "gaia_code_001",
+                "question": "Write a Python function that finds the longest palindromic substring in a given string. Test it with 'babad' and return the result.",
+                "level": 2,
+                "final_answer": "bab"
+            },
+            {
+                "task_id": "gaia_multi_001",
+                "question": "Calculate the factorial of 8, then find what percentage 8! represents of 10!. Express as a percentage rounded to 2 decimal places.",
+                "level": 2,
+                "final_answer": "1.11%"
+            }
+        ]
+        
+        self.tasks = [
+            GAIATask(
+                task_id=task["task_id"],
+                question=task["question"], 
+                level=task["level"],
+                final_answer=task["final_answer"]
+            )
+            for task in fallback_tasks[:self.max_tasks] if self.max_tasks else fallback_tasks
+        ]
+        
+        logger.info(f"Loaded {len(self.tasks)} fallback GAIA tasks")
 
-    def _load_tasks(self) -> None:
-        """Load GAIA tasks from dataset."""
-        if self.data_path.exists():
-            with open(self.data_path, "r") as f:
-                data = json.load(f)
-                self.tasks = [GAIATask(**task) for task in data["tasks"]]
-        else:
-            # Create synthetic GAIA-style tasks for evaluation
-            self.tasks = self._create_synthetic_tasks()
-            self._save_tasks()
+    async def evaluate_agent(self, agent: ReactAgent, shuffle: bool = True) -> List[GAIAResult]:
+        """Evaluate agent on GAIA tasks."""
+        if not self.tasks:
+            await self.load_dataset()
+            
+        tasks = self.tasks.copy()
+        if shuffle:
+            random.shuffle(tasks)
+            
+        results = []
+        
+        for i, task in enumerate(tasks):
+            logger.info(f"Evaluating task {i+1}/{len(tasks)}: {task.task_id}")
+            
+            try:
+                # Execute task
+                response = await agent.execute(task.question)
+                
+                # Extract predicted answer (last line or full content)
+                predicted = response.content.strip().split('\n')[-1]
+                
+                # Simple answer matching (case-insensitive, stripped)
+                is_correct = self._match_answers(predicted, task.final_answer)
+                
+                result = GAIAResult(
+                    task_id=task.task_id,
+                    question=task.question,
+                    level=task.level,
+                    predicted_answer=predicted,
+                    correct_answer=task.final_answer,
+                    is_correct=is_correct,
+                    agent_response=response,
+                    execution_time=response.execution_time,
+                    tokens_used=response.tokens_used
+                )
+                
+                results.append(result)
+                
+                logger.info(f"Task {task.task_id}: {'✓' if is_correct else '✗'} "
+                          f"({response.execution_time:.2f}s, {response.tokens_used} tokens)")
+                
+            except Exception as e:
+                logger.error(f"Failed to evaluate task {task.task_id}: {e}")
+                # Add failed result
+                results.append(GAIAResult(
+                    task_id=task.task_id,
+                    question=task.question,
+                    level=task.level,
+                    predicted_answer=f"ERROR: {e}",
+                    correct_answer=task.final_answer,
+                    is_correct=False,
+                    agent_response=AgentResponse(content=f"Error: {e}", success=False),
+                    execution_time=0.0,
+                    tokens_used=0
+                ))
+                
+        return results
 
-    def _create_synthetic_tasks(self) -> List[GAIATask]:
-        """Create synthetic GAIA-style tasks for evaluation."""
-        tasks = []
+    def _match_answers(self, predicted: str, correct: str) -> bool:
+        """Match predicted answer with correct answer."""
+        # Normalize both answers
+        pred_norm = predicted.lower().strip().replace(",", "").replace("$", "")
+        correct_norm = correct.lower().strip().replace(",", "").replace("$", "")
+        
+        # Exact match
+        if pred_norm == correct_norm:
+            return True
+            
+        # Check if predicted contains correct answer
+        if correct_norm in pred_norm:
+            return True
+            
+        # For numeric answers, try parsing
+        try:
+            pred_num = float(pred_norm.replace("%", ""))
+            correct_num = float(correct_norm.replace("%", ""))
+            return abs(pred_num - correct_num) < 0.01
+        except (ValueError, TypeError):
+            pass
+            
+        return False
 
-        # Mathematical reasoning tasks
-        tasks.extend(
-            [
-                GAIATask(
-                    task_id="math_001",
-                    question="Calculate the compound interest on $1000 invested at 5% annual rate for 3 years, then determine what percentage of the total amount the interest represents.",
-                    expected_answer="The compound interest is $157.63, representing 13.6% of the total amount.",
-                    difficulty="medium",
-                    steps_required=3,
-                    domain="mathematics",
-                    metadata={"requires_calculation": True, "multi_step": True},
-                ),
-                GAIATask(
-                    task_id="math_002",
-                    question="Find the area of a triangle with vertices at (0,0), (4,0), and (2,3), then calculate how many such triangles would fit in a rectangle of area 50.",
-                    expected_answer="The triangle area is 6 square units. 8 triangles would fit in the rectangle (with 2 square units remaining).",
-                    difficulty="medium",
-                    steps_required=4,
-                    domain="mathematics",
-                    metadata={"requires_calculation": True, "geometry": True},
-                ),
-            ]
-        )
-
-        # Programming tasks
-        tasks.extend(
-            [
-                GAIATask(
-                    task_id="prog_001",
-                    question="Write a Python function to find the longest palindromic substring in a given string, then test it with 'racecar' and explain the algorithm's time complexity.",
-                    expected_answer="Function finds 'racecar' as the longest palindrome. Time complexity is O(n²) for the expand-around-centers approach.",
-                    difficulty="hard",
-                    steps_required=4,
-                    domain="programming",
-                    metadata={"requires_code": True, "algorithm_analysis": True},
-                ),
-                GAIATask(
-                    task_id="prog_002",
-                    question="Create a function that generates the first 10 Fibonacci numbers, then calculate their sum and determine what percentage the largest number represents of the total sum.",
-                    expected_answer="Fibonacci sequence: [0,1,1,2,3,5,8,13,21,34]. Sum: 88. Largest (34) represents 38.6% of total.",
-                    difficulty="medium",
-                    steps_required=3,
-                    domain="programming",
-                    metadata={"requires_code": True, "mathematical_analysis": True},
-                ),
-            ]
-        )
-
-        # Multi-domain reasoning
-        tasks.extend(
-            [
-                GAIATask(
-                    task_id="multi_001",
-                    question="If a company's revenue grows by 15% each quarter and starts at $100,000, what will be the revenue after 1 year? Then determine how much additional revenue they would need to reach $200,000 by year-end.",
-                    expected_answer="After 1 year: $174,901. Additional revenue needed: $25,099.",
-                    difficulty="medium",
-                    steps_required=3,
-                    domain="business_math",
-                    metadata={"compound_growth": True, "business_reasoning": True},
-                ),
-                GAIATask(
-                    task_id="multi_002",
-                    question="Explain the concept of machine learning overfitting, provide a code example that demonstrates it, and suggest three practical solutions to prevent it.",
-                    expected_answer="Overfitting occurs when models memorize training data. Code example shows high training accuracy but poor validation performance. Solutions: regularization, cross-validation, more data.",
-                    difficulty="hard",
-                    steps_required=5,
-                    domain="machine_learning",
-                    metadata={"conceptual_explanation": True, "requires_code": True, "solution_generation": True},
-                ),
-            ]
-        )
-
-        # Simple tasks for baseline testing
-        tasks.extend(
-            [
-                GAIATask(
-                    task_id="simple_001",
-                    question="What is 25 * 16?",
-                    expected_answer="400",
-                    difficulty="easy",
-                    steps_required=1,
-                    domain="arithmetic",
-                    metadata={"basic_math": True},
-                ),
-                GAIATask(
-                    task_id="simple_002",
-                    question="Calculate 144 / 12 and then add 7 to the result.",
-                    expected_answer="19",
-                    difficulty="easy",
-                    steps_required=2,
-                    domain="arithmetic",
-                    metadata={"basic_math": True, "sequential_ops": True},
-                ),
-            ]
-        )
-
-        return tasks
-
-    def _save_tasks(self) -> None:
-        """Save tasks to file for reproducibility."""
-        self.data_path.parent.mkdir(parents=True, exist_ok=True)
-        data = {
-            "version": "1.0",
-            "created": time.time(),
-            "tasks": [
-                {
-                    "task_id": task.task_id,
-                    "question": task.question,
-                    "expected_answer": task.expected_answer,
-                    "difficulty": task.difficulty,
-                    "steps_required": task.steps_required,
-                    "domain": task.domain,
-                    "metadata": task.metadata,
+    def generate_report(self, results: List[GAIAResult]) -> Dict[str, Any]:
+        """Generate evaluation report."""
+        if not results:
+            return {"error": "No results to report"}
+            
+        total = len(results)
+        correct = sum(1 for r in results if r.is_correct)
+        
+        # Level-wise breakdown
+        level_stats = {}
+        for level in [1, 2, 3]:
+            level_results = [r for r in results if r.level == level]
+            if level_results:
+                level_correct = sum(1 for r in level_results if r.is_correct)
+                level_stats[f"level_{level}"] = {
+                    "total": len(level_results),
+                    "correct": level_correct,
+                    "accuracy": level_correct / len(level_results) if level_results else 0,
+                    "avg_time": sum(r.execution_time for r in level_results) / len(level_results),
+                    "avg_tokens": sum(r.tokens_used for r in level_results) / len(level_results)
                 }
-                for task in self.tasks
-            ],
-        }
-
-        with open(self.data_path, "w") as f:
-            json.dump(data, f, indent=2)
-
-    def get_tasks(
-        self,
-        difficulty: Optional[str] = None,
-        domain: Optional[str] = None,
-        min_steps: Optional[int] = None,
-        limit: Optional[int] = None,
-    ) -> List[GAIATask]:
-        """Get filtered tasks based on criteria."""
-        filtered_tasks = self.tasks
-
-        if difficulty:
-            filtered_tasks = [t for t in filtered_tasks if t.difficulty == difficulty]
-
-        if domain:
-            filtered_tasks = [t for t in filtered_tasks if t.domain == domain]
-
-        if min_steps:
-            filtered_tasks = [t for t in filtered_tasks if t.steps_required >= min_steps]
-
-        if limit:
-            filtered_tasks = filtered_tasks[:limit]
-
-        return filtered_tasks
-
-    def get_task_by_id(self, task_id: str) -> Optional[GAIATask]:
-        """Get specific task by ID."""
-        for task in self.tasks:
-            if task.task_id == task_id:
-                return task
-        return None
-
-    def get_stats(self) -> Dict[str, Any]:
-        """Get benchmark statistics."""
-        difficulties = {}
-        domains = {}
-
-        for task in self.tasks:
-            difficulties[task.difficulty] = difficulties.get(task.difficulty, 0) + 1
-            domains[task.domain] = domains.get(task.domain, 0) + 1
-
+        
         return {
-            "total_tasks": len(self.tasks),
-            "difficulties": difficulties,
-            "domains": domains,
-            "avg_steps": sum(task.steps_required for task in self.tasks) / len(self.tasks),
-            "max_steps": max(task.steps_required for task in self.tasks),
-            "min_steps": min(task.steps_required for task in self.tasks),
+            "dataset": "GAIA",
+            "subset": self.subset,
+            "total_tasks": total,
+            "correct_answers": correct,
+            "overall_accuracy": correct / total if total > 0 else 0,
+            "average_execution_time": sum(r.execution_time for r in results) / total if total > 0 else 0,
+            "total_tokens_used": sum(r.tokens_used for r in results),
+            "level_breakdown": level_stats,
+            "failed_tasks": [
+                {"task_id": r.task_id, "question": r.question[:100] + "...", "error": r.predicted_answer}
+                for r in results if not r.is_correct and r.predicted_answer.startswith("ERROR:")
+            ]
         }
+
+    async def save_results(self, results: List[GAIAResult], output_path: Path) -> None:
+        """Save results to JSON file."""
+        output_data = {
+            "benchmark": "GAIA",
+            "subset": self.subset,
+            "results": [
+                {
+                    "task_id": r.task_id,
+                    "question": r.question,
+                    "level": r.level,
+                    "predicted_answer": r.predicted_answer,
+                    "correct_answer": r.correct_answer,
+                    "is_correct": r.is_correct,
+                    "execution_time": r.execution_time,
+                    "tokens_used": r.tokens_used,
+                    "agent_success": r.agent_response.success
+                }
+                for r in results
+            ],
+            "summary": self.generate_report(results)
+        }
+        
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, 'w') as f:
+            json.dump(output_data, f, indent=2)
+            
+        logger.info(f"Results saved to {output_path}")
+
+
+# ─────────────────────────────── convenience functions ──────────────────────
+
+async def run_gaia_evaluation(
+    agent_config: AgentConfig,
+    tools: ToolRegistry,
+    subset: str = "validation",
+    max_tasks: Optional[int] = 20,
+    output_dir: Optional[Path] = None
+) -> Dict[str, Any]:
+    """Run GAIA evaluation with given agent configuration."""
+    
+    # Create agent
+    agent = ReactAgent(agent_config, tools=tools)
+    
+    # Create benchmark
+    benchmark = GAIABenchmark(subset=subset, max_tasks=max_tasks)
+    
+    # Run evaluation
+    results = await benchmark.evaluate_agent(agent)
+    
+    # Save results if output directory provided
+    if output_dir:
+        output_path = output_dir / f"gaia_{subset}_{agent_config.name.lower()}_results.json"
+        await benchmark.save_results(results, output_path)
+    
+    # Return summary report
+    return benchmark.generate_report(results)
+
+
+# Legacy compatibility
+async def generate_tasks(
+    categories: Optional[List[str]] = None,
+    difficulty_levels: Optional[List[str]] = None, 
+    count: int = 10
+) -> List[Dict[str, Any]]:
+    """Generate GAIA-style tasks (legacy compatibility)."""
+    benchmark = GAIABenchmark(max_tasks=count)
+    await benchmark.load_dataset()
+    
+    return [
+        {
+            "id": task.task_id,
+            "question": task.question,
+            "level": task.level,
+            "answer": task.final_answer,
+            "metadata": task.metadata
+        }
+        for task in benchmark.tasks
+    ]
