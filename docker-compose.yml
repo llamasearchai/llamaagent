@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  llamaagent:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    command: uvicorn llamaagent.api:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  llamaagent-cli:
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    command: tail -f /dev/null  # Keep container running
+    profiles:
+      - cli
+
+  db:
+    image: ankane/pgvector:latest  # Postgres with pgvector pre-installed
+    environment:
+      POSTGRES_USER: llama
+      POSTGRES_PASSWORD: llama
+      POSTGRES_DB: llamaagent
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "llama"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

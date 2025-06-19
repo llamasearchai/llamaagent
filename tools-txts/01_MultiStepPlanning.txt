@@ -1,0 +1,140 @@
+Excellent. I will now proceed with the complete master coding prompt and scientific implementation plan for the first and most foundational feature we designed: Strategic Planning & Resourceful Execution (SPRE).
+
+This prompt is engineered to be a comprehensive, production-ready directive. It integrates the core concepts from the "Pre-Act" paper (for multi-step planning) and the "SEM" paper (for resource-efficient tool use), providing a clear path from theory to implementation within the LlamaAgent framework.
+
+Master Coding Prompt: Implementing Strategic Planning & Resourceful Execution (SPRE)
+
+Objective:
+Integrate a two-tiered reasoning framework, SPRE, into the LlamaAgent core to fundamentally enhance its decision-making capabilities. The primary goal is to evolve the agent from a purely reactive system to a strategic planner that not only formulates a multi-step plan to solve a task but also judiciously assesses the necessity of each tool-based action to conserve resources. This will be accomplished by introducing an explicit "Planning Phase" before the execution loop and embedding a "Resource Assessment" check within the loop, directly inspired by the methodologies outlined in the Pre-Act and SEM research papers.
+
+1. SPRE Core Logic & Execution Flow:
+
+The existing ReactAgent execution flow will be modified to follow this new, more sophisticated SPRE cycle:
+
+Task Ingestion: The agent receives the user's prompt.
+
+Planning Phase (Pre-Act Inspired):
+
+A specialized Planner agent is invoked.
+
+It receives the user's full task description.
+
+It generates and outputs a structured, multi-step execution plan as a list of PlanStep objects. Each step will contain a description and required_information.
+
+Iterative Execution Loop: The agent iterates through the PlanStep objects. For each step:
+
+Resource Assessment (SEM Inspired): The agent first performs an internal "necessity check." It asks itself: "Given my current context, history, and internal knowledge, is invoking an external tool strictly necessary to acquire the required_information for this step?"
+
+Decision Fork:
+
+If Tool is Necessary: The agent proceeds with the standard ReAct tool invocation (Thought -> Action -> Observation).
+
+If Tool is NOT Necessary: The agent skips the tool call and instead generates a Thought that explains how it can fulfill the step using its existing knowledge. It then proceeds to the next plan step.
+
+Synthesis and Final Answer: After completing all plan steps (or determining it can conclude early), a Synthesizer agent aggregates all observations and internal reasoning steps to produce the final, comprehensive answer.
+
+2. Component-Level Implementation Plan:
+
+File Modifications:
+
+Primary modifications will occur in src/llamaagent/agents/react.py.
+
+Supporting data classes will be added in src/llamaagent/agents/base.py.
+
+CLI flag integration in src/llamaagent/cli/main.py.
+
+New Data Structures (src/llamaagent/agents/base.py):
+
+Create a PlanStep Pydantic model:
+
+Generated python
+class PlanStep(BaseModel):
+    step_id: int
+    description: str
+    required_information: str
+    expected_outcome: str
+    is_completed: bool = False
+
+
+Create a ExecutionPlan Pydantic model:
+
+Generated python
+class ExecutionPlan(BaseModel):
+    original_task: str
+    steps: List[PlanStep]
+    current_step: int = 0
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Python
+IGNORE_WHEN_COPYING_END
+
+Modify AgentResponse to optionally include the ExecutionPlan.
+
+Agent Role and Prompt Engineering:
+
+Planner Agent: Define a new AgentRole enum value, PLANNER. The system prompt for this agent must be:
+
+"You are a master strategist and planner. Your task is to receive a complex user request and decompose it into a structured, sequential list of logical steps. For each step, clearly define the action to be taken and what specific information is required to complete it. Output this plan as a JSON object adhering to the ExecutionPlan schema. Do not attempt to solve the task, only plan it."
+
+Resource Assessment Prompt: During the execution loop, the agent will use a sub-prompt for the necessity check:
+
+"Current Plan Step: '{step.description}'. Information Needed: '{step.required_information}'. Reviewing the conversation history and my internal knowledge, is it absolutely necessary to use an external tool to acquire this information? Answer with only 'true' or 'false' followed by a brief justification."
+
+Modification of ReactAgent.execute:
+
+The method will first check if spree_mode is enabled.
+
+If true, it will first call the PLANNER to generate the ExecutionPlan.
+
+The main for loop will now iterate through plan.steps instead of range(self.config.max_iterations).
+
+Inside the loop, it will perform the Resource Assessment step. The agent's decision to use a tool will be based on the boolean output of this self-correction step.
+
+3. Scientific Testing and Validation Protocol:
+
+The primary hypothesis is that the SPRE-enabled agent will achieve a task success rate comparable to or higher than a pure Pre-Act agent, while significantly reducing the number of external tool calls and thus improving efficiency.
+
+Benchmark: Utilize the GAIA benchmark from the WebDancer paper (arXiv:2505.22648v1), focusing on a subset of tasks that require 3+ steps of information retrieval and reasoning.
+
+Baselines for Rigorous Comparison:
+
+Vanilla ReAct: The standard LlamaAgent implementation.
+
+Pre-Act Only: A modified agent that generates a plan but executes a tool for every step without resource assessment.
+
+SEM Only: A reactive agent without a plan that performs a resource assessment check before every potential tool use.
+
+SPRE Agent: The fully implemented new feature.
+
+Metrics to Collect:
+
+Task Success Rate (%): The primary measure of effectiveness.
+
+Average Tool-API Calls per Task: The primary measure of efficiency.
+
+Average Latency per Task (s): To measure overall task completion time.
+
+Average Reasoning Tokens per Task: To measure cognitive overhead.
+
+Results Presentation: The findings will be presented in a clear summary table. The expected outcome is for the SPRE Agent row to show the highest (Success Rate / API Calls) ratio, scientifically demonstrating its superior strategic efficiency.
+
+Agent Configuration	Task Success Rate (%)	Avg. API Calls	Avg. Latency (s)
+Vanilla ReAct	(result)	(result)	(result)
+Pre-Act Only	(result)	(result)	(result)
+SEM Only	(result)	(result)	(result)
+SPRE Agent (Ours)	(expected best)	(expected lowest)	(result)
+
+4. Documentation and CLI Integration:
+
+CLI Flag: Add a --spree flag to the llamaagent interactive and llamaagent chat commands. When this flag is present, the system should instantiate and use the SPRE-enabled agent logic.
+
+Documentation:
+
+Update README.md to list "Strategic Planning & Resourceful Execution (SPRE)" as a key feature.
+
+Add a new section under "Advanced Usage" explaining the SPRE methodology and how to use the --spree flag.
+
+Example Script: Create a new example file, examples/spree_usage.py, that demonstrates how to programmatically invoke the SPRE agent on a complex task, print the generated plan, and show the step-by-step execution including the resource assessment decisions.
+

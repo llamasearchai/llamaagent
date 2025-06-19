@@ -1,0 +1,102 @@
+{
+  "version": "1.0",
+  "created": 1750285318.931147,
+  "tasks": [
+    {
+      "task_id": "math_001",
+      "question": "Calculate the compound interest on $1000 invested at 5% annual rate for 3 years, then determine what percentage of the total amount the interest represents.",
+      "expected_answer": "The compound interest is $157.63, representing 13.6% of the total amount.",
+      "difficulty": "medium",
+      "steps_required": 3,
+      "domain": "mathematics",
+      "metadata": {
+        "requires_calculation": true,
+        "multi_step": true
+      }
+    },
+    {
+      "task_id": "math_002",
+      "question": "Find the area of a triangle with vertices at (0,0), (4,0), and (2,3), then calculate how many such triangles would fit in a rectangle of area 50.",
+      "expected_answer": "The triangle area is 6 square units. 8 triangles would fit in the rectangle (with 2 square units remaining).",
+      "difficulty": "medium",
+      "steps_required": 4,
+      "domain": "mathematics",
+      "metadata": {
+        "requires_calculation": true,
+        "geometry": true
+      }
+    },
+    {
+      "task_id": "prog_001",
+      "question": "Write a Python function to find the longest palindromic substring in a given string, then test it with 'racecar' and explain the algorithm's time complexity.",
+      "expected_answer": "Function finds 'racecar' as the longest palindrome. Time complexity is O(n\u00b2) for the expand-around-centers approach.",
+      "difficulty": "hard",
+      "steps_required": 4,
+      "domain": "programming",
+      "metadata": {
+        "requires_code": true,
+        "algorithm_analysis": true
+      }
+    },
+    {
+      "task_id": "prog_002",
+      "question": "Create a function that generates the first 10 Fibonacci numbers, then calculate their sum and determine what percentage the largest number represents of the total sum.",
+      "expected_answer": "Fibonacci sequence: [0,1,1,2,3,5,8,13,21,34]. Sum: 88. Largest (34) represents 38.6% of total.",
+      "difficulty": "medium",
+      "steps_required": 3,
+      "domain": "programming",
+      "metadata": {
+        "requires_code": true,
+        "mathematical_analysis": true
+      }
+    },
+    {
+      "task_id": "multi_001",
+      "question": "If a company's revenue grows by 15% each quarter and starts at $100,000, what will be the revenue after 1 year? Then determine how much additional revenue they would need to reach $200,000 by year-end.",
+      "expected_answer": "After 1 year: $174,901. Additional revenue needed: $25,099.",
+      "difficulty": "medium",
+      "steps_required": 3,
+      "domain": "business_math",
+      "metadata": {
+        "compound_growth": true,
+        "business_reasoning": true
+      }
+    },
+    {
+      "task_id": "multi_002",
+      "question": "Explain the concept of machine learning overfitting, provide a code example that demonstrates it, and suggest three practical solutions to prevent it.",
+      "expected_answer": "Overfitting occurs when models memorize training data. Code example shows high training accuracy but poor validation performance. Solutions: regularization, cross-validation, more data.",
+      "difficulty": "hard",
+      "steps_required": 5,
+      "domain": "machine_learning",
+      "metadata": {
+        "conceptual_explanation": true,
+        "requires_code": true,
+        "solution_generation": true
+      }
+    },
+    {
+      "task_id": "simple_001",
+      "question": "What is 25 * 16?",
+      "expected_answer": "400",
+      "difficulty": "easy",
+      "steps_required": 1,
+      "domain": "arithmetic",
+      "metadata": {
+        "basic_math": true
+      }
+    },
+    {
+      "task_id": "simple_002",
+      "question": "Calculate 144 / 12 and then add 7 to the result.",
+      "expected_answer": "19",
+      "difficulty": "easy",
+      "steps_required": 2,
+      "domain": "arithmetic",
+      "metadata": {
+        "basic_math": true,
+        "sequential_ops": true
+      }
+    }
+  ]
+}

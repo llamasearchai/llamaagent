@@ -1,0 +1,2 @@
+[console_scripts]
+llamaagent = llamaagent.cli:main

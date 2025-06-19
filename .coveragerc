@@ -1,0 +1,22 @@
+[run]
+omit =
+    src/llamaagent/cli/*
+    src/llamaagent/api.py
+    src/llamaagent/data_generation/*
+    src/llamaagent/evolution/*
+    src/llamaagent/experiment_runner.py
+    src/llamaagent/report_generator.py
+    src/llamaagent/visualization.py
+    src/llamaagent/statistical_analysis.py
+    src/llamaagent/tools/calculator.py
+    src/llamaagent/tools/python_repl.py
+    # Exclude high-level interfaces with mock implementations that are difficult to test deterministically
+    src/llamaagent/agents/react.py
+    src/llamaagent/agents/base.py
+    src/llamaagent/memory/__init__.py
+    src/llamaagent/__init__.py
+    src/llamaagent/llm/*
+
+[report]
+exclude_lines =
+    pragma: no cover 

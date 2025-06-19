@@ -1,0 +1,370 @@
+{
+  "metadata": {
+    "total_episodes": 5,
+    "generation_timestamp": "2025-06-18T20:34:23.638031+00:00",
+    "generator_version": "1.0.0",
+    "seed": 42,
+    "scenario_distribution": {
+      "math_problem_solving": 1,
+      "data_analysis": 1,
+      "code_generation": 1,
+      "multi_step_planning": 2,
+      "resource_optimization": 0
+    },
+    "statistics": {
+      "success_rate": 0.4,
+      "average_reward": 0.518825122282646,
+      "average_execution_time": 5.062915718855135
+    },
+    "scenarios": [
+      {
+        "scenario_id": "math_problem_solving",
+        "title": "Mathematical Problem Solving",
+        "description": "Solve complex mathematical problems using available tools",
+        "complexity": 3,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "accuracy": 0.95,
+          "efficiency": 0.8
+        }
+      },
+      {
+        "scenario_id": "data_analysis",
+        "title": "Data Analysis Task",
+        "description": "Analyze datasets and extract meaningful insights",
+        "complexity": 5,
+        "required_tools": [
+          "python_repl"
+        ],
+        "success_criteria": {
+          "completeness": 0.9,
+          "accuracy": 0.85
+        }
+      },
+      {
+        "scenario_id": "code_generation",
+        "title": "Code Generation Challenge",
+        "description": "Generate and test code solutions for given problems",
+        "complexity": 7,
+        "required_tools": [
+          "python_repl"
+        ],
+        "success_criteria": {
+          "functionality": 1.0,
+          "efficiency": 0.7
+        }
+      },
+      {
+        "scenario_id": "multi_step_planning",
+        "title": "Multi-Step Planning",
+        "description": "Plan and execute complex multi-step tasks",
+        "complexity": 6,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "plan_quality": 0.8,
+          "execution_success": 0.9
+        }
+      },
+      {
+        "scenario_id": "resource_optimization",
+        "title": "Resource Optimization",
+        "description": "Optimize resource usage while maintaining performance",
+        "complexity": 8,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "efficiency": 0.95,
+          "resource_usage": 0.7
+        }
+      }
+    ]
+  },
+  "episodes": [
+    {
+      "episode_id": 0,
+      "scenario": {
+        "scenario_id": "multi_step_planning",
+        "title": "Multi-Step Planning",
+        "description": "Plan and execute complex multi-step tasks",
+        "complexity": 6,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "plan_quality": 0.8,
+          "execution_success": 0.9
+        }
+      },
+      "agent_a_actions": [
+        "Plan step 1: Analyze multi-step planning",
+        "Plan step 2: Analyze multi-step planning",
+        "Plan step 3: Analyze multi-step planning",
+        "Execute step 4: Implement solution",
+        "Execute step 5: Implement solution",
+        "Execute step 6: Implement solution"
+      ],
+      "agent_b_actions": [
+        "Reason about step 1",
+        "Use calculator for step 2",
+        "Reason about step 3",
+        "Use calculator for step 4",
+        "Use calculator for step 5",
+        "Reason about step 6"
+      ],
+      "rewards": [
+        0.43775241567352957,
+        0.6277477744660811,
+        0.3682530863569431,
+        0.3712259055391007,
+        0.5769478276929898,
+        0.6385829883797038
+      ],
+      "final_reward": 0.503418333018058,
+      "success": true,
+      "execution_time": 5.9412995091223895,
+      "timestamp": "2025-06-18T20:34:23.631542+00:00",
+      "metadata": {
+        "scenario_complexity": 6,
+        "num_actions": 6,
+        "tool_usage_rate": 0.5,
+        "planning_efficiency": 0.6973667478807319,
+        "resource_efficiency": 0.8477201283171736,
+        "generated_at": "2025-06-18T20:34:23.631339+00:00"
+      }
+    },
+    {
+      "episode_id": 1,
+      "scenario": {
+        "scenario_id": "multi_step_planning",
+        "title": "Multi-Step Planning",
+        "description": "Plan and execute complex multi-step tasks",
+        "complexity": 6,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "plan_quality": 0.8,
+          "execution_success": 0.9
+        }
+      },
+      "agent_a_actions": [
+        "Plan step 1: Analyze multi-step planning",
+        "Plan step 2: Analyze multi-step planning",
+        "Plan step 3: Analyze multi-step planning",
+        "Execute step 4: Implement solution",
+        "Execute step 5: Implement solution",
+        "Execute step 6: Implement solution",
+        "Execute step 7: Implement solution"
+      ],
+      "agent_b_actions": [
+        "Use python_repl for step 1",
+        "Use python_repl for step 2",
+        "Use python_repl for step 3",
+        "Use calculator for step 4",
+        "Use python_repl for step 5",
+        "Use python_repl for step 6",
+        "Reason about step 7"
+      ],
+      "rewards": [
+        0.4522633903355225,
+        0.3749725216687334,
+        0.7028975211928823,
+        0.6510819861452799,
+        0.36467208715452165,
+        0.5840349439129754,
+        0.3501627288084914
+      ],
+      "final_reward": 0.49715502560262953,
+      "success": false,
+      "execution_time": 3.5068810321670156,
+      "timestamp": "2025-06-18T20:34:23.632747+00:00",
+      "metadata": {
+        "scenario_complexity": 6,
+        "num_actions": 7,
+        "tool_usage_rate": 0.8571428571428571,
+        "planning_efficiency": 0.7012857872607374,
+        "resource_efficiency": 0.531916790769451,
+        "generated_at": "2025-06-18T20:34:23.632742+00:00"
+      }
+    },
+    {
+      "episode_id": 2,
+      "scenario": {
+        "scenario_id": "data_analysis",
+        "title": "Data Analysis Task",
+        "description": "Analyze datasets and extract meaningful insights",
+        "complexity": 5,
+        "required_tools": [
+          "python_repl"
+        ],
+        "success_criteria": {
+          "completeness": 0.9,
+          "accuracy": 0.85
+        }
+      },
+      "agent_a_actions": [
+        "Plan step 1: Analyze data analysis task",
+        "Plan step 2: Analyze data analysis task",
+        "Execute step 3: Implement solution",
+        "Execute step 4: Implement solution",
+        "Execute step 5: Implement solution"
+      ],
+      "agent_b_actions": [
+        "Use python_repl for step 1",
+        "Use python_repl for step 2",
+        "Use python_repl for step 3",
+        "Use python_repl for step 4",
+        "Use python_repl for step 5"
+      ],
+      "rewards": [
+        0.55427377770576,
+        0.4421082800910086,
+        0.5436524022667952,
+        0.36536099750477136,
+        0.5738457003959498
+      ],
+      "final_reward": 0.49584823159285707,
+      "success": false,
+      "execution_time": 8.585667281708286,
+      "timestamp": "2025-06-18T20:34:23.633940+00:00",
+      "metadata": {
+        "scenario_complexity": 5,
+        "num_actions": 5,
+        "tool_usage_rate": 1.0,
+        "planning_efficiency": 0.8715999690411856,
+        "resource_efficiency": 0.5916192287856418,
+        "generated_at": "2025-06-18T20:34:23.633934+00:00"
+      }
+    },
+    {
+      "episode_id": 3,
+      "scenario": {
+        "scenario_id": "math_problem_solving",
+        "title": "Mathematical Problem Solving",
+        "description": "Solve complex mathematical problems using available tools",
+        "complexity": 3,
+        "required_tools": [
+          "calculator",
+          "python_repl"
+        ],
+        "success_criteria": {
+          "accuracy": 0.95,
+          "efficiency": 0.8
+        }
+      },
+      "agent_a_actions": [
+        "Plan step 1: Analyze mathematical problem solving",
+        "Plan step 2: Analyze mathematical problem solving",
+        "Execute step 3: Implement solution",
+        "Execute step 4: Implement solution",
+        "Execute step 5: Implement solution"
+      ],
+      "agent_b_actions": [
+        "Use calculator for step 1",
+        "Reason about step 2",
+        "Use python_repl for step 3",
+        "Reason about step 4",
+        "Use calculator for step 5"
+      ],
+      "rewards": [
+        0.30751450994762447,
+        0.5204376404712541,
+        0.3666022083394126,
+        0.38683259282796767,
+        0.4783964742693141
+      ],
+      "final_reward": 0.4119566851711146,
+      "success": false,
+      "execution_time": 3.694886448336452,
+      "timestamp": "2025-06-18T20:34:23.635117+00:00",
+      "metadata": {
+        "scenario_complexity": 3,
+        "num_actions": 5,
+        "tool_usage_rate": 0.6,
+        "planning_efficiency": 0.8614548340782902,
+        "resource_efficiency": 0.6713735309178319,
+        "generated_at": "2025-06-18T20:34:23.635113+00:00"
+      }
+    },
+    {
+      "episode_id": 4,
+      "scenario": {
+        "scenario_id": "code_generation",
+        "title": "Code Generation Challenge",
+        "description": "Generate and test code solutions for given problems",
+        "complexity": 7,
+        "required_tools": [
+          "python_repl"
+        ],
+        "success_criteria": {
+          "functionality": 1.0,
+          "efficiency": 0.7
+        }
+      },
+      "agent_a_actions": [
+        "Plan step 1: Analyze code generation challenge",
+        "Plan step 2: Analyze code generation challenge",
+        "Plan step 3: Analyze code generation challenge",
+        "Plan step 4: Analyze code generation challenge",
+        "Plan step 5: Analyze code generation challenge",
+        "Plan step 6: Analyze code generation challenge",
+        "Execute step 7: Implement solution",
+        "Execute step 8: Implement solution",
+        "Execute step 9: Implement solution",
+        "Execute step 10: Implement solution",
+        "Execute step 11: Implement solution",
+        "Execute step 12: Implement solution"
+      ],
+      "agent_b_actions": [
+        "Use python_repl for step 1",
+        "Use python_repl for step 2",
+        "Use python_repl for step 3",
+        "Use python_repl for step 4",
+        "Use python_repl for step 5",
+        "Reason about step 6",
+        "Use python_repl for step 7",
+        "Use python_repl for step 8",
+        "Use python_repl for step 9",
+        "Use python_repl for step 10",
+        "Reason about step 11",
+        "Use python_repl for step 12"
+      ],
+      "rewards": [
+        0.604572620964703,
+        0.7733293966399996,
+        0.7401980948942227,
+        0.54468830960376,
+        0.6139748856475858,
+        0.773174257072559,
+        0.6872209771327559,
+        0.7289273916755741,
+        0.5686873203211704,
+        0.8265062874576549,
+        0.603687203810076,
+        0.7640012871227841
+      ],
+      "final_reward": 0.6857473360285704,
+      "success": true,
+      "execution_time": 3.5858443229415293,
+      "timestamp": "2025-06-18T20:34:23.636308+00:00",
+      "metadata": {
+        "scenario_complexity": 7,
+        "num_actions": 12,
+        "tool_usage_rate": 0.8333333333333334,
+        "planning_efficiency": 0.7308698484069017,
+        "resource_efficiency": 0.5646196143012614,
+        "generated_at": "2025-06-18T20:34:23.636300+00:00"
+      }
+    }
+  ]
+}
