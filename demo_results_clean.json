@@ -1,0 +1,70 @@
+{
+  "demo_summary": {
+    "total_tests": 9,
+    "successful_tests": 7,
+    "success_rate": 77.77777777777779,
+    "total_execution_time": 24.24898409843445,
+    "timestamp": "2025-06-23 09:47:26"
+  },
+  "test_results": [
+    {
+      "test": "core_agent",
+      "success": true,
+      "content": "4",
+      "execution_time": 0.00011396408081054688
+    },
+    {
+      "test": "llm_provider_mock",
+      "success": true,
+      "provider": "mock",
+      "content": "I'm sorry, I couldn't compute that."
+    },
+    {
+      "test": "llm_provider_openai",
+      "success": true,
+      "provider": "openai",
+      "content": "Error: 'OpenAIProvider' object has no attribute 'complete'"
+    },
+    {
+      "test": "tool_integration",
+      "success": true,
+      "content": "144",
+      "tools_available": 2
+    },
+    {
+      "test": "memory_system",
+      "success": false,
+      "stored_items": 2,
+      "search_results": 0
+    },
+    {
+      "test": "database_integration",
+      "success": false,
+      "error": ""
+    },
+    {
+      "test": "spre_methodology",
+      "success": true,
+      "content": "I'm sorry, I couldn't compute that.",
+      "trace_steps": 13
+    },
+    {
+      "test": "error_handling",
+      "success": true,
+      "error_handled": false
+    },
+    {
+      "test": "performance",
+      "success": true,
+      "concurrent_tasks": 5,
+      "successful_tasks": 5,
+      "total_time": 4.926976203918457,
+      "avg_time_per_task": 0.9853952407836915
+    }
+  ],
+  "system_info": {
+    "python_version": "3.13.4 (main, Jun  3 2025, 15:34:24) [Clang 17.0.0 (clang-1700.0.13.3)]",
+    "platform": "darwin",
+    "working_directory": "/Users/nemesis/llamaagent"
+  }
+}
