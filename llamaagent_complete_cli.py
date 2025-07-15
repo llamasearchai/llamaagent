@@ -10,193 +10,205 @@ Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
 import asyncio
-import json
 import logging
-import os
-import sys
-import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-from uuid import uuid4
+from datetime import datetime
+from typing import Dict, Any
 
 # Rich imports for beautiful CLI
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import (
-    BarColumn,
-    MofNCompleteColumn,
     Progress,
     SpinnerColumn,
-    TaskProgressColumn,
     TextColumn,
-    TimeElapsedColumn,
 )
-from rich.prompt import Confirm, IntPrompt, Prompt
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
-from rich.text import Text
 from rich.layout import Layout
-from rich.live import Live
 from rich.align import Align
 
 # LlamaAgent imports
 try:
-    from src.llamaagent.agents.react import ReactAgent
-    from src.llamaagent.agents.base import AgentConfig, AgentRole
+    from src.llamaagent.agents.base import AgentConfig
     from src.llamaagent.llm.providers.mock_provider import MockProvider
     from src.llamaagent.tools.calculator import CalculatorTool
     from src.llamaagent.tools.python_repl import PythonREPLTool
     from src.llamaagent.memory.base import SimpleMemory
-    from src.llamaagent.types import TaskInput
-except ImportError as e:
-    print(f"Warning: Some imports failed: {e}")
-    print("Running in standalone mode with mock implementations")
+    llamaagent_available = True
+except ImportError:
+    # Fallback if LlamaAgent is not available
+    llamaagent_available = False
+    AgentConfig = None
+    MockProvider = None
+    CalculatorTool = None
+    PythonREPLTool = None
+    SimpleMemory = None
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("llamaagent_cli.log"),
-        logging.StreamHandler()
-    ]
-)
+# Initialize console and logger
+console = Console()
 logger = logging.getLogger(__name__)
 
-# Global console instance
-console = Console()
+# Configuration
+APP_NAME = "LlamaAgent Complete CLI"
+VERSION = "1.0.0"
+AUTHOR = "Nik Jois <nikjois@llamasearch.ai>"
 
-# ASCII Art for LlamaAgent
-LLAMA_ASCII = """
-    ╭─────────────────────────────────────────╮
-    │                                         │
-    │   ██╗     ██╗      █████╗  ███╗   ███╗  │
-    │   ██║     ██║     ██╔══██╗ ████╗ ████║  │
-    │   ██║     ██║     ███████║ ██╔████╔██║  │
-    │   ██║     ██║     ██╔══██║ ██║╚██╔╝██║  │
-    │   ███████╗███████╗██║  ██║ ██║ ╚═╝ ██║  │
-    │   ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═╝     ╚═╝  │
-    │                                         │
-    │              A G E N T                  │
-    │                                         │
-    ╰─────────────────────────────────────────╯
-"""
-
-# Mock data for demonstrations
-MOCK_TASKS = [
-    {
-        "id": "task_001",
-        "title": "Analyze Market Trends",
-        "description": "Analyze current market trends in AI technology",
-        "priority": "HIGH",
-        "status": "PENDING",
-        "estimated_duration": 300,
-        "agent_type": "ANALYST"
-    },
-    {
-        "id": "task_002", 
-        "title": "Generate Report",
-        "description": "Generate comprehensive analysis report",
-        "priority": "MEDIUM",
-        "status": "PENDING",
-        "estimated_duration": 180,
-        "agent_type": "WRITER"
-    },
-    {
-        "id": "task_003",
-        "title": "Code Review",
-        "description": "Review and optimize Python code",
-        "priority": "LOW",
-        "status": "PENDING",
-        "estimated_duration": 120,
-        "agent_type": "DEVELOPER"
-    }
-]
-
+# Mock agents data
 MOCK_AGENTS = [
     {
-        "id": "agent_001",
-        "name": "AnalystAgent",
-        "type": "ANALYST",
-        "status": "ACTIVE",
-        "tasks_completed": 15,
-        "success_rate": 0.95,
-        "avg_response_time": 2.3
+        "id": "agent-001",
+        "name": "Code Assistant",
+        "type": "Developer",
+        "capabilities": ["Code generation", "Bug fixing", "Code review"],
+        "status": "active",
+        "performance": 0.95
     },
     {
-        "id": "agent_002",
-        "name": "WriterAgent", 
-        "type": "WRITER",
-        "status": "ACTIVE",
-        "tasks_completed": 8,
-        "success_rate": 0.92,
-        "avg_response_time": 3.1
+        "id": "agent-002",
+        "name": "Research Analyst",
+        "type": "Researcher",
+        "capabilities": ["Data analysis", "Report writing", "Fact checking"],
+        "status": "active",
+        "performance": 0.92
     },
     {
-        "id": "agent_003",
-        "name": "DeveloperAgent",
-        "type": "DEVELOPER", 
-        "status": "IDLE",
-        "tasks_completed": 22,
-        "success_rate": 0.98,
-        "avg_response_time": 1.8
+        "id": "agent-003",
+        "name": "Creative Writer",
+        "type": "Creative",
+        "capabilities": ["Story writing", "Content creation", "Editing"],
+        "status": "active",
+        "performance": 0.88
+    },
+    {
+        "id": "agent-004",
+        "name": "Task Coordinator",
+        "type": "Manager",
+        "capabilities": ["Task planning", "Resource allocation", "Progress tracking"],
+        "status": "active",
+        "performance": 0.90
+    },
+    {
+        "id": "agent-005",
+        "name": "QA Specialist",
+        "type": "Tester",
+        "capabilities": ["Testing", "Quality assurance", "Bug reporting"],
+        "status": "active",
+        "performance": 0.94
     }
 ]
 
-class MockTaskResult:
-    """Mock task result for demonstrations."""
-    def __init__(self, task_id: str, success: bool = True, result: str = "Task completed successfully"):
-        self.task_id = task_id
-        self.success = success
-        self.result = result
-        self.timestamp = datetime.now()
-        self.execution_time = 2.5
+# Mock tasks data
+MOCK_TASKS = [
+    {
+        "id": "task-001",
+        "name": "Implement authentication system",
+        "priority": "high",
+        "status": "in_progress",
+        "assigned_agent": "agent-001",
+        "progress": 0.75
+    },
+    {
+        "id": "task-002",
+        "name": "Market research report",
+        "priority": "medium",
+        "status": "pending",
+        "assigned_agent": "agent-002",
+        "progress": 0.0
+    },
+    {
+        "id": "task-003",
+        "name": "Write blog content",
+        "priority": "low",
+        "status": "completed",
+        "assigned_agent": "agent-003",
+        "progress": 1.0
+    }
+]
 
-class CompleteCLI:
-    """Complete LlamaAgent CLI with all features."""
+# Application metrics
+APP_METRICS = {
+    "uptime": 0,
+    "total_requests": 0,
+    "successful_requests": 0,
+    "failed_requests": 0,
+    "avg_response_time": 0.0
+}
+
+
+class CompleteCliApp:
+    """Main application class for the complete CLI."""
     
     def __init__(self):
         self.console = console
-        self.session_id = str(uuid4())[:8]
-        self.start_time = datetime.now()
-        self.tasks_completed = 0
-        self.total_tokens = 0
-        self.conversation_history = []
-        self.active_agents = []
-        self.system_stats = {
-            "uptime": 0,
-            "total_requests": 0,
-            "successful_requests": 0,
-            "failed_requests": 0,
-            "avg_response_time": 0
-        }
-        
-        # Initialize mock components
+        self.is_running = False
+        self.conversation_history: list[Dict[str, Any]] = []
+        self.current_agent = None
+        self.agents: Dict[str, Dict[str, Any]] = {}
         self.setup_mock_components()
         
+    def display_header(self):
+        """Display application header with animation."""
+        header = Panel(
+            Align.center(
+                f"[bold cyan]{APP_NAME}[/bold cyan]\n"
+                f"[dim]Version {VERSION}[/dim]\n"
+                f"[dim]By {AUTHOR}[/dim]",
+                vertical="middle"
+            ),
+            style="bold blue",
+            padding=(1, 2)
+        )
+        self.console.print(header)
+        
+    def display_menu(self):
+        """Display main menu options."""
+        menu_text = """
+[bold]Main Menu:[/bold]
+
+1. 💬 Start Conversation
+2. 🤖 Manage Agents
+3. 📋 View Tasks
+4. 📊 System Analytics
+5. ⚙️  Configuration
+6. 📚 Documentation
+7. 🚪 Exit
+
+Choose an option (1-7): """
+        return Prompt.ask(menu_text, choices=["1", "2", "3", "4", "5", "6", "7"])
+    
     def setup_mock_components(self):
         """Setup mock components for demonstration."""
+        if not llamaagent_available:
+            logger.warning("LlamaAgent not available, using mock data only")
+            self.tools = []
+            self.memory = None
+            self.agents = {}
+            return
+            
         try:
             # Create mock provider
-            self.mock_provider = MockProvider(model_name="mock-gpt-4")
+            self.mock_provider = MockProvider(model_name="mock-gpt-4") if MockProvider else None
             
             # Create mock tools
-            self.tools = [
-                CalculatorTool(),
-                PythonREPLTool()
-            ]
+            self.tools = []
+            if CalculatorTool:
+                self.tools.append(CalculatorTool())
+            if PythonREPLTool:
+                self.tools.append(PythonREPLTool())
             
             # Create mock memory
-            self.memory = SimpleMemory()
+            self.memory = SimpleMemory() if SimpleMemory else None
             
             # Create mock agents
             self.agents = {}
             for agent_data in MOCK_AGENTS:
-                config = AgentConfig(
-                    name=agent_data["name"],
-                    role=agent_data["type"].lower()
-                )
-                self.agents[agent_data["id"]] = {
+                # Create a simple config dict instead of AgentConfig
+                config = {
+                    "name": str(agent_data["name"]),
+                    "role": "assistant",
+                    "type": agent_data["type"]
+                }
+                self.agents[str(agent_data["id"])] = {
                     "config": config,
                     "data": agent_data,
                     "agent": None  # Will be created on demand
@@ -207,459 +219,258 @@ class CompleteCLI:
             self.tools = []
             self.memory = None
             self.agents = {}
-
-    def show_banner(self):
-        """Display the LlamaAgent banner."""
-        self.console.clear()
-        banner_text = Text()
-        banner_text.append(LLAMA_ASCII, style="bold cyan")
-        banner_text.append("\n\nAdvanced AI Agent Framework\n", style="bold white")
-        banner_text.append("Author: Nik Jois <nikjois@llamasearch.ai>\n", style="dim")
-        banner_text.append(f"Session: {self.session_id} | Started: {self.start_time.strftime('%H:%M:%S')}\n", style="dim")
-        
-        panel = Panel(
-            Align.center(banner_text),
-            border_style="cyan",
-            padding=(1, 2)
-        )
-        self.console.print(panel)
-
-    def show_main_menu(self):
-        """Display the main menu."""
-        menu_table = Table(show_header=False, box=None, padding=(0, 2))
-        menu_table.add_column("Option", style="bold cyan", width=4)
-        menu_table.add_column("Description", style="white")
-        menu_table.add_column("Status", style="green")
-        
-        menu_items = [
-            ("1", "Interactive Chat", "Ready"),
-            ("2", "Task Management", "Ready"),
-            ("3", "Agent Dashboard", "Ready"),
-            ("4", "System Monitor", "Ready"),
-            ("5", "Performance Analytics", "Ready"),
-            ("6", "Tool Workshop", "Ready"),
-            ("7", "Configuration", "Ready"),
-            ("8", "Help & Documentation", "Ready"),
-            ("0", "Exit", "")
-        ]
-        
-        for option, description, status in menu_items:
-            menu_table.add_row(option, description, status)
-        
-        self.console.print("\n")
-        self.console.print(Panel(menu_table, title="Main Menu", border_style="blue"))
-
-    async def interactive_chat(self):
-        """Interactive chat with AI agents."""
-        self.console.clear()
-        self.console.print(Panel("Interactive Chat Mode", style="bold green"))
-        self.console.print("Type 'exit' to return to main menu, 'help' for commands\n")
+    
+    async def start_conversation(self):
+        """Start an interactive conversation with an agent."""
+        self.console.print("\n[bold cyan]Starting Conversation Mode[/bold cyan]\n")
         
         # Select agent
         agent_table = Table(title="Available Agents")
         agent_table.add_column("ID", style="cyan")
-        agent_table.add_column("Name", style="white")
+        agent_table.add_column("Name", style="green")
         agent_table.add_column("Type", style="yellow")
-        agent_table.add_column("Status", style="green")
+        agent_table.add_column("Status", style="blue")
         
         for agent_id, agent_info in self.agents.items():
+            agent_data = agent_info["data"]
             agent_table.add_row(
                 agent_id,
-                agent_info["data"]["name"],
-                agent_info["data"]["type"],
-                agent_info["data"]["status"]
+                str(agent_data.get("name", "Unknown")),
+                str(agent_data.get("type", "Unknown")),
+                str(agent_data.get("status", "Unknown"))
             )
         
         self.console.print(agent_table)
         
-        selected_agent = Prompt.ask("\nSelect agent ID", default="agent_001")
-        
-        if selected_agent not in self.agents:
-            self.console.print("[red]Invalid agent ID[/red]")
+        if not self.agents:
+            self.console.print("[red]No agents available[/red]")
             return
+            
+        agent_choice = Prompt.ask(
+            "\nSelect agent ID",
+            choices=list(self.agents.keys())
+        )
         
-        agent_info = self.agents[selected_agent]
-        self.console.print(f"\n[green]Connected to {agent_info['data']['name']}[/green]")
+        agent_info = self.agents.get(agent_choice)
+        if not agent_info:
+            self.console.print("[red]Invalid agent selection[/red]")
+            return
+            
+        self.current_agent = agent_choice
+        self.console.print(f"\n[green]Connected to {agent_info['data']['name']}[/green]\n")
         
-        # Chat loop
+        # Conversation loop
+        self.console.print("[dim]Type 'exit' to end conversation[/dim]\n")
+        
         while True:
-            try:
-                user_input = Prompt.ask(f"\n[bold cyan]You[/bold cyan]")
-                
-                if user_input.lower() == 'exit':
-                    break
-                elif user_input.lower() == 'help':
-                    self.show_chat_help()
-                    continue
-                elif user_input.lower() == 'stats':
-                    self.show_chat_stats()
-                    continue
-                
-                # Simulate AI response with progress
-                with Progress(
-                    SpinnerColumn(),
-                    TextColumn("[progress.description]{task.description}"),
-                    TimeElapsedColumn(),
-                    console=self.console
-                ) as progress:
-                    task = progress.add_task("Thinking...", total=None)
-                    
-                    # Simulate processing time
-                    await asyncio.sleep(1.5)
-                    
-                    # Generate mock response
-                    response = self.generate_mock_response(user_input, agent_info)
-                    
-                    progress.update(task, description="Complete!", total=1, completed=1)
-                
-                # Display response
-                self.console.print(f"\n[bold green]{agent_info['data']['name']}[/bold green]: {response}")
-                
-                # Update stats
-                self.conversation_history.append({
-                    "user": user_input,
-                    "agent": response,
-                    "timestamp": datetime.now(),
-                    "agent_id": selected_agent
-                })
-                self.tasks_completed += 1
-                self.total_tokens += len(user_input.split()) + len(response.split())
-                
-            except KeyboardInterrupt:
-                self.console.print("\n[yellow]Chat interrupted[/yellow]")
+            user_input = Prompt.ask("[bold]You[/bold]")
+            
+            if user_input.lower() == 'exit':
                 break
-
-    def generate_mock_response(self, user_input: str, agent_info: Dict) -> str:
-        """Generate a mock AI response based on agent type."""
-        agent_type = agent_info["data"]["type"]
+                
+            # Process with progress
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                transient=True,
+                console=self.console
+            ) as progress:
+                task = progress.add_task("Thinking...", total=None)
+                
+                # Simulate processing
+                await asyncio.sleep(1)
+                
+                # Generate mock response
+                response = self.generate_mock_response(user_input, agent_info)
+                
+                progress.update(task, completed=True)
+            
+            # Display response
+            response_panel = Panel(
+                response,
+                title=f"[bold]{agent_info['data']['name']}[/bold]",
+                border_style="green"
+            )
+            self.console.print(response_panel)
+            
+            # Update conversation history
+            self.conversation_history.append({
+                "timestamp": datetime.now().isoformat(),
+                "agent": agent_choice,
+                "user_input": user_input,
+                "response": response
+            })
+            
+        self.console.print("\n[yellow]Conversation ended[/yellow]")
+    
+    def generate_mock_response(self, user_input: str, agent_info: Dict[str, Any]) -> str:
+        """Generate a mock response based on agent type."""
+        agent_type = agent_info['data'].get('type', 'Unknown')
         
         responses = {
-            "ANALYST": [
-                f"Based on my analysis of '{user_input}', I can provide detailed insights. The key factors to consider are market trends, user behavior patterns, and competitive landscape.",
-                f"Let me break down '{user_input}' into actionable components. The data suggests three main areas of focus with varying risk levels.",
-                f"From an analytical perspective, '{user_input}' presents interesting opportunities. I recommend a phased approach with continuous monitoring."
+            "Developer": [
+                "I can help you implement that feature. Let me analyze the requirements...",
+                "Here's a code solution that addresses your needs:",
+                "I've identified a potential optimization in your approach."
             ],
-            "WRITER": [
-                f"I can help you craft compelling content around '{user_input}'. Here's a structured approach that will engage your audience effectively.",
-                f"For '{user_input}', I suggest focusing on clear messaging, strong narrative flow, and compelling call-to-action elements.",
-                f"Let me help you develop '{user_input}' into a comprehensive piece that resonates with your target audience."
+            "Researcher": [
+                "Based on my analysis of the available data...",
+                "I've found several relevant sources for your inquiry.",
+                "The research indicates that..."
             ],
-            "DEVELOPER": [
-                f"For '{user_input}', I recommend implementing a modular architecture with proper error handling and comprehensive testing.",
-                f"The technical approach for '{user_input}' should prioritize scalability, maintainability, and performance optimization.",
-                f"I can help you implement '{user_input}' using best practices, clean code principles, and robust design patterns."
+            "Creative": [
+                "Here's a creative approach to your request:",
+                "Let me craft something unique for you...",
+                "I've developed an innovative solution:"
+            ],
+            "Manager": [
+                "I'll coordinate this task across the team.",
+                "Here's the optimal resource allocation:",
+                "The project timeline suggests..."
+            ],
+            "Tester": [
+                "I've identified several test scenarios to consider.",
+                "The quality assurance process reveals...",
+                "Testing results indicate..."
             ]
         }
         
         import random
-        return random.choice(responses.get(agent_type, ["I can help you with that request."]))
+        agent_responses = responses.get(agent_type, ["I'm processing your request..."])
+        base_response = random.choice(agent_responses)
+        
+        # Add some context
+        return f"{base_response}\n\nRegarding '{user_input}', I've processed this request and generated a comprehensive response based on my {agent_type.lower()} capabilities."
+    
+    def manage_agents(self):
+        """Manage agent configuration and status."""
+        self.console.print("\n[bold cyan]Agent Management[/bold cyan]\n")
+        
+        menu_text = """
+1. View all agents
+2. View agent details
+3. Enable/disable agent
+4. View agent performance
+5. Back to main menu
 
-    def show_chat_help(self):
-        """Show chat help commands."""
-        help_table = Table(title="Chat Commands")
-        help_table.add_column("Command", style="cyan")
-        help_table.add_column("Description", style="white")
+Choose an option: """
         
-        commands = [
-            ("help", "Show this help message"),
-            ("stats", "Show conversation statistics"),
-            ("exit", "Return to main menu"),
-            ("clear", "Clear conversation history")
-        ]
+        choice = Prompt.ask(menu_text, choices=["1", "2", "3", "4", "5"])
         
-        for cmd, desc in commands:
-            help_table.add_row(cmd, desc)
-        
-        self.console.print(help_table)
-
-    def show_chat_stats(self):
-        """Show chat statistics."""
-        stats_table = Table(title="Conversation Statistics")
-        stats_table.add_column("Metric", style="cyan")
-        stats_table.add_column("Value", style="white")
-        
-        uptime = datetime.now() - self.start_time
-        stats_table.add_row("Session Duration", str(uptime).split('.')[0])
-        stats_table.add_row("Messages Exchanged", str(len(self.conversation_history)))
-        stats_table.add_row("Total Tokens", str(self.total_tokens))
-        stats_table.add_row("Tasks Completed", str(self.tasks_completed))
-        
-        self.console.print(stats_table)
-
-    async def task_management(self):
-        """Task management interface."""
-        self.console.clear()
-        self.console.print(Panel("Task Management System", style="bold green"))
-        
-        while True:
-            # Display tasks
-            task_table = Table(title="Current Tasks")
-            task_table.add_column("ID", style="cyan")
-            task_table.add_column("Title", style="white")
-            task_table.add_column("Priority", style="yellow")
-            task_table.add_column("Status", style="green")
-            task_table.add_column("Duration", style="blue")
-            
-            for task in MOCK_TASKS:
-                priority_color = {
-                    "HIGH": "red",
-                    "MEDIUM": "yellow", 
-                    "LOW": "green"
-                }.get(task["priority"], "white")
-                
-                task_table.add_row(
-                    task["id"],
-                    task["title"],
-                    f"[{priority_color}]{task['priority']}[/{priority_color}]",
-                    task["status"],
-                    f"{task['estimated_duration']}s"
-                )
-            
-            self.console.print(task_table)
-            
-            # Task management menu
-            action = Prompt.ask(
-                "\nActions: [1] Execute Task [2] Create Task [3] View Details [4] Back to Menu",
-                default="4"
-            )
-            
-            if action == "1":
-                await self.execute_task()
-            elif action == "2":
-                await self.create_task()
-            elif action == "3":
-                await self.view_task_details()
-            elif action == "4":
-                break
-            else:
-                self.console.print("[red]Invalid option[/red]")
-
-    async def execute_task(self):
-        """Execute a selected task."""
-        task_id = Prompt.ask("Enter task ID to execute")
-        
-        task = next((t for t in MOCK_TASKS if t["id"] == task_id), None)
-        if not task:
-            self.console.print("[red]Task not found[/red]")
+        if choice == "1":
+            self.view_all_agents()
+        elif choice == "2":
+            self.view_agent_details()
+        elif choice == "3":
+            self.toggle_agent_status()
+        elif choice == "4":
+            self.view_agent_performance()
+        elif choice == "5":
             return
-        
-        self.console.print(f"\n[yellow]Executing task: {task['title']}[/yellow]")
-        
-        # Find suitable agent
-        suitable_agents = [a for a in self.agents.values() if a["data"]["type"] == task["agent_type"]]
-        if not suitable_agents:
-            self.console.print("[red]No suitable agent found[/red]")
-            return
-        
-        agent_info = suitable_agents[0]
-        self.console.print(f"[green]Assigned to: {agent_info['data']['name']}[/green]")
-        
-        # Execute with progress tracking
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            TimeElapsedColumn(),
-            console=self.console
-        ) as progress:
-            exec_task = progress.add_task("Initializing...", total=100)
-            
-            # Simulate task execution phases
-            phases = [
-                ("Analyzing requirements...", 20),
-                ("Processing data...", 40),
-                ("Generating results...", 30),
-                ("Finalizing output...", 10)
-            ]
-            
-            completed = 0
-            for phase, duration in phases:
-                progress.update(exec_task, description=phase)
-                await asyncio.sleep(duration / 20)  # Simulate work
-                completed += duration
-                progress.update(exec_task, completed=completed)
-        
-        # Show results
-        result = MockTaskResult(task_id)
-        self.console.print(f"\n[bold green]Task Completed Successfully![/bold green]")
-        self.console.print(f"Result: {result.result}")
-        self.console.print(f"Execution Time: {result.execution_time:.1f}s")
-        
-        # Update task status
-        task["status"] = "COMPLETED"
-        self.tasks_completed += 1
-
-    async def create_task(self):
-        """Create a new task."""
-        self.console.print("\n[yellow]Create New Task[/yellow]")
-        
-        title = Prompt.ask("Task title")
-        description = Prompt.ask("Task description")
-        priority = Prompt.ask("Priority", choices=["HIGH", "MEDIUM", "LOW"], default="MEDIUM")
-        agent_type = Prompt.ask("Agent type", choices=["ANALYST", "WRITER", "DEVELOPER"], default="ANALYST")
-        
-        new_task = {
-            "id": f"task_{len(MOCK_TASKS) + 1:03d}",
-            "title": title,
-            "description": description,
-            "priority": priority,
-            "status": "PENDING",
-            "estimated_duration": 180,
-            "agent_type": agent_type
-        }
-        
-        MOCK_TASKS.append(new_task)
-        self.console.print(f"[green]Task created successfully: {new_task['id']}[/green]")
-
-    async def view_task_details(self):
-        """View detailed task information."""
-        task_id = Prompt.ask("Enter task ID")
-        
-        task = next((t for t in MOCK_TASKS if t["id"] == task_id), None)
-        if not task:
-            self.console.print("[red]Task not found[/red]")
-            return
-        
-        details_table = Table(title=f"Task Details: {task['title']}")
-        details_table.add_column("Property", style="cyan")
-        details_table.add_column("Value", style="white")
-        
-        for key, value in task.items():
-            details_table.add_row(key.replace("_", " ").title(), str(value))
-        
-        self.console.print(details_table)
-
-    async def agent_dashboard(self):
-        """Agent management dashboard."""
-        self.console.clear()
-        self.console.print(Panel("Agent Dashboard", style="bold green"))
-        
-        # Agent overview
-        agent_table = Table(title="Agent Status")
-        agent_table.add_column("ID", style="cyan")
-        agent_table.add_column("Name", style="white")
-        agent_table.add_column("Type", style="yellow")
-        agent_table.add_column("Status", style="green")
-        agent_table.add_column("Tasks", style="blue")
-        agent_table.add_column("Success Rate", style="magenta")
-        agent_table.add_column("Avg Response", style="red")
+    
+    def view_all_agents(self):
+        """Display all agents in a table."""
+        table = Table(title="All Agents")
+        table.add_column("ID", style="cyan")
+        table.add_column("Name", style="green")
+        table.add_column("Type", style="yellow")
+        table.add_column("Status", style="blue")
+        table.add_column("Performance", style="magenta")
         
         for agent_id, agent_info in self.agents.items():
-            data = agent_info["data"]
-            status_color = "green" if data["status"] == "ACTIVE" else "yellow"
+            data = agent_info['data']
+            status_color = "green" if data['status'] == "active" else "red"
+            performance = f"{data['performance']*100:.0f}%"
             
-            agent_table.add_row(
+            table.add_row(
                 agent_id,
-                data["name"],
-                data["type"],
+                data['name'],
+                data['type'],
                 f"[{status_color}]{data['status']}[/{status_color}]",
-                str(data["tasks_completed"]),
-                f"{data['success_rate']:.1%}",
-                f"{data['avg_response_time']:.1f}s"
+                performance
             )
         
-        self.console.print(agent_table)
+        self.console.print(table)
+    
+    def view_tasks(self):
+        """View and manage tasks."""
+        self.console.print("\n[bold cyan]Task Management[/bold cyan]\n")
         
-        # Agent actions
-        action = Prompt.ask(
-            "\nActions: [1] Create Agent [2] Agent Details [3] Performance Chart [4] Back",
-            default="4"
-        )
+        # Create task table
+        table = Table(title="Active Tasks")
+        table.add_column("ID", style="cyan")
+        table.add_column("Task", style="green")
+        table.add_column("Priority", style="yellow")
+        table.add_column("Status", style="blue")
+        table.add_column("Progress", style="magenta")
         
-        if action == "1":
-            await self.create_agent()
-        elif action == "2":
-            await self.show_agent_details()
-        elif action == "3":
-            self.show_performance_chart()
-        elif action == "4":
-            return
-
-    async def create_agent(self):
-        """Create a new agent."""
-        self.console.print("\n[yellow]Create New Agent[/yellow]")
-        
-        name = Prompt.ask("Agent name")
-        agent_type = Prompt.ask("Agent type", choices=["ANALYST", "WRITER", "DEVELOPER"], default="ANALYST")
-        
-        new_agent_id = f"agent_{len(self.agents) + 1:03d}"
-        new_agent_data = {
-            "id": new_agent_id,
-            "name": name,
-            "type": agent_type,
-            "status": "ACTIVE",
-            "tasks_completed": 0,
-            "success_rate": 1.0,
-            "avg_response_time": 2.0
-        }
-        
-        config = AgentConfig(
-            name=name,
-            role=agent_type.lower()
-        )
-        
-        self.agents[new_agent_id] = {
-            "config": config,
-            "data": new_agent_data,
-            "agent": None
-        }
-        
-        self.console.print(f"[green]Agent created successfully: {new_agent_id}[/green]")
-
-    async def show_agent_details(self):
-        """Show detailed agent information."""
-        agent_id = Prompt.ask("Enter agent ID")
-        
-        if agent_id not in self.agents:
-            self.console.print("[red]Agent not found[/red]")
-            return
-        
-        agent_info = self.agents[agent_id]
-        data = agent_info["data"]
-        
-        details_table = Table(title=f"Agent Details: {data['name']}")
-        details_table.add_column("Property", style="cyan")
-        details_table.add_column("Value", style="white")
-        
-        for key, value in data.items():
-            if key == "success_rate":
-                value = f"{value:.1%}"
-            elif key == "avg_response_time":
-                value = f"{value:.1f}s"
-            details_table.add_row(key.replace("_", " ").title(), str(value))
-        
-        self.console.print(details_table)
-
-    def show_performance_chart(self):
-        """Show performance chart (text-based)."""
-        self.console.print("\n[yellow]Performance Chart[/yellow]")
-        
-        chart_table = Table(title="Agent Performance Comparison")
-        chart_table.add_column("Agent", style="cyan")
-        chart_table.add_column("Success Rate", style="green")
-        chart_table.add_column("Response Time", style="blue")
-        chart_table.add_column("Tasks Completed", style="yellow")
-        
-        for agent_info in self.agents.values():
-            data = agent_info["data"]
-            success_bar = "█" * int(data["success_rate"] * 10)
-            response_bar = "█" * min(int(data["avg_response_time"]), 10)
-            tasks_bar = "█" * min(data["tasks_completed"] // 3, 10)
+        for task in MOCK_TASKS:
+            priority_colors = {
+                "high": "red",
+                "medium": "yellow",
+                "low": "green"
+            }
+            priority_color = priority_colors.get(str(task['priority']), 'white')
             
-            chart_table.add_row(
-                data["name"],
-                f"{success_bar} {data['success_rate']:.1%}",
-                f"{response_bar} {data['avg_response_time']:.1f}s",
-                f"{tasks_bar} {data['tasks_completed']}"
+            table.add_row(
+                str(task['id']),
+                str(task['name']),
+                f"[{priority_color}]{task['priority']}[/{priority_color}]",
+                str(task['status']),
+                f"{task['progress']*100:.0f}%"
             )
         
-        self.console.print(chart_table)
+        self.console.print(table)
+        
+        # Task options
+        menu_text = """
+1. Create new task
+2. Update task status
+3. Assign task to agent
+4. Back to main menu
 
-    async def system_monitor(self):
-        """System monitoring interface."""
-        self.console.clear()
-        self.console.print(Panel("System Monitor", style="bold green"))
+Choose an option: """
+        
+        choice = Prompt.ask(menu_text, choices=["1", "2", "3", "4"])
+        
+        if choice == "1":
+            self.create_new_task()
+        elif choice == "2":
+            self.update_task_status()
+        elif choice == "3":
+            self.assign_task_to_agent()
+    
+    def create_new_task(self):
+        """Create a new task."""
+        task_name = Prompt.ask("Task name")
+        priority = Prompt.ask("Priority", choices=["high", "medium", "low"])
+        
+        # Find suitable agents
+        suitable_agents = [a for a in self.agents.values() 
+                         if a['data']['status'] == 'active']
+        
+        if suitable_agents:
+            agent_info = suitable_agents[0]
+            agent_id = [k for k, v in self.agents.items() if v == agent_info][0]
+            
+            new_task = {
+                "id": f"task-{len(MOCK_TASKS) + 1:03d}",
+                "name": task_name,
+                "priority": priority,
+                "status": "pending",
+                "assigned_agent": agent_id,
+                "progress": 0.0
+            }
+            
+            MOCK_TASKS.append(new_task)
+            
+            self.console.print(f"\n[green]Task created and assigned to {agent_info['data']['name']}[/green]")
+        else:
+            self.console.print("\n[red]No active agents available[/red]")
+    
+    def show_analytics(self):
+        """Display system analytics dashboard."""
+        self.console.print("\n[bold cyan]System Analytics Dashboard[/bold cyan]\n")
         
         # Create layout
         layout = Layout()
@@ -669,350 +480,337 @@ class CompleteCLI:
             Layout(name="footer", size=3)
         )
         
-        # System stats
-        uptime = datetime.now() - self.start_time
-        self.system_stats.update({
-            "uptime": str(uptime).split('.')[0],
-            "total_requests": len(self.conversation_history),
-            "successful_requests": self.tasks_completed,
-            "failed_requests": max(0, len(self.conversation_history) - self.tasks_completed),
-            "avg_response_time": 2.3
-        })
+        # Header
+        layout["header"].update(
+            Panel(
+                Align.center(
+                    "[bold]Real-Time Analytics[/bold]",
+                    vertical="middle"
+                )
+            )
+        )
         
-        # Create monitoring display
-        stats_table = Table(title="System Statistics")
-        stats_table.add_column("Metric", style="cyan")
-        stats_table.add_column("Value", style="white")
-        stats_table.add_column("Status", style="green")
+        # Body - split into metrics
+        layout["body"].split_row(
+            Layout(name="agents"),
+            Layout(name="tasks")
+        )
         
-        for key, value in self.system_stats.items():
-            status = "HEALTHY" if key != "failed_requests" or value == 0 else "WARNING"
-            status_color = "green" if status == "HEALTHY" else "yellow"
-            stats_table.add_row(
-                key.replace("_", " ").title(),
-                str(value),
-                f"[{status_color}]{status}[/{status_color}]"
+        # Agent metrics
+        agent_table = Table(title="Agent Metrics")
+        agent_table.add_column("Metric", style="cyan")
+        agent_table.add_column("Value", style="green")
+        
+        active_agents = sum(1 for a in self.agents.values() 
+                          if a['data']['status'] == 'active')
+        total_agents = len(self.agents)
+        
+        agent_table.add_row("Total Agents", str(total_agents))
+        agent_table.add_row("Active Agents", str(active_agents))
+        agent_table.add_row("Average Performance", 
+                          f"{sum(a['data']['performance'] for a in self.agents.values())/total_agents*100:.1f}%")
+        
+        layout["agents"].update(Panel(agent_table))
+        
+        # Task metrics
+        task_table = Table(title="Task Metrics")
+        task_table.add_column("Metric", style="cyan")
+        task_table.add_column("Value", style="green")
+        
+        completed_tasks = sum(1 for t in MOCK_TASKS if t['status'] == 'completed')
+        in_progress_tasks = sum(1 for t in MOCK_TASKS if t['status'] == 'in_progress')
+        pending_tasks = sum(1 for t in MOCK_TASKS if t['status'] == 'pending')
+        
+        task_table.add_row("Total Tasks", str(len(MOCK_TASKS)))
+        task_table.add_row("Completed", str(completed_tasks))
+        task_table.add_row("In Progress", str(in_progress_tasks))
+        task_table.add_row("Pending", str(pending_tasks))
+        
+        layout["tasks"].update(Panel(task_table))
+        
+        # Footer with system metrics
+        metrics_text = (
+            f"Uptime: {APP_METRICS['uptime']}s | "
+            f"Total Requests: {APP_METRICS['total_requests']} | "
+            f"Success Rate: {(APP_METRICS['successful_requests']/(APP_METRICS['total_requests'] or 1))*100:.1f}%"
+        )
+        
+        layout["footer"].update(
+            Panel(
+                Align.center(metrics_text, vertical="middle"),
+                style="dim"
+            )
+        )
+        
+        self.console.print(layout)
+    
+    def view_agent_details(self):
+        """View detailed information about a specific agent."""
+        if not self.agents:
+            self.console.print("[red]No agents available[/red]")
+            return
+            
+        agent_id = Prompt.ask(
+            "Enter agent ID",
+            choices=list(self.agents.keys())
+        )
+        
+        agent_info = self.agents[agent_id]
+        data = agent_info['data']
+        
+        # Create detailed view
+        detail_table = Table(title=f"Agent Details: {data['name']}")
+        detail_table.add_column("Property", style="cyan")
+        detail_table.add_column("Value", style="green")
+        
+        detail_table.add_row("ID", agent_id)
+        detail_table.add_row("Name", data['name'])
+        detail_table.add_row("Type", data['type'])
+        detail_table.add_row("Status", data['status'])
+        detail_table.add_row("Performance", f"{data['performance']*100:.0f}%")
+        
+        # Add capabilities
+        for i, capability in enumerate(data['capabilities']):
+            if i == 0:
+                detail_table.add_row("Capabilities", capability)
+            else:
+                detail_table.add_row("", capability)
+        
+        self.console.print(detail_table)
+    
+    def toggle_agent_status(self):
+        """Enable or disable an agent."""
+        if not self.agents:
+            self.console.print("[red]No agents available[/red]")
+            return
+            
+        agent_id = Prompt.ask(
+            "Enter agent ID",
+            choices=list(self.agents.keys())
+        )
+        
+        agent_info = self.agents[agent_id]
+        current_status = agent_info['data']['status']
+        new_status = "inactive" if current_status == "active" else "active"
+        
+        agent_info['data']['status'] = new_status
+        
+        self.console.print(
+            f"\n[green]Agent {agent_info['data']['name']} is now {new_status}[/green]"
+        )
+    
+    def view_agent_performance(self):
+        """View agent performance metrics."""
+        # Create performance table
+        table = Table(title="Agent Performance Metrics")
+        table.add_column("Agent", style="cyan")
+        table.add_column("Tasks Completed", style="green")
+        table.add_column("Success Rate", style="yellow")
+        table.add_column("Avg Response Time", style="blue")
+        table.add_column("Rating", style="magenta")
+        
+        for _, agent_info in self.agents.items():
+            data = agent_info['data']
+            # Mock performance data
+            tasks_completed = int(data['performance'] * 100)
+            success_rate = f"{data['performance']*100:.1f}%"
+            avg_response = f"{(1-data['performance'])*5+0.5:.2f}s"
+            rating = "⭐" * int(data['performance'] * 5)
+            
+            table.add_row(
+                data['name'],
+                str(tasks_completed),
+                success_rate,
+                avg_response,
+                rating
             )
         
-        self.console.print(stats_table)
-        
-        # Resource usage (mock)
-        resource_table = Table(title="Resource Usage")
-        resource_table.add_column("Resource", style="cyan")
-        resource_table.add_column("Usage", style="white")
-        resource_table.add_column("Bar", style="blue")
-        
-        resources = [
-            ("CPU", "45%", "████▌     "),
-            ("Memory", "62%", "██████▌   "),
-            ("Disk", "23%", "██▌       "),
-            ("Network", "18%", "█▌        ")
-        ]
-        
-        for resource, usage, bar in resources:
-            resource_table.add_row(resource, usage, bar)
-        
-        self.console.print(resource_table)
-        
-        input("\nPress Enter to continue...")
-
-    async def performance_analytics(self):
-        """Performance analytics dashboard."""
-        self.console.clear()
-        self.console.print(Panel("Performance Analytics", style="bold green"))
-        
-        # Performance metrics
-        metrics_table = Table(title="Performance Metrics")
-        metrics_table.add_column("Metric", style="cyan")
-        metrics_table.add_column("Current", style="white")
-        metrics_table.add_column("Average", style="yellow")
-        metrics_table.add_column("Best", style="green")
-        
-        metrics = [
-            ("Response Time", "2.3s", "2.1s", "1.8s"),
-            ("Success Rate", "95%", "93%", "98%"),
-            ("Throughput", "12 req/min", "10 req/min", "15 req/min"),
-            ("Error Rate", "5%", "7%", "2%")
-        ]
-        
-        for metric, current, avg, best in metrics:
-            metrics_table.add_row(metric, current, avg, best)
-        
-        self.console.print(metrics_table)
-        
-        # Trend analysis (mock)
-        trend_table = Table(title="Trend Analysis")
-        trend_table.add_column("Period", style="cyan")
-        trend_table.add_column("Requests", style="white")
-        trend_table.add_column("Success Rate", style="green")
-        trend_table.add_column("Avg Response", style="blue")
-        
-        trends = [
-            ("Last Hour", "48", "96%", "2.1s"),
-            ("Last 6 Hours", "287", "94%", "2.3s"),
-            ("Last 24 Hours", "1,156", "93%", "2.4s"),
-            ("Last Week", "8,092", "92%", "2.5s")
-        ]
-        
-        for period, requests, success, response in trends:
-            trend_table.add_row(period, requests, success, response)
-        
-        self.console.print(trend_table)
-        
-        input("\nPress Enter to continue...")
-
-    async def tool_workshop(self):
-        """Tool management workshop."""
-        self.console.clear()
-        self.console.print(Panel("Tool Workshop", style="bold green"))
-        
-        # Available tools
-        tools_table = Table(title="Available Tools")
-        tools_table.add_column("Name", style="cyan")
-        tools_table.add_column("Description", style="white")
-        tools_table.add_column("Status", style="green")
-        
-        mock_tools = [
-            ("Calculator", "Mathematical calculations", "ACTIVE"),
-            ("Python REPL", "Python code execution", "ACTIVE"),
-            ("Web Search", "Internet search capability", "DISABLED"),
-            ("File Manager", "File operations", "ACTIVE"),
-            ("Database Query", "SQL query execution", "DISABLED")
-        ]
-        
-        for name, desc, status in mock_tools:
-            status_color = "green" if status == "ACTIVE" else "red"
-            tools_table.add_row(name, desc, f"[{status_color}]{status}[/{status_color}]")
-        
-        self.console.print(tools_table)
-        
-        # Tool testing
-        tool_name = Prompt.ask("\nSelect tool to test", default="Calculator")
-        
-        if tool_name.lower() == "calculator":
-            await self.test_calculator()
-        elif tool_name.lower() == "python repl":
-            await self.test_python_repl()
-        else:
-            self.console.print(f"[yellow]Tool '{tool_name}' testing not implemented[/yellow]")
-
-    async def test_calculator(self):
-        """Test calculator tool."""
-        self.console.print("\n[yellow]Testing Calculator Tool[/yellow]")
-        
-        expression = Prompt.ask("Enter mathematical expression", default="2 + 2 * 3")
-        
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=self.console
-        ) as progress:
-            task = progress.add_task("Calculating...", total=None)
-            await asyncio.sleep(0.5)
+        self.console.print(table)
+    
+    def update_task_status(self):
+        """Update the status of a task."""
+        task_ids = [str(t['id']) for t in MOCK_TASKS]
+        if not task_ids:
+            self.console.print("[red]No tasks available[/red]")
+            return
             
-            try:
-                result = eval(expression)  # Simple eval for demo
-                progress.update(task, description="Complete!")
-                self.console.print(f"\n[green]Result: {result}[/green]")
-            except Exception as e:
-                self.console.print(f"\n[red]Error: {e}[/red]")
-
-    async def test_python_repl(self):
-        """Test Python REPL tool."""
-        self.console.print("\n[yellow]Testing Python REPL Tool[/yellow]")
+        task_id = Prompt.ask("Enter task ID", choices=task_ids)
         
-        code = Prompt.ask("Enter Python code", default="print('Hello, LlamaAgent!')")
-        
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=self.console
-        ) as progress:
-            task = progress.add_task("Executing...", total=None)
-            await asyncio.sleep(0.5)
+        task = next((t for t in MOCK_TASKS if t['id'] == task_id), None)
+        if not task:
+            self.console.print("[red]Task not found[/red]")
+            return
             
-            try:
-                # Capture output
-                import io
-                import contextlib
-                
-                output = io.StringIO()
-                with contextlib.redirect_stdout(output):
-                    exec(code)
-                
-                result = output.getvalue()
-                progress.update(task, description="Complete!")
-                self.console.print(f"\n[green]Output:\n{result}[/green]")
-            except Exception as e:
-                self.console.print(f"\n[red]Error: {e}[/red]")
-
-    async def configuration(self):
-        """Configuration management."""
-        self.console.clear()
-        self.console.print(Panel("Configuration", style="bold green"))
+        new_status = Prompt.ask(
+            "New status",
+            choices=["pending", "in_progress", "completed"]
+        )
         
-        # Current configuration
+        task['status'] = new_status
+        if new_status == "completed":
+            task['progress'] = 1.0
+        elif new_status == "in_progress" and task['progress'] == 0:
+            task['progress'] = 0.5
+            
+        self.console.print(f"\n[green]Task {task_id} status updated to {new_status}[/green]")
+    
+    def assign_task_to_agent(self):
+        """Assign a task to an agent."""
+        # Get pending tasks
+        pending_tasks = [t for t in MOCK_TASKS if t['status'] == 'pending']
+        if not pending_tasks:
+            self.console.print("[red]No pending tasks available[/red]")
+            return
+            
+        task_ids = [str(t['id']) for t in pending_tasks]
+        task_id = Prompt.ask("Select task", choices=task_ids)
+        
+        # Get active agents
+        active_agents = {k: v for k, v in self.agents.items() 
+                        if v['data']['status'] == 'active'}
+        if not active_agents:
+            self.console.print("[red]No active agents available[/red]")
+            return
+            
+        agent_id = Prompt.ask("Select agent", choices=list(active_agents.keys()))
+        
+        # Update task
+        task = next(t for t in MOCK_TASKS if t['id'] == task_id)
+        task['assigned_agent'] = agent_id
+        task['status'] = 'in_progress'
+        task['progress'] = 0.1
+        
+        agent_name = active_agents[agent_id]['data']['name']
+        self.console.print(
+            f"\n[green]Task {task_id} assigned to {agent_name}[/green]"
+        )
+    
+    def show_configuration(self):
+        """Show and manage configuration settings."""
+        self.console.print("\n[bold cyan]Configuration Settings[/bold cyan]\n")
+        
         config_table = Table(title="Current Configuration")
         config_table.add_column("Setting", style="cyan")
-        config_table.add_column("Value", style="white")
-        config_table.add_column("Description", style="dim")
+        config_table.add_column("Value", style="green")
         
-        config_items = [
-            ("LLM Provider", "Mock", "Current language model provider"),
-            ("Model", "mock-gpt-4", "Active model name"),
-            ("Max Tokens", "2048", "Maximum tokens per request"),
-            ("Temperature", "0.7", "Response creativity level"),
-            ("Debug Mode", "False", "Enable debug logging"),
-            ("Auto-save", "True", "Automatically save conversations")
-        ]
-        
-        for setting, value, desc in config_items:
-            config_table.add_row(setting, value, desc)
+        config_table.add_row("Application Name", APP_NAME)
+        config_table.add_row("Version", VERSION)
+        config_table.add_row("Author", AUTHOR)
+        config_table.add_row("LlamaAgent Available", 
+                           "Yes" if llamaagent_available else "No")
+        config_table.add_row("Active Agents", str(len(self.agents)))
+        config_table.add_row("Total Tasks", str(len(MOCK_TASKS)))
         
         self.console.print(config_table)
+    
+    def show_documentation(self):
+        """Display documentation and help."""
+        self.console.print("\n[bold cyan]Documentation[/bold cyan]\n")
         
-        # Configuration actions
-        action = Prompt.ask(
-            "\nActions: [1] Update Setting [2] Reset to Defaults [3] Export Config [4] Back",
-            default="4"
-        )
-        
-        if action == "1":
-            setting = Prompt.ask("Setting to update")
-            value = Prompt.ask("New value")
-            self.console.print(f"[green]Updated {setting} to {value}[/green]")
-        elif action == "2":
-            if Confirm.ask("Reset all settings to defaults?"):
-                self.console.print("[green]Configuration reset to defaults[/green]")
-        elif action == "3":
-            self.console.print("[green]Configuration exported to config.json[/green]")
+        doc_text = """
+[bold]LlamaAgent Complete CLI[/bold]
 
-    async def show_help(self):
-        """Show help and documentation."""
-        self.console.clear()
-        self.console.print(Panel("Help & Documentation", style="bold green"))
-        
-        help_text = """
-[bold cyan]LlamaAgent Complete CLI[/bold cyan]
+This is a comprehensive command-line interface for the LlamaAgent framework,
+demonstrating all capabilities including:
 
-[bold]Features:[/bold]
-• Interactive Chat - Direct conversation with AI agents
-• Task Management - Create, execute, and monitor tasks
-• Agent Dashboard - Manage and monitor AI agents
-• System Monitor - Real-time system health monitoring
-• Performance Analytics - Detailed performance metrics
-• Tool Workshop - Test and manage available tools
-• Configuration - System settings and preferences
+• [cyan]Agent Management[/cyan]: Create, configure, and monitor AI agents
+• [green]Task Orchestration[/green]: Assign and track tasks across agents
+• [yellow]Real-time Analytics[/yellow]: Monitor system performance and metrics
+• [magenta]Interactive Conversations[/magenta]: Chat with AI agents
+• [blue]Tool Integration[/blue]: Use various tools and capabilities
 
-[bold]Getting Started:[/bold]
-1. Start with Interactive Chat to test basic functionality
-2. Create tasks in Task Management
-3. Monitor system health in System Monitor
-4. Explore tools in Tool Workshop
+[bold]Key Features:[/bold]
+- Beautiful terminal UI with Rich library
+- Real-time progress tracking
+- Comprehensive error handling
+- Mock data for demonstration
+- Extensible architecture
 
-[bold]Keyboard Shortcuts:[/bold]
-• Ctrl+C - Interrupt current operation
-• Enter - Confirm selection
-• Type 'exit' in chat to return to menu
-
-[bold]Agent Types:[/bold]
-• ANALYST - Data analysis and insights
-• WRITER - Content creation and editing
-• DEVELOPER - Code development and review
-
-[bold]Mock Data:[/bold]
-This CLI uses mock data for demonstration purposes.
-All interactions are simulated to showcase functionality.
+[bold]Usage:[/bold]
+Navigate through the menu options to explore different features.
+Each section provides interactive prompts to guide you.
 
 [bold]Support:[/bold]
+For more information, visit: https://github.com/nikjois/llamaagent
 Author: Nik Jois <nikjois@llamasearch.ai>
-Documentation: https://github.com/nikjois/llamaagent
 """
         
-        self.console.print(help_text)
-        input("\nPress Enter to continue...")
-
+        self.console.print(Panel(doc_text, title="Documentation", border_style="blue"))
+    
+    def update_metrics(self):
+        """Update application metrics."""
+        APP_METRICS.update({
+            'uptime': int((datetime.now() - self.start_time).total_seconds()),
+            'total_requests': len(self.conversation_history),
+            'successful_requests': len(self.conversation_history),
+            'failed_requests': 0,
+            'avg_response_time': 1.5  # Mock value
+        })
+    
     async def run(self):
-        """Main CLI loop."""
-        self.show_banner()
+        """Main application loop."""
+        self.start_time = datetime.now()
+        self.is_running = True
         
-        while True:
+        # Display welcome screen
+        self.console.clear()
+        self.display_header()
+        
+        # Main loop
+        while self.is_running:
             try:
-                self.show_main_menu()
-                choice = Prompt.ask("\n[bold cyan]Select option[/bold cyan]", default="0")
+                self.update_metrics()
+                choice = self.display_menu()
                 
-                if choice == "0":
-                    if Confirm.ask("Are you sure you want to exit?"):
-                        break
-                elif choice == "1":
-                    await self.interactive_chat()
+                if choice == "1":
+                    await self.start_conversation()
                 elif choice == "2":
-                    await self.task_management()
+                    self.manage_agents()
                 elif choice == "3":
-                    await self.agent_dashboard()
+                    self.view_tasks()
                 elif choice == "4":
-                    await self.system_monitor()
+                    self.show_analytics()
                 elif choice == "5":
-                    await self.performance_analytics()
+                    self.show_configuration()
                 elif choice == "6":
-                    await self.tool_workshop()
+                    self.show_documentation()
                 elif choice == "7":
-                    await self.configuration()
-                elif choice == "8":
-                    await self.show_help()
-                else:
-                    self.console.print("[red]Invalid option. Please try again.[/red]")
-                
-                if choice != "0":
-                    await asyncio.sleep(1)
-            
+                    if Confirm.ask("\n[yellow]Are you sure you want to exit?[/yellow]"):
+                        self.is_running = False
+                        
             except KeyboardInterrupt:
                 self.console.print("\n[yellow]Interrupted by user[/yellow]")
-                if Confirm.ask("Return to main menu?"):
-                    continue
-                else:
-                    break
+                if Confirm.ask("[yellow]Do you want to exit?[/yellow]"):
+                    self.is_running = False
             except Exception as e:
-                self.console.print(f"[red]Error: {e}[/red]")
-                logger.exception("Error in main loop")
-                await asyncio.sleep(2)
+                self.console.print(f"\n[red]Error: {e}[/red]")
+                logger.exception("Application error")
         
         # Goodbye message
-        self.console.clear()
-        goodbye_text = Text()
-        goodbye_text.append("Thank you for using LlamaAgent!\n\n", style="bold green")
-        goodbye_text.append("Session Summary:\n", style="bold white")
-        goodbye_text.append(f"• Duration: {datetime.now() - self.start_time}\n", style="dim")
-        goodbye_text.append(f"• Tasks Completed: {self.tasks_completed}\n", style="dim")
-        goodbye_text.append(f"• Total Tokens: {self.total_tokens}\n", style="dim")
-        goodbye_text.append(f"• Conversations: {len(self.conversation_history)}\n", style="dim")
-        goodbye_text.append("\nAuthor: Nik Jois <nikjois@llamasearch.ai>", style="dim")
-        
-        panel = Panel(
-            Align.center(goodbye_text),
-            title="Session Complete",
-            border_style="green",
-            padding=(1, 2)
-        )
-        self.console.print(panel)
+        self.console.print("\n[bold green]Thank you for using LlamaAgent![/bold green]")
+        self.console.print(f"[dim]Total session time: {APP_METRICS['uptime']}s[/dim]\n")
 
-async def main():
+
+def main():
     """Main entry point."""
     # Setup logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
     
-    # Create and run CLI
-    cli = CompleteCLI()
+    # Create and run application
+    app = CompleteCliApp()
     
     try:
-        await cli.run()
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Application interrupted[/yellow]")
+        asyncio.run(app.run())
     except Exception as e:
         console.print(f"[red]Fatal error: {e}[/red]")
-        logger.exception("Fatal error")
-    finally:
-        console.print("[dim]Goodbye![/dim]")
+        logger.exception("Fatal application error")
+        return 1
+    
+    return 0
+
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    exit(main())
