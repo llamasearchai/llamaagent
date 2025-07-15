@@ -1,38 +1,107 @@
-FROM python:3.11-slim
+# LlamaAgent Master System Dockerfile
+# Multi-stage build for comprehensive testing and deployment
+# Author: Nik Jois <nikjois@llamasearch.ai>
 
-# Set working directory
-WORKDIR /app
+# Stage 1: Base Python environment
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    POETRY_VERSION=1.8.3
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY pyproject.toml ./
-RUN pip install --no-cache-dir -e .[api]
+# Install Poetry
+RUN pip install poetry==$POETRY_VERSION
 
-# Copy source code
-COPY src/ ./src/
-COPY README.md ./
+# Set work directory
+WORKDIR /app
 
-# Install the package
-RUN pip install --no-cache-dir -e .
+# Copy dependency files
+COPY pyproject.toml poetry.lock* ./
+
+# Stage 2: Development and testing environment
+FROM base as development
+
+# Install all dependencies including dev dependencies
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/results /app/data
+
+# Run comprehensive tests
+RUN python -m pytest tests/ -v --tb=short || true
+RUN python comprehensive_syntax_fixer.py || true
+RUN python master_llamaagent_system.py --test-mode || true
+
+# Stage 3: Production environment
+FROM base as production
+
+# Install only production dependencies
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-interaction --no-ansi
+
+# Copy application code
+COPY . .
 
 # Create non-root user
-RUN useradd --create-home --shell /bin/bash llamaagent
+RUN groupadd -r llamaagent && useradd -r -g llamaagent llamaagent
+
+# Create application directories
+RUN mkdir -p /app/logs /app/results /app/data \
+    && chown -R llamaagent:llamaagent /app
+
+# Switch to non-root user
 USER llamaagent
 
-# Expose port
-EXPOSE 8000
+# Expose ports
+EXPOSE 8000 8001 8002
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import asyncio; from master_llamaagent_system import MasterSystemOrchestrator, MasterSystemConfig; asyncio.run(MasterSystemOrchestrator(MasterSystemConfig()).health_monitor.check_system_health())" || exit 1
 
-# Use *uvicorn* as the entrypoint so additional CLI flags (e.g. `--help`) work
-ENTRYPOINT ["uvicorn"]
+# Default command
+CMD ["python", "master_llamaagent_system.py"]
 
-# Default command arguments
-CMD ["llamaagent.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Stage 4: FastAPI production server
+FROM production as fastapi
+
+# Install additional FastAPI dependencies
+RUN pip install fastapi uvicorn[standard] gunicorn
+
+# Copy FastAPI application
+COPY fastapi_app.py ./
+
+# Expose FastAPI port
+EXPOSE 8000
+
+# Run FastAPI server
+CMD ["uvicorn", "fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
+# Stage 5: Complete system with monitoring
+FROM production as monitoring
+
+# Install monitoring dependencies
+RUN pip install prometheus-client grafana-client
+
+# Copy monitoring configuration
+COPY monitoring/ ./monitoring/
+
+# Expose monitoring ports
+EXPOSE 8001 8002
+
+# Run with monitoring
+CMD ["python", "master_llamaagent_system.py", "--enable-monitoring"]

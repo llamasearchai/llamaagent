@@ -1,0 +1,106 @@
+# Main navigation
+main:
+  - title: "Documentation"
+    url: /docs/
+  - title: "API Reference"
+    url: /api/
+  - title: "Examples"
+    url: /examples/
+  - title: "GitHub"
+    url: https://github.com/yourusername/llamaagent
+
+# Documentation sidebar navigation
+docs:
+  - title: "Getting Started"
+    children:
+      - title: "Quick Start"
+        url: /docs/getting-started/
+      - title: "Installation"
+        url: /docs/installation/
+      - title: "Configuration"
+        url: /docs/configuration/
+      - title: "First Agent"
+        url: /docs/first-agent/
+
+  - title: "User Guide"
+    children:
+      - title: "Agents"
+        url: /docs/agents/
+      - title: "Tools"
+        url: /docs/tools/
+      - title: "Memory"
+        url: /docs/memory/
+      - title: "Providers"
+        url: /docs/providers/
+      - title: "Planning"
+        url: /docs/planning/
+
+  - title: "Advanced Topics"
+    children:
+      - title: "SPRE Framework"
+        url: /docs/spre/
+      - title: "Multimodal Agents"
+        url: /docs/multimodal/
+      - title: "Distributed Processing"
+        url: /docs/distributed/
+      - title: "Custom Tools"
+        url: /docs/custom-tools/
+      - title: "Benchmarking"
+        url: /docs/benchmarking/
+
+  - title: "Production"
+    children:
+      - title: "Deployment"
+        url: /docs/deployment/
+      - title: "Security"
+        url: /docs/security/
+      - title: "Monitoring"
+        url: /docs/monitoring/
+      - title: "Scaling"
+        url: /docs/scaling/
+      - title: "Performance"
+        url: /docs/performance/
+
+  - title: "Development"
+    children:
+      - title: "Contributing"
+        url: /docs/contributing/
+      - title: "Testing"
+        url: /docs/testing/
+      - title: "Architecture"
+        url: /docs/architecture/
+      - title: "Changelog"
+        url: /docs/changelog/
+
+# API Reference navigation
+api:
+  - title: "Core API"
+    children:
+      - title: "Agents"
+        url: /api/agents/
+      - title: "Tools"
+        url: /api/tools/
+      - title: "Memory"
+        url: /api/memory/
+      - title: "Providers"
+        url: /api/providers/
+      - title: "Types"
+        url: /api/types/
+
+  - title: "REST API"
+    children:
+      - title: "Authentication"
+        url: /api/auth/
+      - title: "Endpoints"
+        url: /api/endpoints/
+      - title: "WebSocket"
+        url: /api/websocket/
+      - title: "Rate Limiting"
+        url: /api/rate-limiting/
+
+  - title: "CLI"
+    children:
+      - title: "Commands"
+        url: /api/cli/
+      - title: "Configuration"
+        url: /api/cli-config/ 

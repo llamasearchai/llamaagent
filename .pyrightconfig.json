@@ -1,0 +1,38 @@
+{
+  "include": ["src/**/*.py"],
+  "exclude": ["**/__pycache__", "**/node_modules", "**/.venv"],
+  "ignore": ["**/migrations"],
+  "defineConstant": {
+    "DEBUG": true
+  },
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "reportMissingModuleSource": "warning",
+  "reportUnusedImport": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "reportConstantRedefinition": false,
+  "reportUnknownParameterType": false,
+  "reportUntypedFunctionDecorator": false,
+  "reportUntypedClassDecorator": false,
+  "reportUntypedBaseClass": false,
+  "reportOptionalSubscript": false,
+  "reportOptionalMemberAccess": false,
+  "reportOptionalCall": false,
+  "reportOptionalIterable": false,
+  "reportOptionalContextManager": false,
+  "reportOptionalOperand": false,
+  "pythonVersion": "3.11",
+  "pythonPlatform": "All",
+  "typeCheckingMode": "basic",
+  "useLibraryCodeForTypes": true,
+  "executionEnvironments": [
+    {
+      "root": "src",
+      "pythonVersion": "3.11",
+      "pythonPlatform": "All",
+      "extraPaths": []
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llamaagent-config
+  namespace: llamaagent
+data:
+  config.yaml: |
+    llm:
+      provider: "ollama"
+      model: "llama3.2:3b"
+      temperature: 0.7
+      max_tokens: 2000
+      timeout: 300.0
+    agent:
+      name: "ProductionAgent"
+      max_iterations: 15
+      spree_enabled: true
+    api:
+      host: "0.0.0.0"
+      port: 8000
+      workers: 4
+      cors_origins: ["*"]
+    logging:
+      level: "INFO"
+      format: "json"

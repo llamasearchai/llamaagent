@@ -8,7 +8,6 @@ focusing on SPRE (Strategic Planning & Resourceful Execution) features.
 """
 
 import asyncio
-import json
 import time
 from pathlib import Path
 
@@ -45,42 +44,42 @@ async def demo_basic_agents():
     """Demonstrate basic agent functionality."""
     print("DEMO 1: Basic Agent Functionality")
     print("-" * 40)
-    
+
     # Create a basic agent configuration
     config = AgentConfig(
         name="DemoAgent",
         role=AgentRole.GENERALIST,
         temperature=0.7,
-        spree_enabled=False  # Start with basic functionality
+        spree_enabled=False,  # Start with basic functionality
     )
-    
+
     # Set up tools
     tools = ToolRegistry()
     for tool in get_all_tools():
         tools.register(tool)
-    
+
     # Create agent
     agent = ReactAgent(config, tools=tools)
-    
+
     # Test tasks
     test_tasks = [
         "What is 15 * 23?",
         "Calculate the square root of 144",
         "What is the capital of France?",
-        "Explain what machine learning is in one sentence"
+        "Explain what machine learning is in one sentence",
     ]
-    
+
     for i, task in enumerate(test_tasks, 1):
         print(f"\nTask {i}: {task}")
-        
+
         start_time = time.time()
         result = await agent.execute(task)
         execution_time = time.time() - start_time
-        
+
         print(f"Response: {result.content}")
         print(f"Success: {result.success}")
         print(f"Time: {execution_time:.3f}s")
-        
+
         # Count tool calls
         tool_calls = [trace for trace in result.trace if trace.get("type") == "tool_execution_success"]
         print(f"Tools used: {len(tool_calls)}")
@@ -91,42 +90,42 @@ async def demo_spre_planning():
     """Demonstrate SPRE planning capabilities."""
     print("DEMO 2: SPRE Planning (Strategic Planning & Resourceful Execution)")
     print("-" * 70)
-    
+
     # Create SPRE-enabled agent
     config = AgentConfig(
         name="SPREAgent",
         role=AgentRole.PLANNER,
         temperature=0.5,
-        spree_enabled=True  # Enable SPRE features
+        spree_enabled=True,  # Enable SPRE features
     )
-    
+
     # Set up tools
     tools = ToolRegistry()
     for tool in get_all_tools():
         tools.register(tool)
-    
+
     # Create agent
     agent = ReactAgent(config, tools=tools)
-    
+
     # Complex task that benefits from planning
     complex_task = (
         "Calculate the compound interest on $1000 invested at 5% annual rate for 3 years, "
         "then create a Python function that can calculate compound interest for any principal, "
         "rate, and time period."
     )
-    
+
     print(f"\nComplex Task: {complex_task}")
     print()
-    
+
     start_time = time.time()
     result = await agent.execute(complex_task)
     execution_time = time.time() - start_time
-    
+
     print(f"\nSPRE Response: {result.content}")
     print(f"Success: {result.success}")
     print(f"Time: {execution_time:.3f}s")
     print(f"SPRE Planning: {'Enabled' if config.spree_enabled else 'Disabled'}")
-    
+
     # Show planning information
     planning_events = [trace for trace in result.trace if trace.get("type") == "plan_generated"]
     if planning_events:
@@ -141,33 +140,15 @@ async def demo_dataset_generation():
     """Demonstrate SPRE dataset generation."""
     print("DEMO 3: SPRE Dataset Generation")
     print("-" * 40)
-    
-    # Set up output file
+
+    generator = SPREDatasetGenerator(seed=42)
     output_file = Path("demo_output/demo_dataset.json")
     output_file.parent.mkdir(exist_ok=True)
-    
-    print(f"\nGenerating SPRE dataset...")
-    print(f"Output: {output_file}")
-    
-    # Create generator
-    generator = SPREDatasetGenerator(seed=42)
-    
+
     # Generate small dataset for demo
     try:
-        dataset = await generator.generate_dataset(
-            num_episodes=10,
-            output_path=output_file
-        )
-        
-        # Load and display summary
-        with open(output_file) as f:
-            data = json.load(f)
-        
-        print(f"Dataset generated successfully!")
-        print(f"Episodes: {data['metadata']['total_episodes']}")
-        print(f"Success Rate: {data['metadata']['statistics']['success_rate']:.2%}")
-        print(f"Average Reward: {data['metadata']['statistics']['average_reward']:.3f}")
-        
+        await generator.generate_dataset(num_episodes=5, output_path=output_file)
+        print(f"SPRE dataset generated successfully at [green]{output_file}[/green]")
     except Exception as e:
         print(f"Error generating dataset: {e}")
 
@@ -176,28 +157,28 @@ async def main():
     """Run all demonstrations."""
     print_header()
     print_capabilities()
-    
+
     try:
         await demo_basic_agents()
-        print("\n" + "="*60 + "\n")
-        
+        print("\n" + "=" * 60 + "\n")
+
         await demo_spre_planning()
-        print("\n" + "="*60 + "\n")
-        
+        print("\n" + "=" * 60 + "\n")
+
         await demo_dataset_generation()
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("All demos completed successfully!")
         print("\nNext steps:")
         print("1. Explore the full API: python -m llamaagent.api")
         print("2. Run comprehensive tests: python -m pytest tests/ -v")
         print("3. Generate larger datasets: python -m llamaagent.data_generation.spre --help")
         print("4. Try the interactive CLI: python -m llamaagent.cli.interactive")
-        
+
     except Exception as e:
         print(f"Demo error: {e}")
         print("Some features may require additional dependencies.")
 
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

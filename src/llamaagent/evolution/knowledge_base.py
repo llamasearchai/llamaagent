@@ -1,19 +1,19 @@
+"""
+Knowledge base module for cooperative insights and learning.
+"""
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Optional
-
-try:
-    import numpy as np
-except ImportError:
-    np = None
+from typing import Dict, List, Optional, Tuple
 
 
 class CooperationKnowledge:
     """Vector-based knowledge base for cooperative insights."""
 
     def __init__(self, persist_path: Optional[str] = None):
+        """Initialize the knowledge base."""
         self.persist_path = persist_path
         self.insights: List[str] = []
         self.embeddings: List[List[float]] = []
@@ -30,7 +30,9 @@ class CooperationKnowledge:
         if self.persist_path:
             self._save()
 
-    def retrieve_relevant_insights(self, task_description: str, top_k: int = 3) -> List[str]:
+    def retrieve_relevant_insights(
+        self, task_description: str, top_k: int = 3
+    ) -> List[str]:
         """Retrieve most relevant insights for a task."""
         if not self.insights:
             return []
@@ -38,10 +40,10 @@ class CooperationKnowledge:
         task_embedding = self._simple_embed(task_description)
 
         # Calculate similarities
-        similarities = []
+        similarities: List[Tuple[float, int]] = []
         for i, insight_embedding in enumerate(self.embeddings):
             similarity = self._cosine_similarity(task_embedding, insight_embedding)
-            similarities.append((similarity, i))
+            similarities.append(similarity, i)
 
         # Sort by similarity and return top-k
         similarities.sort(reverse=True)
@@ -104,7 +106,7 @@ class CooperationKnowledge:
 
             self.insights = data.get("insights", [])
             self.embeddings = data.get("embeddings", [])
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError, FileNotFoundError):
             # Reset if corrupted
             self.insights = []
             self.embeddings = []
@@ -115,11 +117,13 @@ class CooperationKnowledge:
             for i, insight in enumerate(self.insights, 1):
                 f.write(f"{i}. {insight}\n\n")
 
-    def get_stats(self) -> dict:
+    def get_stats(self) -> Dict[str, float]:
         """Get knowledge base statistics."""
         return {
             "total_insights": len(self.insights),
             "avg_insight_length": (
-                sum(len(insight) for insight in self.insights) / len(self.insights) if self.insights else 0
+                sum(len(insight) for insight in self.insights) / len(self.insights)
+                if self.insights
+                else 0
             ),
         }

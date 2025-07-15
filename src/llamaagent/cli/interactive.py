@@ -1,309 +1,409 @@
 #!/usr/bin/env python3
 """
-Interactive CLI for LlamaAgent Research Experiment
-Author : Nik Jois <nikjois@llamasearch.ai>
+Enhanced interactive CLI with comprehensive features and error handling.
+
+Author: Nik Jois, Email: nikjois@llamasearch.ai
 """
 
-from __future__ import annotations
-
-# ──────────────────────────────── stdlib ────────────────────────────────
+import argparse
 import asyncio
-import json
-import time
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+import signal
+from typing import Any, Dict, List, Optional
 
-# ─────────────────────────────── 3rd-party (optional) ───────────────────
-if TYPE_CHECKING:  # keep valid annotations even if Rich is missing
-    from rich.console import Console as _RichConsole
-    from rich.prompt import Prompt as _RichPrompt
-else:  # simple stubs so the names are always "types"
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.prompt import Prompt, Confirm
+from rich.syntax import Syntax
+from rich.table import Table
 
-    class _RichStub: ...  # noqa: E701
+from ..agents import ReactAgent
+from ..config import get_config
 
-    _RichConsole = _RichPrompt = _RichStub  # type: ignore
-
+# Optional imports with fallbacks
 try:
-    from rich import box
-    from rich.console import Console
-    from rich.panel import Panel
-    from rich.progress import (BarColumn, Progress, SpinnerColumn, TextColumn,
-                               TimeElapsedColumn)
-    from rich.prompt import Confirm, Prompt
-    from rich.table import Table
-except ModuleNotFoundError:  # plain-text fall-back
-    Console = Panel = Progress = SpinnerColumn = TextColumn = BarColumn = TimeElapsedColumn = Table = Prompt = Confirm = box = None  # type: ignore
+    from ..agents import AgentConfig
+except ImportError:
+    AgentConfig = None
 
-# ─────────────────────────────── internal ───────────────────────────────
-from llamaagent.agents import AgentConfig, AgentRole, ReactAgent
-from llamaagent.data_generation.spre import SPREDatasetGenerator
-from llamaagent.tools import ToolRegistry, get_all_tools
-
-# ═════════════════════════════ helper wrappers ══════════════════════════
+console = Console()
 
 
-def _console() -> Optional[_RichConsole]:
-    """Return a Rich console if available."""
-    return Console() if Console else None
+class InteractiveCLI:
+    """Interactive CLI for LlamaAgent with comprehensive features."""
 
+    def __init__(self, spree_enabled: bool = False, debug: bool = False) -> None:
+        self.spree_enabled = spree_enabled
+        self.debug = debug
+        self.config = get_config()
+        self.agent: Optional[ReactAgent] = None
+        self.conversation_history: List[Dict[str, Any]] = []
+        self.running = True
 
-def _panel(*args: Any, **kwargs: Any) -> Any:
-    """Rich Panel wrapper that degrades to plain string."""
-    if Panel:
-        return Panel(*args, **kwargs)
-    return "\n".join(str(a) for a in args)
+        # Setup signal handlers
+        signal.signal(signal.SIGINT, self._handle_signal)
+        signal.signal(signal.SIGTERM, self._handle_signal)
 
+    def _handle_signal(self, signum: int, frame: Any) -> None:
+        """Handle system signals."""
+        console.print("\n[yellow]Received interrupt signal. Shutting down gracefully...[/yellow]")
+        self.running = False
 
-def _prompt(msg: str, choices: List[str]) -> str:
-    """Prompt.ask wrapper safe for plain mode."""
-    if Prompt:
-        return Prompt.ask(msg, choices=choices)
-    return input(f"{msg} {choices}: ").strip()
-
-
-def _confirm(msg: str) -> bool:
-    """Confirm.ask wrapper safe for plain mode."""
-    if Confirm:
-        return Confirm.ask(msg)
-    return input(f"{msg} [y/N]: ").lower().startswith("y")
-
-
-# ═════════════════════════════ main class ═══════════════════════════════
-
-
-class InteractiveExperiment:
-    """Interactive research experiment runner."""
-
-    def __init__(self) -> None:
-        self.console: Optional[_RichConsole] = _console()
-        self.results: Dict[str, Any] = {}
-
-    # ──────────────────────── ui primitives ────────────────────────────
-    def _print(self, msg: str) -> None:
-        if self.console:
-            self.console.print(msg)
-        else:
-            print(msg)
-
-    def display_banner(self) -> None:
-        text = (
-            "[bold cyan]LlamaAgent Research Experiment[/bold cyan]\n"
-            "[dim]Strategic Planning & Resourceful Execution[/dim]\n"
-            "Interactive Demo · Real-time Results · AI Agents"
-        )
-        if self.console:
-            self.console.print(_panel(text, border_style="cyan", title="[bold]Welcome[/bold]"))
-        else:
-            print("=" * 60, "\n", text, "\n", "=" * 60)
-
-    def menu(self) -> str:
-        items = [
-            ("1", "Quick Demo", "Basic agent interaction"),
-            ("2", "SPRE Planning Demo", "Hierarchical planning"),
-            ("3", "Dataset Generation", "Create SPRE dataset"),
-            ("4", "Performance Benchmarks", "Compare agents"),
-            ("5", "GAIA Evaluation", "Official GAIA benchmark"),
-            ("6", "Full Experiment", "End-to-end pipeline"),
-            ("7", "View Results", "Last run"),
-            ("8", "API Demo", "FastAPI smoke-test"),
-            ("9", "Exit", "Quit"),
-        ]
-        if self.console:
-            table = Table(show_header=False, box=box.ROUNDED)  # type: ignore[arg-type]
-            for opt, desc, feat in items:
-                table.add_row(opt, desc, feat)
-            self.console.print(_panel(table, title="[bold cyan]Menu[/bold cyan]", border_style="blue"))
-        else:
-            for opt, desc, _ in items:
-                print(f"{opt}. {desc}")
-        return _prompt("Choose an option", [opt for opt, *_ in items])
-
-    # ───────────────────────── demos / steps ───────────────────────────
-    async def _build_agent(self, cfg: AgentConfig, spree_enabled: bool = False) -> ReactAgent:
-        tools = ToolRegistry()
-        for t in get_all_tools():
-            tools.register(t)
-        # Override SPRE setting based on CLI flag
-        cfg.spree_enabled = spree_enabled
-        # Pass the tool registry via the correct keyword argument so that the
-        # second positional parameter (``llm_provider``) retains its intended
-        # semantics.  Using a positional argument here caused a type mismatch
-        return ReactAgent(cfg, tools=tools)
-
-    async def quick_demo(self, spree_enabled: bool = False) -> None:
-        self._print("\n[bold green]Quick Demo[/bold green]")
-        agent = await self._build_agent(
-            AgentConfig(name="Demo", role=AgentRole.GENERALIST), spree_enabled=spree_enabled
-        )
-        for prompt in (
-            "15 * 23 + 47 = ?",
-            "Square root of 144?",
-            "Python function to reverse a string.",
-            "Explain ML in simple terms.",
-        ):
-            res = await agent.execute(prompt)
-            self._print(_panel(f"[cyan]{prompt}[/cyan]\n\n{res.content}", border_style="green"))
-
-    async def spre_demo(self, spree_enabled: bool = True) -> None:
-        self._print("\n[bold blue]SPRE Planning Demo[/bold blue]")
-        agent = await self._build_agent(
-            AgentConfig(name="Planner", role=AgentRole.PLANNER), spree_enabled=spree_enabled
-        )
-        task = "Plan a DS project to predict house prices."
-        res = await agent.execute(task)
-        steps = getattr(res, "plan", None)
-        steps_str = "\n".join(f"  {i+1}. {s}" for i, s in enumerate(steps.steps)) if steps else "—"
-        self._print(_panel(f"[bold]{task}[/bold]\n\n{res.content}\n\n[italic]Steps:[/italic]\n{steps_str}"))
-
-    async def dataset_demo(self) -> None:
-        self._print("\n[bold magenta]Dataset Generation[/bold magenta]")
-        out = Path("demo_datasets/spre_demo.json")
-        out.parent.mkdir(exist_ok=True)
-        await SPREDatasetGenerator(seed=42).generate_dataset(10, out)
-        self._print(f"Generated dataset → {out}")
-
-    async def benchmark(self, spree_enabled: bool = False) -> None:
-        self._print("\n[bold red]Benchmarks[/bold red]")
-        configs = [
-            ("Basic", AgentConfig("Basic", AgentRole.GENERALIST), False),
-            ("SPRE", AgentConfig("SPRE", AgentRole.PLANNER), True),
-            ("Spec", AgentConfig("Spec", AgentRole.SPECIALIST, temperature=0.3), False),
-        ]
-        tasks = ["123*456", "Capital of France?", "Sort list func", "Explain quantum computing"]
-        results: List[Dict[str, Any]] = []
-        for name, cfg, use_spree in configs:
-            agent = await self._build_agent(cfg, spree_enabled=use_spree or spree_enabled)
-            summ: Dict[str, Any] = {"name": name, "tasks": []}
-            for t in tasks:
-                t0 = time.perf_counter()
-                r = await agent.execute(t)
-                summ["tasks"].append({"time": time.perf_counter() - t0, "ok": r.success})
-            results.append(summ)
-        self.results["benchmarks"] = results
-        self._print(json.dumps(results, indent=2))
-
-    async def gaia_evaluation(self, spree_enabled: bool = False) -> None:
-        self._print("\n[bold yellow]GAIA Benchmark Evaluation[/bold yellow]")
-        try:
-            from ..benchmarks.gaia_benchmark import GAIABenchmark
+    async def initialize(self) -> None:
+        """Initialize the CLI and agent."""
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Initializing LlamaAgent...", total=None)
             
-            # Create SPRE-enabled agent
-            config = AgentConfig(
-                name="GAIA-Agent",
-                role=AgentRole.PLANNER,
-                spree_enabled=spree_enabled
-            )
-            agent = await self._build_agent(config, spree_enabled=spree_enabled)
-            
-            # Run GAIA evaluation on subset
-            benchmark = GAIABenchmark(subset="validation", max_tasks=5)
-            self._print("Loading GAIA dataset...")
-            await benchmark.load_dataset()
-            
-            self._print(f"Evaluating {len(benchmark.tasks)} GAIA tasks...")
-            results = await benchmark.evaluate_agent(agent, shuffle=True)
-            
-            # Generate report
-            report = benchmark.generate_report(results)
-            self._print(f"GAIA Results: {report['correct_answers']}/{report['total_tasks']} correct ({report['overall_accuracy']:.1%})")
-            
-            # Store results
-            self.results["gaia"] = report
-            
-        except ImportError:
-            self._print("[red]GAIA benchmark requires 'datasets' library. Install with: pip install datasets[/red]")
-        except Exception as e:
-            self._print(f"[red]GAIA evaluation failed: {e}[/red]")
-
-    async def full_experiment(self) -> None:
-        await self.dataset_demo()
-        await self.benchmark()
-        await self.gaia_evaluation()
-        Path("experiment_results.json").write_text(json.dumps(self.results, indent=2))
-        self._print("[green]Experiment complete.[/green]  Results → experiment_results.json")
-
-    def view_results(self) -> None:
-        p = Path("experiment_results.json")
-        self._print(p.read_text() if p.exists() else "No previous results.")
-
-    async def api_demo(self) -> None:
-        self._print("\n[bold purple]FastAPI Demo[/bold purple]")
-        try:
-            from fastapi.testclient import TestClient
-
-            from llamaagent.api import app
-        except ModuleNotFoundError:
-            self._print("FastAPI components not installed.")
-            return
-        client = TestClient(app)
-        self._print(f"/health → {client.get('/health').json()}")
-        self._print(f"/chat   → {client.post('/chat', json={'message': 'hi'}).json()}")
-
-    # ───────────────────────────── main loop ────────────────────────────
-    async def run(self, spree_enabled: bool = False) -> None:
-        self.display_banner()
-        if spree_enabled:
-            self._print("[bold yellow]SPRE Mode Enabled[/bold yellow] - Strategic Planning & Resourceful Execution")
-        while True:
             try:
-                choice = self.menu()
-                if choice == "1":
-                    await self.quick_demo(spree_enabled)
-                elif choice == "2":
-                    await self.spre_demo(True)  # Always use SPRE for demo
-                elif choice == "3":
-                    await self.dataset_demo()
-                elif choice == "4":
-                    await self.benchmark(spree_enabled)
-                elif choice == "5":
-                    await self.gaia_evaluation(spree_enabled)
-                elif choice == "6":
-                    await self.full_experiment()
-                elif choice == "7":
-                    self.view_results()
-                elif choice == "8":
-                    await self.api_demo()
-                elif choice == "9":
-                    self._print("Goodbye!")
-                    break
-                else:
-                    self._print("Invalid choice.")
-                if self.console and choice != "9":
-                    _ = _prompt("\n[dim]Enter to continue[/dim]", [""])  # noqa: F841
-                    self.console.clear()
-                    self.display_banner()
+                # Create agent with basic configuration
+                self.agent = ReactAgent(
+                    name="Interactive-Agent",
+                    description="Interactive CLI agent",
+                )
+                
+                progress.update(task, description="Agent initialized successfully")
+                
+            except Exception as e:
+                progress.update(task, description=f"Failed to initialize: {e}")
+                console.print(f"[red]Error initializing agent: {e}[/red]")
+                raise
+
+    def display_welcome(self) -> None:
+        """Display welcome message."""
+        welcome_text = """
+[bold blue]Welcome to LlamaAgent Interactive CLI![/bold blue]
+
+Type your questions or commands below. Available commands:
+• [bold]/help[/bold] - Show help information
+• [bold]/history[/bold] - Show conversation history
+• [bold]/clear[/bold] - Clear conversation history
+• [bold]/config[/bold] - Show current configuration
+• [bold]/status[/bold] - Show agent status
+• [bold]/debug[/bold] - Toggle debug mode
+• [bold]/spree[/bold] - Toggle SPREE mode
+• [bold]/quit[/bold] - Exit the CLI
+
+Ready to chat!
+        """
+        console.print(Panel(welcome_text, title="LlamaAgent CLI", border_style="blue"))
+
+    async def run(self) -> None:
+        """Main interactive loop."""
+        await self.initialize()
+        self.display_welcome()
+
+        while self.running:
+            try:
+                # Get user input
+                user_input = Prompt.ask("[bold blue]You[/bold blue]").strip()
+
+                if not user_input:
+                    continue
+
+                # Handle commands
+                if user_input.startswith("/"):
+                    await self.handle_command(user_input)
+                    continue
+
+                # Process user message
+                await self.process_message(user_input)
+
             except KeyboardInterrupt:
-                self._print("\nInterrupted.")
-                break
-            except Exception as exc:  # pragma: no cover
-                self._print(f"[red]Error:[/red] {exc}")
+                if Confirm.ask("Are you sure you want to exit?"):
+                    break
+            except Exception as e:
+                console.print(f"[red]Error: {e}[/red]")
+                if self.debug:
+                    console.print_exception()
+
+    async def handle_command(self, command: str) -> None:
+        """Handle CLI commands."""
+        cmd = command.lower().strip()
+
+        if cmd in ["/help", "/h"]:
+            self.show_help()
+        elif cmd in ["/history", "/hist"]:
+            self.show_history()
+        elif cmd in ["/clear", "/c"]:
+            self.clear_history()
+        elif cmd in ["/config", "/cfg"]:
+            self.show_config()
+        elif cmd in ["/status", "/s"]:
+            await self.show_status()
+        elif cmd in ["/debug"]:
+            self.toggle_debug()
+        elif cmd in ["/spree"]:
+            self.toggle_spree()
+        elif cmd in ["/quit", "/q"]:
+            self.running = False
+        else:
+            console.print(f"[red]Unknown command: {command}[/red]")
+            console.print("Type [bold]/help[/bold] for available commands")
+
+    def show_help(self) -> None:
+        """Show help information."""
+        help_table = Table(title="Available Commands")
+        help_table.add_column("Command", style="cyan")
+        help_table.add_column("Description", style="white")
+        
+        help_table.add_row("/help, /h", "Show this help message")
+        help_table.add_row("/history, /hist", "Show conversation history")
+        help_table.add_row("/clear, /c", "Clear conversation history")
+        help_table.add_row("/config, /cfg", "Show current configuration")
+        help_table.add_row("/status, /s", "Show agent status")
+        help_table.add_row("/debug", "Toggle debug mode")
+        help_table.add_row("/spree", "Toggle SPREE mode")
+        help_table.add_row("/quit, /q", "Exit the CLI")
+        
+        console.print(help_table)
+
+    def show_history(self) -> None:
+        """Show conversation history."""
+        if not self.conversation_history:
+            console.print("[yellow]No conversation history available[/yellow]")
+            return
+
+        console.print(Panel("Conversation History", title="History", border_style="green"))
+        
+        for i, entry in enumerate(self.conversation_history, 1):
+            # User message
+            console.print(f"[bold blue]{i}. You:[/bold blue]")
+            console.print(entry["user_message"])
+
+            # Agent response
+            console.print("[bold green]Agent:[/bold green]")
+            if entry["success"]:
+                console.print(entry["response"])
+            else:
+                console.print(f"[red]Error: {entry['error']}[/red]")
+
+            # Metadata
+            if entry.get("metadata"):
+                console.print(
+                    f"[dim]Tokens: {entry['metadata'].get('tokens_used', 0)}, "
+                    f"Latency: {entry['metadata'].get('latency_ms', 0):.1f}ms[/dim]"
+                )
+
+    def clear_history(self) -> None:
+        """Clear conversation history."""
+        if Confirm.ask("Are you sure you want to clear the conversation history?"):
+            self.conversation_history.clear()
+            console.print("[green]Conversation history cleared[/green]")
+
+    def show_config(self) -> None:
+        """Show current configuration."""
+        config_table = Table(title="Current Configuration")
+        config_table.add_column("Setting", style="cyan")
+        config_table.add_column("Value", style="white")
+        
+        config_table.add_row("Debug Mode", "Enabled" if self.debug else "Disabled")
+        config_table.add_row("SPREE Mode", "Enabled" if self.spree_enabled else "Disabled")
+        config_table.add_row("LLM Provider", self.config.llm.provider)
+        config_table.add_row("Model", self.config.llm.model)
+        config_table.add_row("Temperature", str(self.config.llm.temperature))
+        
+        console.print(config_table)
+
+    async def show_status(self) -> None:
+        """Show agent status."""
+        status_table = Table(title="Agent Status")
+        status_table.add_column("Component", style="cyan")
+        status_table.add_column("Status", style="white")
+        
+        # Agent status
+        if self.agent:
+            try:
+                status = "Active"
+                details = f"Model: {self.config.llm.model}"
+            except Exception as e:
+                status = "Error"
+                details = str(e)
+        else:
+            status = "Not initialized"
+            details = "Agent not created"
+
+        status_table.add_row("Agent", status)
+        status_table.add_row("Details", details)
+        
+        # Tool status
+        if hasattr(self.agent, 'tool_registry') and self.agent.tool_registry:
+            status_table.add_row("Tools", "All tools loaded")
+        else:
+            status_table.add_row("Tools", "No tools available")
+
+        # Conversation status
+        msg_count = len(self.conversation_history)
+        status_table.add_row("Messages", f"{msg_count} in history")
+        
+        if msg_count > 0:
+            last_msg = self.conversation_history[-1]
+            status_table.add_row("Last Message", "Success" if last_msg["success"] else "Error")
+        else:
+            status_table.add_row("Last Message", "None")
+
+        console.print(status_table)
+
+    def toggle_debug(self) -> None:
+        """Toggle debug mode."""
+        self.debug = not self.debug
+        console.print(f"[green]Debug mode {'enabled' if self.debug else 'disabled'}[/green]")
+
+    def toggle_spree(self) -> None:
+        """Toggle SPREE mode."""
+        self.spree_enabled = not self.spree_enabled
+        console.print(f"[green]SPREE mode {'enabled' if self.spree_enabled else 'disabled'}[/green]")
+
+    async def process_message(self, user_input: str) -> None:
+        """Process user message and generate response."""
+        if not self.agent:
+            console.print("[red]Agent not initialized. Please restart the CLI.[/red]")
+            return
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Agent is thinking...", total=None)
+            
+            try:
+                # Create task input
+                task_input = {
+                    "task": user_input,
+                    "context": {
+                        "conversation_history": self.conversation_history[-10:] if len(self.conversation_history) > 10 else self.conversation_history,
+                        "spree_enabled": self.spree_enabled,
+                        "debug": self.debug,
+                    }
+                }
+                
+                # Execute task
+                response = await self.agent.execute_task(task_input)
+                
+                progress.update(task, description="Processing response...")
+                
+                # Process response
+                if response and hasattr(response, 'result'):
+                    result_text = response.result.get("response", "No response generated")
+                    success = response.status.name == "SUCCESS"
+                    error_msg = None
+                else:
+                    result_text = str(response) if response else "No response"
+                    success = True
+                    error_msg = None
+                
+                # Store in history
+                history_entry = {
+                    "user_message": user_input,
+                    "response": result_text,
+                    "success": success,
+                    "error": error_msg,
+                    "metadata": {
+                        "tokens_used": getattr(response, 'tokens_used', 0),
+                        "latency_ms": getattr(response, 'latency_ms', 0),
+                    },
+                    "timestamp": asyncio.get_event_loop().time(),
+                }
+                
+                self.conversation_history.append(history_entry)
+                
+                # Display response
+                self.display_response(result_text)
+                
+                # Display debug info if enabled
+                if self.debug:
+                    self.display_debug_info(response)
+                    
+            except Exception as e:
+                error_msg = f"Error processing message: {e}"
+                console.print(f"[red]{error_msg}[/red]")
+                
+                # Store error in history
+                history_entry = {
+                    "user_message": user_input,
+                    "response": "",
+                    "success": False,
+                    "error": error_msg,
+                    "metadata": {"tokens_used": 0, "latency_ms": 0},
+                    "timestamp": asyncio.get_event_loop().time(),
+                }
+                self.conversation_history.append(history_entry)
+                
+                if self.debug:
+                    console.print_exception()
+
+    def display_response(self, content: str) -> None:
+        """Display response with syntax highlighting for code blocks."""
+        parts = content.split("```")
+
+        for i, part in enumerate(parts):
+            if i % 2 == 0:
+                # Regular text
+                console.print(part.strip())
+            else:
+                # Code block
+                lines = part.split("\n")
+                language = lines[0].strip() if lines else "text"
+                code = "\n".join(lines[1:]) if language != "text" else part.strip()
+
+                syntax = Syntax(code, language or "text", theme="monokai", line_numbers=True)
+                console.print(syntax)
+
+    def display_debug_info(self, response: Any) -> None:
+        """Display debug information."""
+        if not response:
+            return
+
+        debug_table = Table(title="Debug Information")
+        debug_table.add_column("Metric", style="cyan")
+        debug_table.add_column("Value", style="white")
+        
+        debug_table.add_row("Response Type", type(response).__name__)
+        debug_table.add_row("Status", getattr(response, 'status', 'Unknown'))
+        debug_table.add_row("Tokens Used", str(getattr(response, 'tokens_used', 0)))
+        debug_table.add_row("Latency", f"{getattr(response, 'latency_ms', 0):.1f}ms")
+        
+        if hasattr(response, 'metadata') and response.metadata:
+            for key, value in response.metadata.items():
+                debug_table.add_row(f"Metadata: {key}", str(value))
+
+        console.print(debug_table)
 
 
-# ────────────────────────────── public helper ────────────────────────────
-# Exported function consumed by ``run_experiment.py``.  Keeping the helper in
-# this module avoids duplication and provides an explicit public API for
-# programmatic launches of the interactive experiment.
+async def run_interactive_experiment(
+    spree_enabled: bool = False,
+    debug: bool = False
+) -> None:
+    """Entry-point helper for run_experiment.py.
 
-
-async def run_interactive_experiment(spree_enabled: bool = False) -> None:
-    """Run the :class:`InteractiveExperiment` event loop.
-
-    This thin wrapper exists so that external launchers (e.g. ``run_experiment.py``)
-    can invoke the interactive CLI without accessing private helpers or
-    rewriting the startup logic.
+    The historical public API expects an async run_interactive_experiment
+    coroutine that sets up an InteractiveCLI instance and drives its
+    event-loop. This wrapper keeps that contract while re-using the
+    implementation that already exists inside InteractiveCLI.run.
     """
+    cli = InteractiveCLI(spree_enabled=spree_enabled, debug=debug)
+    await cli.run()
 
-    await InteractiveExperiment().run(spree_enabled=spree_enabled)
 
+def main() -> None:
+    """Main entry point for the interactive CLI."""
+    parser = argparse.ArgumentParser(description="LlamaAgent Interactive CLI")
+    parser.add_argument("--spree", action="store_true", help="Enable SPREE mode")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    args = parser.parse_args()
 
-async def _main() -> None:
-    # Delegate to the public helper so that both CLI execution and external
-    # imports share the same entrypoint.
-    import sys
+    # Run CLI
+    cli = InteractiveCLI(spree_enabled=args.spree, debug=args.debug)
 
-    spree_enabled = "--spree" in sys.argv
-    await run_interactive_experiment(spree_enabled=spree_enabled)
+    try:
+        asyncio.run(cli.run())
+    except KeyboardInterrupt:
+        console.print("[yellow]Goodbye![/yellow]")
 
 
 if __name__ == "__main__":
-    asyncio.run(_main())
+    main()

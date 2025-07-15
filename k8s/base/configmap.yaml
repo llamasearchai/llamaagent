@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llamaagent-config
+  namespace: llamaagent
+data:
+  app.yaml: |
+    server:
+      host: 0.0.0.0
+      port: 8000
+      workers: 4
+      timeout: 120
+      keepalive: 5
+      max_requests: 1000
+      max_requests_jitter: 50
+    
+    logging:
+      level: info
+      format: json
+      output: stdout
+      error_output: stderr
+    
+    database:
+      pool_size: 20
+      max_overflow: 10
+      pool_timeout: 30
+      pool_recycle: 3600
+      echo: false
+    
+    redis:
+      max_connections: 50
+      decode_responses: true
+      socket_timeout: 5
+      socket_connect_timeout: 5
+      retry_on_timeout: true
+      health_check_interval: 30
+    
+    vector_db:
+      collection_name: llamaagent_vectors
+      vector_size: 1536
+      distance_metric: cosine
+      hnsw_ef: 128
+      hnsw_m: 16
+    
+    llm:
+      default_provider: litellm
+      timeout: 300
+      max_retries: 3
+      retry_delay: 1
+      temperature: 0.7
+      max_tokens: 4096
+      budget_limit: 100.0
+      enable_caching: true
+      cache_ttl: 3600
+    
+    multimodal:
+      vision_models:
+        - gpt-4o
+        - claude-3.5-sonnet
+        - llama-3.2-vision
+      reasoning_models:
+        - deepseek-r1
+        - deepseek-r1-distilled
+      max_image_size: 10485760  # 10MB
+      supported_formats:
+        - jpg
+        - jpeg
+        - png
+        - webp
+        - gif
+    
+    evolution:
+      max_generations: 50
+      population_size: 20
+      mutation_rate: 0.1
+      crossover_rate: 0.7
+      elite_size: 5
+      diversity_weight: 0.2
+      convergence_threshold: 0.95
+    
+    prompting:
+      optimization:
+        method: genetic
+        generations: 10
+        population_size: 20
+        early_stopping_patience: 3
+      chain_of_thought:
+        max_depth: 5
+        branching_factor: 3
+        self_consistency_samples: 5
+      compound:
+        combination_method: adaptive
+        strategies:
+          - chain_of_thought
+          - few_shot
+          - role_based
+          - decomposition
+    
+    monitoring:
+      metrics_port: 8001
+      health_check_interval: 30
+      enable_tracing: true
+      enable_profiling: false
+      trace_sample_rate: 0.1
+    
+    security:
+      api_key_header: X-API-Key
+      enable_rate_limiting: true
+      rate_limit_requests: 100
+      rate_limit_window: 60
+      enable_cors: true
+      cors_origins:
+        - https://app.llamaagent.io
+        - https://api.llamaagent.io
+      max_request_size: 52428800  # 50MB
+    
+    features:
+      enable_multimodal: true
+      enable_reasoning: true
+      enable_evolution: true
+      enable_prompt_optimization: true
+      enable_memory_store: true
+      enable_function_calling: true
+      enable_streaming: true
+      enable_batch_processing: true
+  
+  nginx.conf: |
+    upstream llamaagent_api {
+        least_conn;
+        server llamaagent-api:80 max_fails=3 fail_timeout=30s;
+        keepalive 32;
+    }
+    
+    server {
+        listen 80;
+        server_name api.llamaagent.io;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Content-Security-Policy "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';" always;
+        
+        # Rate limiting zones
+        limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/m;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss;
+        
+        # API endpoints
+        location /api/ {
+            limit_req zone=api_limit burst=20 nodelay;
+            
+            proxy_pass http://llamaagent_api;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 300s;
+            proxy_read_timeout 300s;
+            
+            proxy_buffering off;
+            proxy_request_buffering off;
+            
+            client_max_body_size 50M;
+        }
+        
+        # Health check endpoint
+        location /health {
+            access_log off;
+            proxy_pass http://llamaagent_api/health;
+        }
+        
+        # Metrics endpoint (internal only)
+        location /metrics {
+            allow 10.0.0.0/8;
+            deny all;
+            proxy_pass http://llamaagent_api:8001/metrics;
+        }
+    }

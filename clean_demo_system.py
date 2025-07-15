@@ -19,16 +19,16 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from llamaagent import ReactAgent, AgentConfig
+from llamaagent import AgentConfig, ReactAgent
 from llamaagent.llm import create_provider
-from llamaagent.tools import ToolRegistry, get_all_tools
 from llamaagent.memory.base import SimpleMemory
-from llamaagent.storage.database import DatabaseManager, DatabaseConfig
+from llamaagent.storage.database import DatabaseConfig, DatabaseManager
+from llamaagent.tools import ToolRegistry, get_all_tools
 
 # Configure logging
 logging.basicConfig(
@@ -301,7 +301,7 @@ class LlamaAgentSystemDemo:
         # Run tasks concurrently
         agents = [ReactAgent(config) for _ in tasks]
         results = await asyncio.gather(
-            *[agent.execute(task) for agent, task in zip(agents, tasks)],
+            *[agent.execute(task) for agent, task in zip(agents, tasks, strict=False)],
             return_exceptions=True
         )
         

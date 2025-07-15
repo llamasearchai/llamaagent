@@ -1,0 +1,2477 @@
+{
+  "errors": [
+    {
+      "filename": "src/llamaagent/agents/multimodal_reasoning.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/agents/reasoning_chains.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/gateway.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/main.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/openai_comprehensive_api.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/premium_endpoints.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/production_app.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/shell_endpoints.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/api/simon_ecosystem_api.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/benchmarks/frontier_evaluation.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/benchmarks/gaia_benchmark.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/benchmarks/spre_evaluator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cache/advanced_cache.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cache/cache_manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cache/llm_cache.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cache/query_optimizer.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cache/result_cache.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/chat_repl.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/code_generator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/config_manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/diagnostics_cli.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/enhanced_cli.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/enhanced_shell_cli.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/function_manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/interactive.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/llm_cmd.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/main.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/openai_cli.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/role_manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/cli/shell_commands.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/core/agent.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/core/error_handling.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/core/message_bus.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/core/orchestrator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/core/service_mesh.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/data/gdt.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/data_generation/agentic_pipelines.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/data_generation/gdt.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/data_generation/spre.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/diagnostics/code_analyzer.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/diagnostics/dependency_checker.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/diagnostics/master_diagnostics.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/diagnostics/system_validator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evaluation/benchmark_engine.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evaluation/golden_dataset.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evaluation/model_comparison.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evolution/adaptive_learning.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evolution/knowledge_base.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/evolution/reflection.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/experiment_runner.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/integration/_openai_stub.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/integration/openai_agents.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/integration/openai_agents_complete.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/integration/openai_comprehensive.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/integration/simon_tools.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/knowledge/knowledge_generator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/llm/providers/anthropic.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/llm/providers/cohere.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/llm/providers/litellm_provider.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/llm/simon_ecosystem.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/ml/inference_engine.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/monitoring/advanced_monitoring.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/monitoring/alerting.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/monitoring/metrics_collector.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/monitoring/profiling.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/monitoring/tracing.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/optimization/performance.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/optimization/prompt_optimizer.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/orchestration/adaptive_orchestra.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/orchestrator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/planning/execution_engine.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/planning/monitoring.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/planning/optimization.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/planning/strategies.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/planning/task_planner.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/prompting/compound_prompting.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/prompting/dspy_optimizer.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/prompting/optimization.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/prompting/prompt_templates.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/reasoning/chain_engine.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/reasoning/context_sharing.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/reasoning/memory_manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/report_generator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/routing/ai_router.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/routing/metrics.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/routing/provider_registry.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/routing/strategies.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/routing/task_analyzer.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/security/audit.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/security/manager.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/security/rate_limiter.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/security/validator.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/spawning/agent_pool.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/spawning/agent_spawner.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/spawning/communication.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/statistical_analysis.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/tools/tool_registry.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "src/llamaagent/visualization.py",
+      "reason": "syntax error while parsing AST from file"
+    }
+  ],
+  "generated_at": "2025-07-07T19:17:01Z",
+  "metrics": {
+    "_totals": {
+      "CONFIDENCE.HIGH": 13,
+      "CONFIDENCE.LOW": 2,
+      "CONFIDENCE.MEDIUM": 4,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 6,
+      "SEVERITY.MEDIUM": 12,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 54283,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/__init__.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 221,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/__main__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 23,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/_version.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 3,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 35,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/advanced_reasoning.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 793,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 301,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/multimodal_advanced.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 32,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/multimodal_reasoning.py": {
+      "loc": 277,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/react.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1020,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/agents/reasoning_chains.py": {
+      "loc": 308,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api.py": {
+      "loc": 488,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/__main__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 19,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/complete_api.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 642,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/gateway.py": {
+      "loc": 285,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/main.py": {
+      "loc": 981,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/openai_comprehensive_api.py": {
+      "loc": 517,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/premium_endpoints.py": {
+      "loc": 111,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/production_app.py": {
+      "loc": 905,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/shell_endpoints.py": {
+      "loc": 532,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/simon_ecosystem_api.py": {
+      "loc": 515,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/api/simple_app.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 363,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/benchmarks/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 17,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/benchmarks/baseline_agents.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 162,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/benchmarks/frontier_evaluation.py": {
+      "loc": 473,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/benchmarks/gaia_benchmark.py": {
+      "loc": 489,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/benchmarks/spre_evaluator.py": {
+      "loc": 315,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 13,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/advanced_cache.py": {
+      "loc": 305,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/cache_manager.py": {
+      "loc": 365,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/llm_cache.py": {
+      "loc": 314,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/memory_pool.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 21,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/query_optimizer.py": {
+      "loc": 451,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cache/result_cache.py": {
+      "loc": 333,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 5,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/__main__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/chat_repl.py": {
+      "loc": 396,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/code_generator.py": {
+      "loc": 213,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/config_manager.py": {
+      "loc": 401,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/diagnostics_cli.py": {
+      "loc": 280,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/enhanced_cli.py": {
+      "loc": 482,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/enhanced_shell_cli.py": {
+      "loc": 368,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/function_manager.py": {
+      "loc": 443,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/interactive.py": {
+      "loc": 309,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/llm_cmd.py": {
+      "loc": 378,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/main.py": {
+      "loc": 322,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/master_cli.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 535,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/openai_cli.py": {
+      "loc": 319,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/role_manager.py": {
+      "loc": 401,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/cli/shell_commands.py": {
+      "loc": 374,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/config/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 13,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/config/settings.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 368,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 47,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/agent.py": {
+      "loc": 471,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/error_handling.py": {
+      "loc": 463,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/message_bus.py": {
+      "loc": 341,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/orchestrator.py": {
+      "loc": 522,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/core/service_mesh.py": {
+      "loc": 416,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 19,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data/gdt.py": {
+      "loc": 289,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data_generation/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 28,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data_generation/agentic_pipelines.py": {
+      "loc": 527,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data_generation/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 103,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data_generation/gdt.py": {
+      "loc": 256,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/data_generation/spre.py": {
+      "loc": 910,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/diagnostics/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 16,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/diagnostics/code_analyzer.py": {
+      "loc": 242,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/diagnostics/dependency_checker.py": {
+      "loc": 335,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/diagnostics/master_diagnostics.py": {
+      "loc": 916,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/diagnostics/system_validator.py": {
+      "loc": 424,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evaluation/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 36,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evaluation/benchmark_engine.py": {
+      "loc": 466,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evaluation/golden_dataset.py": {
+      "loc": 471,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evaluation/model_comparison.py": {
+      "loc": 533,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evolution/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 10,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evolution/adaptive_learning.py": {
+      "loc": 431,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evolution/knowledge_base.py": {
+      "loc": 98,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evolution/orchestrator.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 123,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/evolution/reflection.py": {
+      "loc": 110,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/experiment_runner.py": {
+      "loc": 193,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 23,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/_openai_stub.py": {
+      "loc": 367,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/langgraph.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 273,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/openai_agents.py": {
+      "loc": 448,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/openai_agents_complete.py": {
+      "loc": 316,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/openai_comprehensive.py": {
+      "loc": 936,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/integration/simon_tools.py": {
+      "loc": 533,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/knowledge/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 13,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/knowledge/knowledge_generator.py": {
+      "loc": 553,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 115,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 21,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/exceptions.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 23,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/factory.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 216,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/messages.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 21,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/mlx_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 24,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 93,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/anthropic.py": {
+      "loc": 186,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 120,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/base_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 49,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/cohere.py": {
+      "loc": 316,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/cohere_provider.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 141,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/cuda_provider.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 278,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/litellm_provider.py": {
+      "loc": 292,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/mlx_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 250,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/mock_provider.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 215,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/ollama_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 342,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/openai.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 290,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/openai_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 225,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/together.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 181,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/providers/together_provider.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 24,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/llm/simon_ecosystem.py": {
+      "loc": 445,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/memory/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 13,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/memory/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 98,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/ml/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 8,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/ml/inference_engine.py": {
+      "loc": 561,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 10,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/advanced_monitoring.py": {
+      "loc": 452,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/alerting.py": {
+      "loc": 403,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/health.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 321,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/logging.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 272,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/metrics.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 420,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/metrics_collector.py": {
+      "loc": 578,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/middleware.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 390,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/profiling.py": {
+      "loc": 250,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/monitoring/tracing.py": {
+      "loc": 289,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/optimization/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 34,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/optimization/performance.py": {
+      "loc": 550,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/optimization/prompt_optimizer.py": {
+      "loc": 500,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/orchestration/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/orchestration/adaptive_orchestra.py": {
+      "loc": 424,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/orchestrator.py": {
+      "loc": 303,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 90,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/execution_engine.py": {
+      "loc": 573,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/monitoring.py": {
+      "loc": 318,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/optimization.py": {
+      "loc": 530,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/strategies.py": {
+      "loc": 607,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/planning/task_planner.py": {
+      "loc": 605,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 27,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/chain_prompting.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 538,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/compound_prompting.py": {
+      "loc": 389,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/dspy_optimizer.py": {
+      "loc": 304,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/optimization.py": {
+      "loc": 553,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/prompting/prompt_templates.py": {
+      "loc": 525,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/reasoning/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 31,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/reasoning/chain_engine.py": {
+      "loc": 419,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/reasoning/context_sharing.py": {
+      "loc": 444,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/reasoning/memory_manager.py": {
+      "loc": 346,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/report_generator.py": {
+      "loc": 114,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 96,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/citations.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 22,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/evidence.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 22,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/knowledge_graph.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 22,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/literature_review.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 22,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/report_generator.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 24,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/research/scientific_reasoning.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 21,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 39,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/ai_router.py": {
+      "loc": 439,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/metrics.py": {
+      "loc": 501,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/provider_registry.py": {
+      "loc": 502,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/strategies.py": {
+      "loc": 567,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/routing/task_analyzer.py": {
+      "loc": 384,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 21,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/audit.py": {
+      "loc": 41,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/authentication.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 40,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/encryption.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 23,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/manager.py": {
+      "loc": 397,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/rate_limiter.py": {
+      "loc": 296,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/security/validator.py": {
+      "loc": 555,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/spawning/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 40,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/spawning/agent_pool.py": {
+      "loc": 419,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/spawning/agent_spawner.py": {
+      "loc": 456,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/spawning/communication.py": {
+      "loc": 403,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/statistical_analysis.py": {
+      "loc": 128,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/storage/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 18,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/storage/database.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 2,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 515,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/storage/vector_memory.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 51,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 134,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 48,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/calculator.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 70,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/dynamic.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 5,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/dynamic_loader.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 359,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/openai_tools.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 494,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/plugin_framework.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 17,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/python_repl.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 65,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/registry.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 352,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/tools/tool_registry.py": {
+      "loc": 508,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/types.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 213,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/llamaagent/visualization.py": {
+      "loc": 292,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "274 \n275     except Exception:  # pragma: no cover\n276         pass\n277 \n",
+      "col_offset": 4,
+      "end_col_offset": 12,
+      "filename": "src/llamaagent/__init__.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 275,
+      "line_range": [
+        275,
+        276
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "347                 # Safe evaluation with restricted builtins\n348                 result_value = eval(expression, {\"__builtins__\": {}})\n349                 self.add_trace(\n",
+      "col_offset": 31,
+      "end_col_offset": 69,
+      "filename": "src/llamaagent/agents/react.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+      "line_number": 348,
+      "line_range": [
+        348
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b307-eval",
+      "test_id": "B307",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "710                 clean_expr = re.sub(r\"[^0-9+\\-*/().]\", \"\", expr)\n711                 result = eval(clean_expr, {\"__builtins__\": {}})\n712                 return f\"Calculated: {result}\"\n",
+      "col_offset": 25,
+      "end_col_offset": 63,
+      "filename": "src/llamaagent/agents/react.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+      "line_number": 711,
+      "line_range": [
+        711
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b307-eval",
+      "test_id": "B307",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "17         factory=True,\n18         host=\"0.0.0.0\",\n19         port=8000,\n",
+      "col_offset": 13,
+      "end_col_offset": 22,
+      "filename": "src/llamaagent/api/__main__.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 18,
+      "line_range": [
+        18
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    },
+    {
+      "code": "820             await websocket.close()\n821         except Exception:\n822             pass\n823     \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/llamaagent/api/complete_api.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 821,
+      "line_range": [
+        821,
+        822
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "854         \"src.llamaagent.api.complete_api:app\",\n855         host=\"0.0.0.0\",\n856         port=8000,\n",
+      "col_offset": 13,
+      "end_col_offset": 22,
+      "filename": "src/llamaagent/api/complete_api.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 855,
+      "line_range": [
+        855
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    },
+    {
+      "code": "243             providers_available.append(provider_name)\n244         except Exception:\n245             continue\n246     \n",
+      "col_offset": 8,
+      "end_col_offset": 20,
+      "filename": "src/llamaagent/api/simple_app.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Continue detected.",
+      "line_number": 244,
+      "line_range": [
+        244,
+        245
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html",
+      "test_id": "B112",
+      "test_name": "try_except_continue"
+    },
+    {
+      "code": "481         \"src.llamaagent.api.simple_app:app\",\n482         host=\"0.0.0.0\",\n483         port=8000,\n",
+      "col_offset": 13,
+      "end_col_offset": 22,
+      "filename": "src/llamaagent/api/simple_app.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 482,
+      "line_range": [
+        482
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    },
+    {
+      "code": "183             asyncio.create_task(self.close())\n184         except Exception:\n185             pass\n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/llamaagent/llm/providers/cohere_provider.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 184,
+      "line_range": [
+        184,
+        185
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "313             from transformers import AutoConfig\n314             config = AutoConfig.from_pretrained(model)\n315             return config is not None\n",
+      "col_offset": 21,
+      "end_col_offset": 54,
+      "filename": "src/llamaagent/llm/providers/cuda_provider.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 494,
+        "link": "https://cwe.mitre.org/data/definitions/494.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Unsafe Hugging Face Hub download without revision pinning in from_pretrained()",
+      "line_number": 314,
+      "line_range": [
+        314
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b615_huggingface_unsafe_download.html",
+      "test_id": "B615",
+      "test_name": "huggingface_unsafe_download"
+    },
+    {
+      "code": "240             # Generate deterministic \"embeddings\" based on text hash\n241             text_hash = hashlib.md5(text.encode()).hexdigest()\n242 \n",
+      "col_offset": 24,
+      "end_col_offset": 50,
+      "filename": "src/llamaagent/llm/providers/mock_provider.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 241,
+      "line_range": [
+        241
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "189                     initial_memory = process.memory_info().rss / 1024 / 1024  # MB\n190                 except Exception:\n191                     pass\n192             \n",
+      "col_offset": 16,
+      "end_col_offset": 24,
+      "filename": "src/llamaagent/monitoring/logging.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 190,
+      "line_range": [
+        190,
+        191
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "208                         extra[\"memory_usage_mb\"] = final_memory - initial_memory\n209                     except Exception:\n210                         pass\n211                 \n",
+      "col_offset": 20,
+      "end_col_offset": 28,
+      "filename": "src/llamaagent/monitoring/logging.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 209,
+      "line_range": [
+        209,
+        210
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "473             await runner.setup()\n474             self.server = web.TCPSite(runner, \"0.0.0.0\", self.port)\n475             await self.server.start()\n",
+      "col_offset": 46,
+      "end_col_offset": 55,
+      "filename": "src/llamaagent/monitoring/metrics.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 605,
+        "link": "https://cwe.mitre.org/data/definitions/605.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 474,
+      "line_range": [
+        474
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    },
+    {
+      "code": "398 \n399         query = f\"\"\"\n400         UPDATE agents \n401         SET {\", \".join(set_clauses)}\n402         WHERE id = ${param_count}\n403         \"\"\"\n404 \n",
+      "col_offset": 20,
+      "end_col_offset": 12,
+      "filename": "src/llamaagent/storage/database.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 399,
+      "line_range": [
+        399,
+        400,
+        401,
+        402,
+        403
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "470 \n471         query = f\"\"\"\n472         UPDATE tasks \n473         SET {\", \".join(set_clauses)}\n474         WHERE id = ${param_count}\n475         \"\"\"\n476 \n",
+      "col_offset": 20,
+      "end_col_offset": 12,
+      "filename": "src/llamaagent/storage/database.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 471,
+      "line_range": [
+        471,
+        472,
+        473,
+        474,
+        475
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "203                 # Safe evaluation\n204                 metadata_dict = eval(metadata_str, {\"__builtins__\": {}})\n205 \n",
+      "col_offset": 32,
+      "end_col_offset": 72,
+      "filename": "src/llamaagent/tools/dynamic_loader.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+      "line_number": 204,
+      "line_range": [
+        204
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b307-eval",
+      "test_id": "B307",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "366 \n367                 exec(code, restricted_globals)\n368 \n",
+      "col_offset": 16,
+      "end_col_offset": 46,
+      "filename": "src/llamaagent/tools/dynamic_loader.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of exec detected.",
+      "line_number": 367,
+      "line_range": [
+        367
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b102_exec_used.html",
+      "test_id": "B102",
+      "test_name": "exec_used"
+    },
+    {
+      "code": "74                 compiled = compile(parsed, \"<python_repl>\", \"exec\")\n75                 exec(compiled, global_namespace, local_namespace)\n76         except Exception:\n",
+      "col_offset": 16,
+      "end_col_offset": 65,
+      "filename": "src/llamaagent/tools/python_repl.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Use of exec detected.",
+      "line_number": 75,
+      "line_range": [
+        75
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b102_exec_used.html",
+      "test_id": "B102",
+      "test_name": "exec_used"
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+groups:
+  - name: llamaagent-system
+    rules:
+      - alert: LlamaAgentDown
+        expr: up{job="llamaagent"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "LlamaAgent instance {{ $labels.instance }} is down"
+          description: "LlamaAgent instance {{ $labels.instance }} has been down for more than 1 minute."
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/service-down"
+
+      - alert: HighErrorRate
+        expr: rate(llamaagent_http_requests_total{status_code=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High error rate on {{ $labels.instance }}"
+          description: "Error rate is {{ $value }} errors per second on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-error-rate"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(llamaagent_http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High response time on {{ $labels.instance }}"
+          description: "95th percentile response time is {{ $value }}s on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-response-time"
+
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes{job="llamaagent"} / 1024 / 1024 / 1024) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}GB on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-memory-usage"
+
+      - alert: TaskQueueBacklog
+        expr: llamaagent_task_queue_length > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: orchestrator
+        annotations:
+          summary: "Task queue backlog on {{ $labels.instance }}"
+          description: "Task queue has {{ $value }} pending tasks on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/task-queue-backlog"
+
+      - alert: LowCacheHitRate
+        expr: llamaagent_cache_hit_rate < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Low cache hit rate on {{ $labels.instance }}"
+          description: "Cache hit rate is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/low-cache-hit-rate"
+
+  - name: llamaagent-agents
+    rules:
+      - alert: AgentUnhealthy
+        expr: llamaagent_agent_health_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: agent
+        annotations:
+          summary: "Agent {{ $labels.agent_id }} is unhealthy"
+          description: "Agent {{ $labels.agent_id }} on {{ $labels.instance }} has been unhealthy for more than 2 minutes."
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-unhealthy"
+
+      - alert: AgentHighErrorRate
+        expr: rate(llamaagent_agent_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: agent
+        annotations:
+          summary: "High error rate for agent {{ $labels.agent_id }}"
+          description: "Agent {{ $labels.agent_id }} error rate is {{ $value }} errors per second"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-high-error-rate"
+
+      - alert: AgentSlowResponse
+        expr: histogram_quantile(0.95, rate(llamaagent_agent_response_duration_seconds_bucket[5m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+          component: agent
+        annotations:
+          summary: "Slow response time for agent {{ $labels.agent_id }}"
+          description: "Agent {{ $labels.agent_id }} 95th percentile response time is {{ $value }}s"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-slow-response"
+
+      - alert: AgentHighMemoryUsage
+        expr: llamaagent_agent_memory_usage_bytes > 1073741824  # 1GB
+        for: 5m
+        labels:
+          severity: warning
+          component: agent
+        annotations:
+          summary: "High memory usage for agent {{ $labels.agent_id }}"
+          description: "Agent {{ $labels.agent_id }} memory usage is {{ $value | humanize }}B"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-high-memory-usage"
+
+      - alert: AgentTaskQueueBacklog
+        expr: llamaagent_agent_task_queue_length > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: agent
+        annotations:
+          summary: "Task queue backlog for agent {{ $labels.agent_id }}"
+          description: "Agent {{ $labels.agent_id }} has {{ $value }} pending tasks"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-task-queue-backlog"
+
+      - alert: AgentLowSuccessRate
+        expr: llamaagent_agent_success_rate < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: agent
+        annotations:
+          summary: "Low success rate for agent {{ $labels.agent_id }}"
+          description: "Agent {{ $labels.agent_id }} success rate is {{ $value }}%"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/agent-low-success-rate"
+
+  - name: llamaagent-llm
+    rules:
+      - alert: LLMProviderDown
+        expr: llamaagent_llm_provider_health == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: llm
+        annotations:
+          summary: "LLM provider {{ $labels.provider }} is down"
+          description: "LLM provider {{ $labels.provider }} on {{ $labels.instance }} has been down for more than 1 minute."
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/llm-provider-down"
+
+      - alert: LLMHighErrorRate
+        expr: rate(llamaagent_llm_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "High error rate for LLM provider {{ $labels.provider }}"
+          description: "LLM provider {{ $labels.provider }} error rate is {{ $value }} errors per second"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/llm-high-error-rate"
+
+      - alert: LLMSlowResponse
+        expr: histogram_quantile(0.95, rate(llamaagent_llm_request_duration_seconds_bucket[5m])) > 60
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "Slow response time for LLM provider {{ $labels.provider }}"
+          description: "LLM provider {{ $labels.provider }} 95th percentile response time is {{ $value }}s"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/llm-slow-response"
+
+      - alert: LLMHighTokenUsage
+        expr: rate(llamaagent_llm_tokens_used_total[5m]) > 10000
+        for: 5m
+        labels:
+          severity: info
+          component: llm
+        annotations:
+          summary: "High token usage for LLM provider {{ $labels.provider }}"
+          description: "LLM provider {{ $labels.provider }} token usage is {{ $value }} tokens per second"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/llm-high-token-usage"
+
+  - name: llamaagent-database
+    rules:
+      - alert: DatabaseConnectionPoolExhausted
+        expr: llamaagent_db_connections_active >= llamaagent_db_connections_max
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection pool exhausted on {{ $labels.instance }}"
+          description: "All database connections are in use on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/db-connection-pool-exhausted"
+
+      - alert: DatabaseSlowQueries
+        expr: histogram_quantile(0.95, rate(llamaagent_db_query_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries on {{ $labels.instance }}"
+          description: "95th percentile query time is {{ $value }}s on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/db-slow-queries"
+
+      - alert: DatabaseHighErrorRate
+        expr: rate(llamaagent_db_errors_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High database error rate on {{ $labels.instance }}"
+          description: "Database error rate is {{ $value }} errors per second on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/db-high-error-rate"
+
+  - name: llamaagent-infrastructure
+    rules:
+      - alert: DiskSpaceWarning
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is {{ $value | humanizePercentage }} available on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/low-disk-space"
+
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Disk space is {{ $value | humanizePercentage }} available on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/critical-disk-space"
+
+      - alert: HighCPUUsage
+        expr: (100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-cpu-usage"
+
+      - alert: HighLoadAverage
+        expr: node_load15 > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High load average on {{ $labels.instance }}"
+          description: "15-minute load average is {{ $value }} on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-load-average"
+
+  - name: llamaagent-business
+    rules:
+      - alert: LowThroughput
+        expr: rate(llamaagent_tasks_completed_total[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Low task completion throughput on {{ $labels.instance }}"
+          description: "Task completion rate is {{ $value }} tasks per second on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/low-throughput"
+
+      - alert: HighFailureRate
+        expr: (rate(llamaagent_tasks_failed_total[5m]) / rate(llamaagent_tasks_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "High task failure rate on {{ $labels.instance }}"
+          description: "Task failure rate is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/high-failure-rate"
+
+      - alert: SLAViolation
+        expr: histogram_quantile(0.95, rate(llamaagent_task_duration_seconds_bucket[5m])) > 300
+        for: 5m
+        labels:
+          severity: critical
+          component: business
+        annotations:
+          summary: "SLA violation: high task duration on {{ $labels.instance }}"
+          description: "95th percentile task duration is {{ $value }}s (SLA: 300s) on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/sla-violation"
+
+      - alert: UnbalancedAgentLoad
+        expr: (max(llamaagent_agent_task_queue_length) - min(llamaagent_agent_task_queue_length)) > 20
+        for: 5m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Unbalanced agent load on {{ $labels.instance }}"
+          description: "Agent load difference is {{ $value }} tasks on {{ $labels.instance }}"
+          runbook_url: "https://docs.llamaagent.com/troubleshooting/unbalanced-agent-load" 

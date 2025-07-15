@@ -1,0 +1,140 @@
+groups:
+  - name: llamaagent_alerts
+    interval: 30s
+    rules:
+      # API Health Alerts
+      - alert: LlamaAgentAPIDown
+        expr: up{job="llamaagent-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "LlamaAgent API is down"
+          description: "LlamaAgent API has been down for more than 2 minutes"
+          
+      - alert: HighErrorRate
+        expr: rate(llamaagent_http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes"
+          
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(llamaagent_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile response time is above 2 seconds"
+          
+      # Resource Alerts
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total{job="llamaagent-api"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% for the last 5 minutes"
+          
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job="llamaagent-api"} / 1024 / 1024 / 1024 > 3.5
+        for: 5m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 3.5GB"
+          
+      # Cache Alerts
+      - alert: LowCacheHitRate
+        expr: llamaagent_cache_hit_rate < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is below 50% for the last 10 minutes"
+          
+      # Circuit Breaker Alerts
+      - alert: CircuitBreakerOpen
+        expr: llamaagent_circuit_breaker_state{state="open"} == 1
+        for: 2m
+        labels:
+          severity: critical
+          component: resilience
+        annotations:
+          summary: "Circuit breaker is open"
+          description: "Circuit breaker {{ $labels.breaker_name }} has been open for more than 2 minutes"
+          
+      # Database Alerts
+      - alert: DatabaseConnectionPoolExhausted
+        expr: llamaagent_db_pool_available_connections == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection pool exhausted"
+          description: "No available database connections in the pool"
+          
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(llamaagent_db_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries"
+          description: "95th percentile database query time is above 1 second"
+          
+      # LLM Provider Alerts
+      - alert: LLMProviderErrors
+        expr: rate(llamaagent_llm_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "High LLM provider error rate"
+          description: "LLM provider {{ $labels.provider }} error rate is above 10%"
+          
+      - alert: LLMProviderHighLatency
+        expr: histogram_quantile(0.95, rate(llamaagent_llm_request_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "High LLM provider latency"
+          description: "LLM provider {{ $labels.provider }} 95th percentile latency is above 10 seconds"
+          
+      # Advanced Features Alerts
+      - alert: ReasoningAgentTimeout
+        expr: rate(llamaagent_reasoning_timeout_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: reasoning
+        annotations:
+          summary: "High reasoning timeout rate"
+          description: "Reasoning agent timeout rate is above 5%"
+          
+      - alert: MultiModalProcessingError
+        expr: rate(llamaagent_multimodal_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: multimodal
+        annotations:
+          summary: "High multimodal processing error rate"
+          description: "Multimodal processing error rate is above 10%"

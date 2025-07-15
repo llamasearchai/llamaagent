@@ -1,0 +1,304 @@
+src/llamaagent/statistical_analysis.py|unexpected indent at line 48|Sorry: IndentationError: unexpected indent (statistical_analysis.py, line 48)
+
+src/llamaagent/cache/cache_manager.py|expected an indented block at line 430|Sorry: IndentationError: expected an indented block (cache_manager.py, line 430)
+
+src/llamaagent/cache/llm_cache.py|invalid syntax at line 205|  File "src/llamaagent/cache/llm_cache.py", line 205
+    self, messages: List[LLMMessage], response: LLMResponse, **kwargs)
+                                                                      ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cache/query_optimizer.py|invalid syntax at line 147|  File "src/llamaagent/cache/query_optimizer.py", line 147
+    else:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cache/advanced_cache.py|expected an indented block at line 300|Sorry: IndentationError: expected an indented block (advanced_cache.py, line 300)
+
+src/llamaagent/prompting/dspy_optimizer.py|invalid syntax at line 284|  File "src/llamaagent/prompting/dspy_optimizer.py", line 284
+    scored_examples.append({
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/prompting/prompt_templates.py|invalid syntax at line 46|  File "src/llamaagent/prompting/prompt_templates.py", line 46
+    if missing:
+              ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/prompting/optimization.py|unexpected indent at line 238|Sorry: IndentationError: unexpected indent (optimization.py, line 238)
+
+src/llamaagent/security/validator.py|invalid syntax at line 81|  File "src/llamaagent/security/validator.py", line 81
+    def validate_url(cls, value: str) -> bool:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/security/rate_limiter.py|invalid syntax at line 120|  File "src/llamaagent/security/rate_limiter.py", line 120
+    if requests:
+               ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/integration/_openai_stub.py|invalid syntax at line 53|  File "src/llamaagent/integration/_openai_stub.py", line 53
+    model: str = "gpt-4"
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/integration/simon_tools.py|invalid syntax at line 594|  File "src/llamaagent/integration/simon_tools.py", line 594
+    def get_registry(self) -> Dict[str, Tool]:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/optimization/prompt_optimizer.py|invalid syntax at line 386|  File "src/llamaagent/optimization/prompt_optimizer.py", line 386
+    if random.random() < 0.5:
+                            ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/optimization/performance.py|invalid syntax at line 83|  File "src/llamaagent/optimization/performance.py", line 83
+    async def stop_monitoring(self) -> None:
+          ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/agents/reasoning_chains.py|invalid syntax at line 130|  File "src/llamaagent/agents/reasoning_chains.py", line 130
+    async def _chain_of_thought(self, task_input: TaskInput) -> LLMResponse:
+          ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/agents/multimodal_reasoning.py|invalid syntax at line 110|  File "src/llamaagent/agents/multimodal_reasoning.py", line 110
+    def _parse_input(self, task_input: TaskInput) -> ModalityInput:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/enhanced_shell_cli.py|invalid syntax at line 73|  File "src/llamaagent/cli/enhanced_shell_cli.py", line 73
+    console.print(panel)
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/enhanced_cli.py|invalid syntax at line 160|  File "src/llamaagent/cli/enhanced_cli.py", line 160
+    def show_help(self) -> None:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/config_manager.py|invalid syntax at line 197|  File "src/llamaagent/cli/config_manager.py", line 197
+    except Exception as e:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/role_manager.py|invalid syntax at line 58|  File "src/llamaagent/cli/role_manager.py", line 58
+    def _create_builtin_roles(self) -> None:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/function_manager.py|invalid syntax at line 136|  File "src/llamaagent/cli/function_manager.py", line 136
+    def get_function_info(self, name: str) -> Dict[str, Any]:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/openai_cli.py|invalid syntax at line 101|  File "src/llamaagent/cli/openai_cli.py", line 101
+    def estimate_cost(tokens: int, model: str) -> float:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/diagnostics_cli.py|invalid syntax at line 78|  File "src/llamaagent/cli/diagnostics_cli.py", line 78
+    with Progress(
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/interactive.py|invalid syntax at line 94|  File "src/llamaagent/cli/interactive.py", line 94
+    async def run(self) -> None:
+          ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/main.py|invalid syntax at line 406|  File "src/llamaagent/cli/main.py", line 406
+    results_table.add_row("Average Response Time", f"{avg_time:.2f}s")
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/cli/llm_cmd.py|expected an indented block at line 194|Sorry: IndentationError: expected an indented block (llm_cmd.py, line 194)
+
+src/llamaagent/cli/code_generator.py|invalid syntax at line 85|  File "src/llamaagent/cli/code_generator.py", line 85
+    filename = self._generate_filename(request.prompt, request.language)
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/reasoning/memory_manager.py|invalid syntax at line 210|  File "src/llamaagent/reasoning/memory_manager.py", line 210
+    item.access()
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/reasoning/chain_engine.py|invalid syntax at line 54|  File "src/llamaagent/reasoning/chain_engine.py", line 54
+    thought: str = ""
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/knowledge/knowledge_generator.py|invalid syntax at line 652|  File "src/llamaagent/knowledge/knowledge_generator.py", line 652
+    total_words = len(words)
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/ml/inference_engine.py|invalid syntax at line 454|  File "src/llamaagent/ml/inference_engine.py", line 454
+    else:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/evolution/adaptive_learning.py|invalid syntax at line 123|  File "src/llamaagent/evolution/adaptive_learning.py", line 123
+    for py_file in py_files[:10]:  # Limit for demo
+                                ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/benchmarks/frontier_evaluation.py|unexpected indent at line 108|Sorry: IndentationError: unexpected indent (frontier_evaluation.py, line 108)
+
+src/llamaagent/benchmarks/gaia_benchmark.py|unexpected indent at line 433|Sorry: IndentationError: unexpected indent (gaia_benchmark.py, line 433)
+
+src/llamaagent/benchmarks/spre_evaluator.py|invalid syntax at line 57|  File "src/llamaagent/benchmarks/spre_evaluator.py", line 57
+    def avg_api_calls(self) -> float:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/diagnostics/dependency_checker.py|unexpected indent at line 115|Sorry: IndentationError: unexpected indent (dependency_checker.py, line 115)
+
+src/llamaagent/diagnostics/master_diagnostics.py|invalid syntax at line 364|  File "src/llamaagent/diagnostics/master_diagnostics.py", line 364
+    except ImportError:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/diagnostics/system_validator.py|unexpected indent at line 57|Sorry: IndentationError: unexpected indent (system_validator.py, line 57)
+
+src/llamaagent/diagnostics/code_analyzer.py|invalid syntax at line 63|  File "src/llamaagent/diagnostics/code_analyzer.py", line 63
+    "char_count": len(content),
+                ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/orchestration/adaptive_orchestra.py|invalid syntax at line 128|  File "src/llamaagent/orchestration/adaptive_orchestra.py", line 128
+    class CodeSpecialistAgent(BaseAgent):
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/api/production_app.py|invalid syntax at line 237|  File "src/llamaagent/api/production_app.py", line 237
+    app_state["cache"][cache_key] = {
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/api/openai_comprehensive_api.py|invalid syntax at line 155|  File "src/llamaagent/api/openai_comprehensive_api.py", line 155
+    return tools[tool_type]
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/api/shell_endpoints.py|invalid syntax at line 486|  File "src/llamaagent/api/shell_endpoints.py", line 486
+    background_tasks.add_task(_log_function_call, request, function_response)
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/api/simon_ecosystem_api.py|f-string: closing parenthesis '}' does not match opening parenthesis '(' at line 288|  File "src/llamaagent/api/simon_ecosystem_api.py", line 288
+    resource_id = f"resource_{str(uuid.uuid4()[:8]}"
+                                                    ^
+SyntaxError: f-string: closing parenthesis '}' does not match opening parenthesis '('
+
+
+src/llamaagent/evaluation/benchmark_engine.py|invalid syntax at line 195|  File "src/llamaagent/evaluation/benchmark_engine.py", line 195
+    config: Optional[Dict[str, Any]] = None)
+                                            ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/evaluation/golden_dataset.py|invalid syntax at line 77|  File "src/llamaagent/evaluation/golden_dataset.py", line 77
+    def to_dict(self) -> Dict[str, Any]:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/evaluation/model_comparison.py|invalid syntax at line 284|  File "src/llamaagent/evaluation/model_comparison.py", line 284
+    if isinstance(value, (int, float):
+                                     ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/routing/metrics.py|invalid syntax at line 67|  File "src/llamaagent/routing/metrics.py", line 67
+    def success_rate(self) -> float:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/routing/task_analyzer.py|invalid syntax at line 308|  File "src/llamaagent/routing/task_analyzer.py", line 308
+    if score > 0:
+                ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/routing/strategies.py|unexpected indent at line 451|Sorry: IndentationError: unexpected indent (strategies.py, line 451)
+
+src/llamaagent/routing/provider_registry.py|invalid syntax at line 391|  File "src/llamaagent/routing/provider_registry.py", line 391
+    def get_active_providers(self) -> List[str]:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/data_generation/agentic_pipelines.py|invalid syntax at line 390|  File "src/llamaagent/data_generation/agentic_pipelines.py", line 390
+    "issues": issues,
+            ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/data_generation/gdt.py|unexpected indent at line 132|Sorry: IndentationError: unexpected indent (gdt.py, line 132)
+
+src/llamaagent/data_generation/base.py|invalid syntax at line 37|  File "src/llamaagent/data_generation/base.py", line 37
+    parent_id: Optional[str] = None
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/monitoring/metrics_collector.py|invalid syntax at line 410|  File "src/llamaagent/monitoring/metrics_collector.py", line 410
+    self.metrics[name] = getattr(self, name)
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/monitoring/advanced_monitoring.py|invalid syntax at line 27|  File "src/llamaagent/monitoring/advanced_monitoring.py", line 27
+    from typing import 0", 100", "", "<, "==
+                       ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/monitoring/alerting.py|invalid syntax at line 154|  File "src/llamaagent/monitoring/alerting.py", line 154
+    def stop(self) -> None:
+    ^
+SyntaxError: invalid syntax
+
+
+src/llamaagent/monitoring/middleware.py|invalid syntax at line 167|  File "src/llamaagent/monitoring/middleware.py", line 167
+    request_info = {
+    ^
+SyntaxError: invalid syntax
+
+

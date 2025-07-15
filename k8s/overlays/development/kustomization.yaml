@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: llamaagent-dev
+
+bases:
+  - ../../base
+
+namePrefix: dev-
+nameSuffix: -dev
+
+patchesStrategicMerge:
+  - deployment-patch.yaml
+
+configMapGenerator:
+  - name: llamaagent-config
+    behavior: merge
+    literals:
+      - ENV=development
+      - LOG_LEVEL=debug
+      - ENABLE_PROFILING=true
+      - TRACE_SAMPLE_RATE=1.0
+
+replicas:
+  - name: llamaagent-api
+    count: 1
+  - name: llamaagent-worker
+    count: 2
+  - name: llamaagent-multimodal-worker
+    count: 1
+  - name: postgres
+    count: 1
+  - name: redis
+    count: 1
+  - name: qdrant
+    count: 1
+
+images:
+  - name: llamaagent/api
+    newTag: dev-latest
+  - name: llamaagent/worker
+    newTag: dev-latest
+  - name: llamaagent/multimodal-worker
+    newTag: dev-latest

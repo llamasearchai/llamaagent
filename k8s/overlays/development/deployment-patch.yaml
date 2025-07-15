@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamaagent-api
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: api
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        env:
+        - name: ENV
+          value: "development"
+        - name: LOG_LEVEL
+          value: "debug"
+        - name: WORKERS
+          value: "2"
+        - name: ENABLE_PROFILING
+          value: "true"
+        - name: ENABLE_DEBUG
+          value: "true"
+        - name: RELOAD
+          value: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamaagent-worker
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: worker
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        env:
+        - name: WORKER_CONCURRENCY
+          value: "4"
+        - name: LOG_LEVEL
+          value: "debug"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamaagent-multimodal-worker
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: worker
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        env:
+        - name: ENABLE_GPU
+          value: "false"  # CPU only in dev
+        - name: LOG_LEVEL
+          value: "debug"

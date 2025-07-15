@@ -1,0 +1,155 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.log
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pyright/
+
+# Documentation
+docs/_build/
+docs/.doctrees/
+site/
+mkdocs.yml
+
+# Security - NEVER commit these
+.env
+.env.local
+.env.production
+.env.*.local
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# API Keys - Additional safety
+*api_key*
+*apikey*
+*API_KEY*
+*APIKEY*
+*secret*
+*SECRET*
+*password*
+*PASSWORD*
+config/production.json
+config/secrets.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+instance/
+migrations/versions/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+llamaagent.db
+demo_results.json
+openai_integration_demo_report.json
+benchmark_results/
+data/
+ollama-models/
+.ollama/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Monitoring
+prometheus-data/
+grafana-data/
+elasticsearch-data/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+.cache/
+
+# CI/CD
+.github/workflows/local/
+
+# Package managers
+node_modules/
+package-lock.json
+yarn.lock
+poetry.lock
+
+# Generated files
+htmlcov/
+.benchmarks/

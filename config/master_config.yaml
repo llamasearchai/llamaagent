@@ -1,0 +1,223 @@
+# LlamaAgent Master Program Configuration
+# Production-ready settings for the complete AI agent system
+
+# System Configuration
+system:
+  name: "LlamaAgent Master System"
+  version: "2.0.0"
+  environment: "production"
+  debug: false
+  log_level: "INFO"
+
+# Agent Configuration
+agents:
+  max_agents: 100
+  max_concurrent_tasks: 50
+  default_timeout: 300.0
+  enable_auto_spawn: true
+  enable_dynamic_planning: true
+  default_agent_memory_mb: 512
+  system_memory_mb: 4096
+  
+  # Role Configuration
+  role_limits:
+    coordinator: 10
+    researcher: 20
+    analyzer: 20
+    executor: 30
+    specialist: 10
+    planner: 10
+
+# OpenAI Integration
+openai:
+  enabled: true
+  default_model: "gpt-4o-mini"
+  fallback_model: "gpt-3.5-turbo"
+  max_tokens: 2000
+  temperature: 0.7
+  budget_limit: 100.0
+  enable_tools: true
+  enable_reasoning: true
+  
+  # Model Selection by Task Type
+  model_mapping:
+    planning: "gpt-4o"
+    coding: "gpt-4o"
+    research: "gpt-4o-mini"
+    analysis: "gpt-4o-mini"
+    general: "gpt-3.5-turbo"
+
+# Task Planning Configuration
+planning:
+  auto_decompose: true
+  max_subtasks: 50
+  dependency_resolution: true
+  optimization_enabled: true
+  parallel_execution: true
+  
+  # Task Type Configuration
+  task_types:
+    - name: "coding"
+      priority_boost: 1
+      max_duration: 600
+      required_tools: ["python_repl", "file_reader", "file_writer"]
+    
+    - name: "research"
+      priority_boost: 0
+      max_duration: 900
+      required_tools: ["web_search", "file_reader"]
+    
+    - name: "analysis"
+      priority_boost: 1
+      max_duration: 1200
+      required_tools: ["calculator", "python_repl", "file_reader"]
+
+# Resource Management
+resources:
+  memory:
+    total_mb: 4096
+    per_agent_mb: 512
+    warning_threshold: 0.8
+    critical_threshold: 0.95
+  
+  api_calls:
+    total_limit: 10000
+    per_agent_limit: 100
+    rate_limit: 60  # per minute
+  
+  cpu:
+    max_cores: 8
+    per_agent_cores: 0.5
+
+# Tool Configuration
+tools:
+  enabled_by_default:
+    - "calculator"
+    - "python_repl"
+    - "file_reader"
+    - "file_writer"
+    - "web_search"
+  
+  security:
+    sandbox_enabled: true
+    network_access: "restricted"
+    file_access: "sandboxed"
+    max_execution_time: 30.0
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_enabled: true
+  rate_limiting: true
+  authentication: false  # Set to true in production
+  ssl_enabled: false
+  
+  # Rate Limiting
+  rate_limits:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    burst_size: 10
+
+# WebSocket Configuration
+websocket:
+  enabled: true
+  ping_interval: 30
+  max_connections: 100
+  message_queue_size: 1000
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  health_endpoint: "/health"
+  
+  # Prometheus Integration
+  prometheus:
+    enabled: true
+    port: 9090
+    scrape_interval: 15
+  
+  # Logging
+  logging:
+    file_enabled: true
+    file_path: "/var/log/llamaagent/master.log"
+    max_file_size_mb: 100
+    retention_days: 30
+    
+# Database Configuration (Optional)
+database:
+  enabled: false
+  type: "postgresql"
+  connection_string: "${DATABASE_URL}"
+  pool_size: 20
+  timeout: 30
+
+# Security Configuration
+security:
+  api_key_required: false
+  api_key_header: "X-API-Key"
+  allowed_origins:
+    - "http://localhost:*"
+    - "https://*.llamaagent.ai"
+  
+  # Rate Limiting by API Key
+  api_key_limits:
+    default: 1000
+    premium: 10000
+    enterprise: -1  # unlimited
+
+# Performance Optimization
+performance:
+  cache_enabled: true
+  cache_ttl: 3600
+  result_caching: true
+  
+  # Thread Pool Settings
+  thread_pool_size: 50
+  async_workers: 10
+  
+  # Batch Processing
+  batch_size: 10
+  batch_timeout: 5.0
+
+# Deployment Configuration
+deployment:
+  environment: "production"
+  auto_scaling: true
+  min_instances: 1
+  max_instances: 10
+  
+  # Health Checks
+  health_check:
+    interval: 30
+    timeout: 10
+    failure_threshold: 3
+    
+  # Graceful Shutdown
+  shutdown_timeout: 30
+  drain_timeout: 15
+
+# Feature Flags
+features:
+  enable_experiments: true
+  enable_advanced_reasoning: true
+  enable_multi_modal: false
+  enable_voice_interface: false
+  enable_code_execution: true
+  enable_web_browsing: true
+
+# Notification Configuration
+notifications:
+  enabled: false
+  channels:
+    - type: "webhook"
+      url: "${NOTIFICATION_WEBHOOK_URL}"
+      events: ["task_failed", "system_error", "budget_exceeded"]
+    
+    - type: "email"
+      smtp_host: "${SMTP_HOST}"
+      smtp_port: 587
+      from: "alerts@llamaagent.ai"
+      to: ["admin@llamaagent.ai"]
+      events: ["system_critical", "deployment_complete"]

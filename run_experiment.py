@@ -9,11 +9,16 @@ demonstrating all capabilities with an interactive command-line interface.
 """
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 
 # Add src to path for development
 sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+# Default to local Ollama Llama 3.2-3B if the user has not explicitly chosen
+os.environ.setdefault("LLAMAAGENT_LLM_PROVIDER", "ollama")
+os.environ.setdefault("LLAMAAGENT_LLM_MODEL", "llama3.2:3b")
 
 try:
     from llamaagent.cli.interactive import run_interactive_experiment
@@ -29,12 +34,12 @@ def main():
     print("LlamaAgent Research Experiment Launcher")
     print("=" * 50)
     print()
-    
+
     try:
         # Run the interactive experiment
         asyncio.run(run_interactive_experiment())
     except KeyboardInterrupt:
-        print("\n\nExperiment interrupted by user. Goodbye! 👋")
+        print("\n\nExperiment interrupted by user. Goodbye!")
     except Exception as e:
         print(f"\nError running experiment: {e}")
         print("Please check your installation and try again.")
@@ -42,4 +47,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

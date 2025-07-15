@@ -1,0 +1,6 @@
+{
+  "typeCheckingMode": "strict",
+  "stubPath": "typings",
+  "reportMissingTypeStubs": "none",
+  "exclude": ["build", "**/__pypackages__/**"]
+} 

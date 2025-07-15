@@ -1,16 +1,17 @@
 """Basic tests for LlamaAgent functionality."""
 
+from typing import Any, Dict
+
 import pytest
-from typing import Dict, Any
 
 from llamaagent.agents import ReactAgent
 from llamaagent.agents.base import AgentConfig
 from llamaagent.llm import MockProvider
 from llamaagent.memory import MemoryEntry, SimpleMemory
 from llamaagent.tools import ToolRegistry
+from llamaagent.tools.base import BaseTool, Tool
 from llamaagent.tools.calculator import CalculatorTool
 from llamaagent.tools.python_repl import PythonREPLTool
-from llamaagent.tools.base import BaseTool, Tool
 
 
 @pytest.mark.asyncio
@@ -58,38 +59,36 @@ async def test_agent_with_memory():
     assert response2.success
 
 
-@pytest.mark.asyncio
-async def test_calculator_tool():
+def test_calculator_tool():
     """Test calculator tool functionality."""
     tool = CalculatorTool()
 
     # Test basic arithmetic
-    result = await tool.execute("2 + 2")
+    result = tool.execute("2 + 2")
     assert "4" in result
 
-    result = await tool.execute("10 * 5")
+    result = tool.execute("10 * 5")
     assert "50" in result
 
     # Test invalid expression
-    result = await tool.execute("invalid expression")
+    result = tool.execute("invalid expression")
     assert "error" in result.lower() or "invalid" in result.lower()
 
 
-@pytest.mark.asyncio
-async def test_python_repl_tool():
+def test_python_repl_tool():
     """Test Python REPL tool functionality."""
     tool = PythonREPLTool()
 
     # Test basic Python code
-    result = await tool.execute("print('Hello, World!')")
+    result = tool.execute("print('Hello, World!')")
     assert "Hello, World!" in result
 
     # Test calculation
-    result = await tool.execute("result = 5 * 3\nprint(result)")
+    result = tool.execute("result = 5 * 3\nprint(result)")
     assert "15" in result
 
     # Test error handling
-    result = await tool.execute("invalid_syntax(")
+    result = tool.execute("invalid_syntax(")
     assert "error" in result.lower() or "syntax" in result.lower()
 
 
@@ -110,50 +109,50 @@ async def test_memory_operations():
     # Search memories
     results = await memory.search("Alice")
     assert len(results) == 2
-    assert all("Alice" in entry.content for entry in results)
+    assert all("Alice" in entry["content"] for entry in results)
 
     # Search with limit
     results = await memory.search("Alice", limit=1)
     assert len(results) == 1
 
-    # Test memory stats
-    stats = memory.get_stats()
-    assert stats["count"] == 3
-    assert stats["avg_content_length"] > 0
+    # Test memory count
+    count = memory.count()
+    assert count == 3
 
 
 def test_tool_registry():
     """Test tool registry functionality."""
+
     # Create a concrete tool for testing
     class TestTool(BaseTool):
         @property
         def name(self) -> str:
             return "test_tool"
-        
+
         @property
         def description(self) -> str:
             return "A test tool for coverage"
-        
+
         def execute(self, *args, **kwargs) -> Dict[str, Any]:
             return {"result": "test executed", "args": args, "kwargs": kwargs}
-    
+
     # Test registry operations
     registry = ToolRegistry()
     tool = TestTool()
-    
+
     # Test registration
     registry.register(tool)
     assert "test_tool" in registry.list_names()
     assert registry.get("test_tool") == tool
-    
+
     # Test deregistration
     registry.deregister("test_tool")
     assert "test_tool" not in registry.list_names()
     assert registry.get("test_tool") is None
-    
+
     # Test missing tool
     assert registry.get("nonexistent") is None
-    
+
     # Test deregistering non-existent tool (should not raise)
     registry.deregister("nonexistent")
 
@@ -163,59 +162,59 @@ def test_base_tool_abstract_methods():
     # Test that we cannot instantiate BaseTool directly
     with pytest.raises(TypeError):
         BaseTool()  # type: ignore[abstract] # Should raise TypeError due to abstract methods
-    
+
     # Test concrete implementation
     class ConcreteTool(BaseTool):
         @property
         def name(self) -> str:
             return "concrete_tool"
-        
+
         @property
         def description(self) -> str:
             return "A concrete tool implementation"
-        
+
         def execute(self, *args, **kwargs) -> Dict[str, Any]:
             return {"status": "success", "input": {"args": args, "kwargs": kwargs}}
-    
+
     # Test that concrete implementation works
     tool = ConcreteTool()
     assert tool.name == "concrete_tool"
     assert tool.description == "A concrete tool implementation"
-    
+
     result = tool.execute("arg1", "arg2", key="value")
     assert result["status"] == "success"
     assert result["input"]["args"] == ("arg1", "arg2")
     assert result["input"]["kwargs"] == {"key": "value"}
 
     # Test that abstract methods exist and are properly defined
-    assert hasattr(BaseTool, 'name')
-    assert hasattr(BaseTool, 'description') 
-    assert hasattr(BaseTool, 'execute')
-    
+    assert hasattr(BaseTool, "name")
+    assert hasattr(BaseTool, "description")
+    assert hasattr(BaseTool, "execute")
+
     # Verify they are abstract
-    assert getattr(BaseTool.name, '__isabstractmethod__', False)
-    assert getattr(BaseTool.description, '__isabstractmethod__', False)
-    assert getattr(BaseTool.execute, '__isabstractmethod__', False)
+    assert getattr(BaseTool.name, "__isabstractmethod__", False)
+    assert getattr(BaseTool.description, "__isabstractmethod__", False)
+    assert getattr(BaseTool.execute, "__isabstractmethod__", False)
 
 
 def test_tool_compatibility_alias():
     """Test that Tool alias works for backward compatibility."""
     # Test that Tool is an alias for BaseTool
     assert Tool is BaseTool
-    
+
     # Test that we can subclass using Tool
     class CompatibilityTool(Tool):
         @property
         def name(self) -> str:
             return "compat_tool"
-        
+
         @property
         def description(self) -> str:
             return "Tool using compatibility alias"
-        
+
         def execute(self, *args, **kwargs) -> Dict[str, Any]:
             return {"compatibility": True}
-    
+
     tool = CompatibilityTool()
     assert tool.name == "compat_tool"
     assert tool.description == "Tool using compatibility alias"
@@ -224,52 +223,53 @@ def test_tool_compatibility_alias():
 
 def test_tool_registry_comprehensive():
     """Test comprehensive tool registry functionality."""
+
     class Tool1(BaseTool):
         @property
         def name(self) -> str:
             return "tool1"
-        
+
         @property
         def description(self) -> str:
             return "First tool"
-        
+
         def execute(self, *args, **kwargs) -> Dict[str, Any]:
             return {"tool": "1"}
-    
+
     class Tool2(BaseTool):
         @property
         def name(self) -> str:
             return "tool2"
-        
+
         @property
         def description(self) -> str:
             return "Second tool"
-        
+
         def execute(self, *args, **kwargs) -> Dict[str, Any]:
             return {"tool": "2"}
-    
+
     registry = ToolRegistry()
     tool1 = Tool1()
     tool2 = Tool2()
-    
+
     # Test multiple registrations
     registry.register(tool1)
     registry.register(tool2)
-    
+
     # Test list_names maintains order
     names = registry.list_names()
     assert names == ["tool1", "tool2"]
-    
+
     # Test list_tools
     tools = registry.list_tools()
     assert len(tools) == 2
     assert tools[0] == tool1
     assert tools[1] == tool2
-    
+
     # Test get functionality
     assert registry.get("tool1") == tool1
     assert registry.get("tool2") == tool2
-    
+
     # Test deregistration
     registry.deregister("tool1")
     assert registry.get("tool1") is None
@@ -334,7 +334,9 @@ async def test_agent_trace():
 
 def test_memory_entry():
     """Test memory entry functionality."""
-    entry = MemoryEntry(content="Test content", tags=["test", "example"], metadata={"source": "test"})
+    entry = MemoryEntry(
+        content="Test content", tags=["test", "example"], metadata={"source": "test"}
+    )
 
     assert entry.content == "Test content"
     assert "test" in entry.tags

@@ -1,0 +1,70 @@
+{
+  "llm": {
+    "provider": "anthropic",
+    "model": "claude-3-sonnet",
+    "api_key": null,
+    "base_url": null,
+    "temperature": 0.5,
+    "max_tokens": 4000,
+    "timeout": 600.0,
+    "max_retries": 3,
+    "stream": true,
+    "top_p": 0.9,
+    "frequency_penalty": null,
+    "presence_penalty": null
+  },
+  "agent": {
+    "name": "LlamaAgent-Production",
+    "max_iterations": 15,
+    "spree_enabled": true,
+    "debug": false,
+    "trace_execution": true,
+    "memory_enabled": true,
+    "planning_enabled": true,
+    "reflection_enabled": true,
+    "tool_use_enabled": true
+  },
+  "database": {
+    "url": "postgresql://user:pass@localhost:5432/llamaagent",
+    "auto_migrate": true,
+    "vector_dimensions": 1536,
+    "connection_pool_size": 20,
+    "echo": false,
+    "pool_pre_ping": true,
+    "pool_recycle": 3600
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "workers": 8,
+    "cors_origins": ["https://app.example.com", "http://localhost:3000"],
+    "enable_metrics": true,
+    "enable_docs": false,
+    "trusted_hosts": ["app.example.com", "127.0.0.1", "localhost"],
+    "api_prefix": "/api/v1"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "file": "/var/log/llamaagent/app.log",
+    "max_file_size": "50MB",
+    "backup_count": 10,
+    "enable_color": false
+  },
+  "cache": {
+    "enabled": true,
+    "backend": "redis",
+    "ttl": 7200,
+    "max_size": 5000,
+    "redis_url": "redis://localhost:6379/0"
+  },
+  "security": {
+    "enable_auth": true,
+    "secret_key": "your-secret-key-here",
+    "algorithm": "HS256",
+    "access_token_expire_minutes": 60,
+    "allow_origins": ["https://app.example.com"]
+  },
+  "version": "1.0.0",
+  "environment": "production"
+}

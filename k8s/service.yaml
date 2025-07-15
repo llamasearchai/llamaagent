@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llamaagent
+  namespace: llamaagent
+  labels:
+    app: llamaagent
+spec:
+  selector:
+    app: llamaagent
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP

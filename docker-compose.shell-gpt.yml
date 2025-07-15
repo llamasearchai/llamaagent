@@ -1,0 +1,332 @@
+version: '3.8'
+
+# LlamaAgent Shell_GPT System - Production Deployment
+# Author: Nik Jois <nikjois@llamasearch.ai>
+#
+# Complete production deployment stack including:
+# - LlamaAgent Shell_GPT application
+# - PostgreSQL database
+# - Redis cache
+# - Nginx reverse proxy
+# - Monitoring with Prometheus & Grafana
+# - Log aggregation with ELK stack
+
+services:
+  # Main LlamaAgent Shell_GPT application
+  llamaagent-shell-gpt:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      args:
+        BUILD_DATE: ${BUILD_DATE:-}
+        VCS_REF: ${VCS_REF:-}
+        VERSION: ${VERSION:-latest}
+    image: llamaagent/shell-gpt:${VERSION:-latest}
+    container_name: llamaagent-shell-gpt
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      # Application configuration
+      LLAMAAGENT_ENV: production
+      LLAMAAGENT_HOST: 0.0.0.0
+      LLAMAAGENT_PORT: 8000
+      LLAMAAGENT_LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      
+      # Database configuration
+      DATABASE_URL: postgresql://${POSTGRES_USER:-llamaagent}:${POSTGRES_PASSWORD:-secure_password}@postgres:5432/${POSTGRES_DB:-llamaagent}
+      
+      # Redis configuration
+      REDIS_URL: redis://redis:6379/0
+      
+      # LLM provider configuration
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      
+      # Shell_GPT specific configuration
+      SHELL_GPT_SAFETY_CHECKS: true
+      SHELL_GPT_COMMAND_TIMEOUT: 30
+      SHELL_GPT_MAX_OUTPUT_SIZE: 1048576
+      
+      # Security configuration
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-super-secret-jwt-key}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+      
+      # Monitoring
+      ENABLE_METRICS: true
+      METRICS_PORT: 8001
+    volumes:
+      - llamaagent_data:/app/data
+      - llamaagent_logs:/app/logs
+      - llamaagent_cache:/app/cache
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # For container stats
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - llamaagent-network
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: llamaagent-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-llamaagent}
+      POSTGRES_USER: ${POSTGRES_USER:-llamaagent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - llamaagent-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-llamaagent} -d ${POSTGRES_DB:-llamaagent}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis cache and session store
+  redis:
+    image: redis:7-alpine
+    container_name: llamaagent-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --appendfsync everysec --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - llamaagent-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Nginx reverse proxy and load balancer
+  nginx:
+    image: nginx:alpine
+    container_name: llamaagent-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - llamaagent-shell-gpt
+    networks:
+      - llamaagent-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Prometheus monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: llamaagent-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks:
+      - llamaagent-network
+    depends_on:
+      - llamaagent-shell-gpt
+
+  # Grafana dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: llamaagent-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    networks:
+      - llamaagent-network
+    depends_on:
+      - prometheus
+
+  # Elasticsearch for log aggregation
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: llamaagent-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - llamaagent-network
+
+  # Kibana for log visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: llamaagent-kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - llamaagent-network
+
+  # Filebeat for log shipping
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: llamaagent-filebeat
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./docker/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - llamaagent_logs:/app/logs:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - llamaagent-network
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: llamaagent-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    networks:
+      - llamaagent-network
+
+  # Backup service
+  backup:
+    image: alpine:latest
+    container_name: llamaagent-backup
+    restart: "no"
+    volumes:
+      - postgres_data:/backup/postgres:ro
+      - llamaagent_data:/backup/app_data:ro
+      - ./backups:/backups
+    networks:
+      - llamaagent-network
+    command: |
+      sh -c "
+        echo 'Starting backup service...'
+        while true; do
+          echo 'Creating backup at $(date)'
+          tar -czf /backups/llamaagent-backup-$(date +%Y%m%d_%H%M%S).tar.gz \
+            -C /backup .
+          find /backups -name '*.tar.gz' -mtime +7 -delete
+          echo 'Backup completed, sleeping for 24 hours'
+          sleep 86400
+        done
+      "
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  llamaagent_data:
+    driver: local
+  llamaagent_logs:
+    driver: local
+  llamaagent_cache:
+    driver: local
+  nginx_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+# Network configuration
+networks:
+  llamaagent-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Development override configuration
+x-development: &development-config
+  environment:
+    LLAMAAGENT_ENV: development
+    LLAMAAGENT_LOG_LEVEL: DEBUG
+    DEBUG: "1"
+  volumes:
+    - ./src:/app/src:ro
+    - ./tests:/app/tests:ro 

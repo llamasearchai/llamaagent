@@ -1,0 +1,69 @@
+{
+  "baseline_type": "enhanced_intelligent_mock",
+  "agent_name": "Enhanced-Intelligent-Agent",
+  "timestamp": 1751831943,
+  "summary": {
+    "success_rate": 1.0,
+    "avg_api_calls": 1.0,
+    "avg_latency": 0.009525108337402343,
+    "avg_tokens": 37.2,
+    "efficiency_ratio": 1.0
+  },
+  "task_results": [
+    {
+      "task_id": "math_easy_001",
+      "question": "Calculate 15% of 240 and then add 30 to the result.",
+      "expected_answer": "66",
+      "actual_answer": "66",
+      "success": true,
+      "execution_time": 0.00011491775512695312,
+      "tokens_used": 50,
+      "api_calls": 1,
+      "error_message": null
+    },
+    {
+      "task_id": "math_easy_002",
+      "question": "If a rectangle has length 8 cm and width 5 cm, what is its perimeter?",
+      "expected_answer": "26 cm",
+      "actual_answer": "26 cm",
+      "success": true,
+      "execution_time": 0.012237071990966797,
+      "tokens_used": 32,
+      "api_calls": 1,
+      "error_message": null
+    },
+    {
+      "task_id": "math_medium_001",
+      "question": "Calculate the compound interest on $5000 at 8% annual rate for 3 years, compounded annually.",
+      "expected_answer": "$6298.56",
+      "actual_answer": "$6298.56",
+      "success": true,
+      "execution_time": 0.011201620101928711,
+      "tokens_used": 31,
+      "api_calls": 1,
+      "error_message": null
+    },
+    {
+      "task_id": "math_hard_001",
+      "question": "Find the derivative of f(x) = 3x\u00b3 - 2x\u00b2 + 5x - 1, then evaluate it at x = 2.",
+      "expected_answer": "33",
+      "actual_answer": "33",
+      "success": true,
+      "execution_time": 0.012042045593261719,
+      "tokens_used": 36,
+      "api_calls": 1,
+      "error_message": null
+    },
+    {
+      "task_id": "prog_easy_001",
+      "question": "Write a Python function that returns the maximum of two numbers.",
+      "expected_answer": "def max_two(a, b): return a if a > b else b",
+      "actual_answer": "def max_two(a, b): return a if a > b else b",
+      "success": true,
+      "execution_time": 0.012029886245727539,
+      "tokens_used": 37,
+      "api_calls": 1,
+      "error_message": null
+    }
+  ]
+}

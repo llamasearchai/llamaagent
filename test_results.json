@@ -1,0 +1,80 @@
+{
+  "timestamp": 1752500983.837429,
+  "total_tests": 12,
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "test": "Import Test",
+      "status": "PASS",
+      "message": "All modules imported successfully",
+      "timestamp": 1752500983.8354728
+    },
+    {
+      "test": "Database Config Test",
+      "status": "PASS",
+      "message": "Database configuration working correctly",
+      "timestamp": 1752500983.835479
+    },
+    {
+      "test": "Database Manager Init Test",
+      "status": "PASS",
+      "message": "Database manager initialized correctly",
+      "timestamp": 1752500983.835503
+    },
+    {
+      "test": "GDT Generator Init Test",
+      "status": "PASS",
+      "message": "GDT generator initialized correctly",
+      "timestamp": 1752500983.8355148
+    },
+    {
+      "test": "GDT Item Creation Test",
+      "status": "PASS",
+      "message": "GDT items created and serialized correctly",
+      "timestamp": 1752500983.835714
+    },
+    {
+      "test": "GDT Dataset Operations Test",
+      "status": "PASS",
+      "message": "Dataset operations working correctly",
+      "timestamp": 1752500983.835857
+    },
+    {
+      "test": "GDT Validation Test",
+      "status": "PASS",
+      "message": "Validation system working correctly",
+      "timestamp": 1752500983.835876
+    },
+    {
+      "test": "GDT Transformation Test",
+      "status": "PASS",
+      "message": "Transformation system working correctly",
+      "timestamp": 1752500983.8358898
+    },
+    {
+      "test": "GDT Generation Test",
+      "status": "PASS",
+      "message": "Data generation working correctly",
+      "timestamp": 1752500983.8359392
+    },
+    {
+      "test": "JSON Serialization Test",
+      "status": "PASS",
+      "message": "JSON serialization working correctly",
+      "timestamp": 1752500983.836024
+    },
+    {
+      "test": "Error Handling Test",
+      "status": "PASS",
+      "message": "Error handling working correctly",
+      "timestamp": 1752500983.8360379
+    },
+    {
+      "test": "Performance Test",
+      "status": "PASS",
+      "message": "Generated 100 items in 0.00s, validated in 0.00s",
+      "timestamp": 1752500983.836534
+    }
+  ]
+}

@@ -1,12 +1,3 @@
-from __future__ import annotations
-
-"""SPRE evaluation framework with comprehensive metrics and statistical analysis.
-
-This module implements the complete evaluation protocol specified in the research
-document, including performance metrics, statistical significance testing, and
-automated report generation.
-"""
-
 import json
 import statistics
 import time
@@ -18,6 +9,12 @@ from ..agents.react import ReactAgent
 from ..llm import LLMProvider
 from .baseline_agents import BaselineAgentFactory
 from .gaia_benchmark import GAIABenchmark, GAIATask
+
+"""
+SPRE (Self-Planning and Resource-based Execution) evaluation component.
+This module orchestrates the evaluation of different baseline agents against
+the GAIA benchmark to quantify the performance improvements of SPRE.
+"""
 
 __all__ = ["BenchmarkResult", "SPREEvaluator"]
 
@@ -102,12 +99,21 @@ class BenchmarkResult:
                 successes = sum(1 for r in difficulty_tasks if r.success)
                 stats[difficulty] = {
                     "success_rate": (successes / len(difficulty_tasks)) * 100,
-                    "avg_api_calls": statistics.mean(r.api_calls for r in difficulty_tasks),
-                    "avg_latency": statistics.mean(r.execution_time for r in difficulty_tasks),
+                    "avg_api_calls": statistics.mean(
+                        r.api_calls for r in difficulty_tasks
+                    ),
+                    "avg_latency": statistics.mean(
+                        r.execution_time for r in difficulty_tasks
+                    ),
                     "count": len(difficulty_tasks),
                 }
             else:
-                stats[difficulty] = {"success_rate": 0.0, "avg_api_calls": 0.0, "avg_latency": 0.0, "count": 0}
+                stats[difficulty] = {
+                    "success_rate": 0.0,
+                    "avg_api_calls": 0.0,
+                    "avg_latency": 0.0,
+                    "count": 0,
+                }
 
         return stats
 
@@ -115,14 +121,20 @@ class BenchmarkResult:
 class SPREEvaluator:
     """Comprehensive SPRE evaluation framework."""
 
-    def __init__(self, llm_provider: Optional[LLMProvider] = None, output_dir: Optional[Path] = None):
+    def __init__(
+        self,
+        llm_provider: Optional[LLMProvider] = None,
+        output_dir: Optional[Path] = None,
+    ):
         self.llm_provider = llm_provider
         self.output_dir = output_dir or Path("benchmark_results")
         self.output_dir.mkdir(exist_ok=True)
         self.benchmark = GAIABenchmark()
 
     async def run_full_evaluation(
-        self, task_filter: Optional[Dict[str, Any]] = None, max_tasks_per_baseline: int = 20
+        self,
+        task_filter: Optional[Dict[str, Any]] = None,
+        max_tasks_per_baseline: int = 20,
     ) -> Dict[str, BenchmarkResult]:
         """Run complete evaluation across all baseline types."""
 
@@ -145,7 +157,9 @@ class SPREEvaluator:
         for baseline_type in BaselineAgentFactory.get_all_baseline_types():
             print(f"\nEvaluating {baseline_type}...")
 
-            agent = BaselineAgentFactory.create_agent(baseline_type, self.llm_provider, name_suffix="-Eval")
+            agent = BaselineAgentFactory.create_agent(
+                baseline_type, self.llm_provider, name_suffix="-Eval"
+            )
 
             result = await self._evaluate_agent_on_tasks(agent, tasks, baseline_type)
             results[baseline_type] = result
@@ -170,7 +184,7 @@ class SPREEvaluator:
         task_results = []
 
         for i, task in enumerate(tasks):
-            print(f"  Task {i+1}/{len(tasks)}: {task.task_id}")
+            print(f"  Task {i + 1}/{len(tasks)}: {task.task_id}")
 
             start_time = time.time()
 
@@ -215,11 +229,20 @@ class SPREEvaluator:
 
             task_results.append(task_result)
 
-        return BenchmarkResult(baseline_type=baseline_type, agent_name=agent.config.name, task_results=task_results)
+        return BenchmarkResult(
+            baseline_type=baseline_type,
+            agent_name=agent.config.name,
+            task_results=task_results,
+        )
 
     def _count_api_calls(self, trace: List[Dict[str, Any]]) -> int:
         """Count API calls from execution trace."""
-        api_call_events = ["planner_response", "resource_assessment_detail", "internal_execution", "synthesis_complete"]
+        api_call_events = [
+            "planner_response",
+            "resource_assessment_detail",
+            "internal_execution",
+            "synthesis_complete",
+        ]
 
         count = 0
         for event in trace:
@@ -359,13 +382,20 @@ class SPREEvaluator:
             f.write(
                 f"- **Highest Efficiency**: {best_efficiency.agent_name} (ratio: {best_efficiency.efficiency_ratio:.2f})\n"
             )
-            f.write(f"- **Highest Success Rate**: {best_success.agent_name} ({best_success.success_rate:.1f}%)\n")
-            f.write(f"- **Lowest API Usage**: {lowest_api.agent_name} ({lowest_api.avg_api_calls:.1f} calls/task)\n")
+            f.write(
+                f"- **Highest Success Rate**: {best_success.agent_name} ({best_success.success_rate:.1f}%)\n"
+            )
+            f.write(
+                f"- **Lowest API Usage**: {lowest_api.agent_name} ({lowest_api.avg_api_calls:.1f} calls/task)\n"
+            )
 
         print(f"\nComparison report saved to: {report_path}")
 
     async def run_single_baseline_evaluation(
-        self, baseline_type: str, task_ids: Optional[List[str]] = None, max_tasks: int = 10
+        self,
+        baseline_type: str,
+        task_ids: Optional[List[str]] = None,
+        max_tasks: int = 10,
     ) -> BenchmarkResult:
         """Run evaluation for single baseline type."""
 

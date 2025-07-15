@@ -1,0 +1,274 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'llamaagent-production'
+    replica: 'prometheus-1'
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # LlamaAgent application metrics
+  - job_name: 'llamaagent'
+    static_configs:
+      - targets: ['llamaagent-app:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # LlamaAgent worker metrics
+  - job_name: 'llamaagent-workers'
+    static_configs:
+      - targets: 
+        - 'llamaagent-worker-1:8001'
+        - 'llamaagent-worker-2:8002'
+        - 'llamaagent-worker-3:8003'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # System metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+
+  # PostgreSQL metrics
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+
+  # Prometheus metrics
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+
+  # AlertManager metrics
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+    scrape_interval: 15s
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Blackbox exporter for endpoint monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://llamaagent-app:8000/health
+        - http://llamaagent-app:8000/healthz
+        - http://grafana:3000/api/health
+        - http://prometheus:9090/-/healthy
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Service discovery for dynamic targets
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+  # Docker service discovery
+  - job_name: 'docker'
+    dockerswarm_sd_configs:
+      - host: unix:///var/run/docker.sock
+        role: tasks
+    relabel_configs:
+      - source_labels: [__meta_dockerswarm_task_label_prometheus_job]
+        target_label: job
+      - source_labels: [__meta_dockerswarm_service_name]
+        target_label: service
+
+  # File-based service discovery
+  - job_name: 'file_sd'
+    file_sd_configs:
+      - files:
+        - '/etc/prometheus/targets/*.yml'
+        refresh_interval: 30s
+
+  # Custom application metrics with authentication
+  - job_name: 'llamaagent-secure'
+    static_configs:
+      - targets: ['llamaagent-api:8000']
+    metrics_path: '/api/v1/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+    basic_auth:
+      username: 'prometheus'
+      password: 'monitoring_secret'
+
+  # Long-term storage (VictoriaMetrics)
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets: ['victoriametrics:8428']
+    scrape_interval: 30s
+
+  # Pushgateway for batch jobs
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets: ['pushgateway:9091']
+    honor_labels: true
+
+# Remote write configuration for long-term storage
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 1000
+      batch_send_deadline: 5s
+      min_shards: 1
+      max_shards: 10
+      capacity: 2500
+
+# Remote read configuration
+remote_read:
+  - url: "http://victoriametrics:8428/api/v1/read"
+    read_recent: true
+
+# Recording rules for performance optimization
+recording_rules:
+  - name: llamaagent.rules
+    rules:
+      # HTTP request rate by endpoint
+      - record: llamaagent:http_request_rate_5m
+        expr: rate(llamaagent_http_requests_total[5m])
+        labels:
+          job: llamaagent
+
+      # HTTP error rate by endpoint
+      - record: llamaagent:http_error_rate_5m
+        expr: rate(llamaagent_http_requests_total{status_code=~"4..|5.."}[5m])
+        labels:
+          job: llamaagent
+
+      # Task completion rate
+      - record: llamaagent:task_completion_rate_5m
+        expr: rate(llamaagent_tasks_completed_total[5m])
+        labels:
+          job: llamaagent
+
+      # Agent health summary
+      - record: llamaagent:agent_health_summary
+        expr: avg(llamaagent_agent_health_status) by (instance)
+        labels:
+          job: llamaagent
+
+      # Database connection utilization
+      - record: llamaagent:db_connection_utilization
+        expr: llamaagent_db_connections_active / llamaagent_db_connections_max
+        labels:
+          job: llamaagent
+
+      # Cache hit rate summary
+      - record: llamaagent:cache_hit_rate_summary
+        expr: |
+          llamaagent_cache_hits_total / 
+          (llamaagent_cache_hits_total + llamaagent_cache_misses_total)
+        labels:
+          job: llamaagent
+
+      # LLM provider response time percentiles
+      - record: llamaagent:llm_response_time_p95_5m
+        expr: histogram_quantile(0.95, rate(llamaagent_llm_request_duration_seconds_bucket[5m]))
+        labels:
+          job: llamaagent
+
+      - record: llamaagent:llm_response_time_p99_5m
+        expr: histogram_quantile(0.99, rate(llamaagent_llm_request_duration_seconds_bucket[5m]))
+        labels:
+          job: llamaagent
+
+      # System resource utilization
+      - record: llamaagent:cpu_utilization
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+        labels:
+          job: node
+
+      - record: llamaagent:memory_utilization
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+        labels:
+          job: node
+
+      - record: llamaagent:disk_utilization
+        expr: |
+          100 - ((node_filesystem_avail_bytes{mountpoint="/"} / 
+          node_filesystem_size_bytes{mountpoint="/"}) * 100)
+        labels:
+          job: node
+
+      # Business metrics
+      - record: llamaagent:active_users_5m
+        expr: avg_over_time(llamaagent_user_sessions_active[5m])
+        labels:
+          job: llamaagent
+
+      - record: llamaagent:task_success_rate_5m
+        expr: |
+          rate(llamaagent_tasks_completed_total{status="success"}[5m]) / 
+          rate(llamaagent_tasks_total[5m])
+        labels:
+          job: llamaagent
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true 

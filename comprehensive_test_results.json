@@ -1,0 +1,14 @@
+{
+  "timestamp": 1751831144.944779,
+  "total_time": 0.30622196197509766,
+  "core_components": {
+    "type_system": false,
+    "mock_provider": false,
+    "calculator_tool": false,
+    "react_agent": false
+  },
+  "mathematical_problems": true,
+  "mini_benchmark": false,
+  "full_integration": false,
+  "overall_success": false
+}

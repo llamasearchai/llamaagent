@@ -1,10 +1,15 @@
+"""
+Reflection module for analyzing multi-agent interactions and extracting insights.
+"""
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from ..agents.base import AgentConfig, AgentRole
 from ..agents.react import ReactAgent
 from ..llm import MockProvider
+from ..llm.base import LLMProvider
 
 
 class ReflectionModule:
@@ -12,7 +17,7 @@ class ReflectionModule:
 
     REFLECTION_PROMPT = """You are an expert in multi-agent systems analysis. Analyze the following transcript of an agent team's attempt to solve a task.
 
-Your goal is to identify the single most important reason for their success or failure and distill this into a concise, generalizable, and actionable heuristic for future collaboration.
+Your goal is to identify the single most important reason for their success or failure and distill this into a concise, actionable heuristic for future collaboration.
 
 The heuristic should be:
 1. An "if-then" statement or best practice
@@ -29,7 +34,8 @@ Format your response as:
 INSIGHT: [single actionable heuristic]
 REASONING: [brief explanation of why this insight matters]"""
 
-    def __init__(self, llm_provider=None):
+    def __init__(self, llm_provider: Optional[LLMProvider] = None) -> None:
+        """Initialize the reflection module."""
         self.llm = llm_provider or MockProvider()
 
         self.reflector = ReactAgent(
@@ -42,10 +48,7 @@ REASONING: [brief explanation of why this insight matters]"""
         )
 
     async def analyze_interaction(
-        self,
-        task: str,
-        transcript: List[Dict[str, str]],
-        success: bool,
+        self, task: str, transcript: List[Dict[str, Any]], success: bool
     ) -> str:
         """Analyze a multi-agent interaction and extract insight."""
         # Format transcript for analysis
@@ -55,7 +58,7 @@ REASONING: [brief explanation of why this insight matters]"""
         analysis_prompt = f"""{self.REFLECTION_PROMPT}
 
 Task: {task}
-Success: {'Yes' if success else 'No'}
+Success: {"Yes" if success else "No"}
 
 Transcript:
 {formatted_transcript}"""
@@ -66,9 +69,9 @@ Transcript:
         insight = self._parse_insight(response.content)
         return insight
 
-    def _format_transcript(self, transcript: List[Dict[str, str]]) -> str:
+    def _format_transcript(self, transcript: List[Dict[str, Any]]) -> str:
         """Format transcript for analysis."""
-        formatted = []
+        formatted: List[str] = []
 
         for i, message in enumerate(transcript, 1):
             sender = message.get("sender", "Unknown")
@@ -98,12 +101,9 @@ Transcript:
 
         return "No clear insight extracted"
 
-    async def batch_analyze(
-        self,
-        interactions: List[Dict[str, Any]],
-    ) -> List[str]:
+    async def batch_analyze(self, interactions: List[Dict[str, Any]]) -> List[str]:
         """Analyze multiple interactions and extract insights."""
-        insights = []
+        insights: List[str] = []
 
         for interaction in interactions:
             try:
@@ -122,7 +122,7 @@ Transcript:
     def filter_insights(self, insights: List[str]) -> List[str]:
         """Filter and deduplicate insights."""
         # Simple deduplication based on similarity
-        filtered = []
+        filtered: List[str] = []
 
         for insight in insights:
             # Skip very short or generic insights

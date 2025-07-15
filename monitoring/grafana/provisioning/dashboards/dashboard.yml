@@ -1,0 +1,15 @@
+# Grafana dashboard provisioning configuration
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
+apiVersion: 1
+
+providers:
+  - name: 'LlamaAgent Dashboards'
+    orgId: 1
+    folder: 'LlamaAgent'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

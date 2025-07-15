@@ -1,0 +1,549 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "LlamaAgent Agents Performance",
+    "tags": ["llamaagent", "agents", "performance"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 16,
+    "version": 1,
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Agent Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_health_status",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.0",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "UNHEALTHY",
+                    "color": "red"
+                  },
+                  "1": {
+                    "text": "HEALTHY",
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "Agent Task Processing Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(llamaagent_agent_tasks_processed_total[5m])",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "short",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Agent Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(llamaagent_agent_response_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(llamaagent_agent_response_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile",
+            "refId": "B"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "s",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Agent Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_memory_usage_bytes",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 17
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "bytes",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Agent CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_cpu_usage_percent",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 17
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "percent",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      },
+      {
+        "id": 6,
+        "title": "Agent Task Queue Length",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_task_queue_length",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "short",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Agent Success Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_success_rate",
+            "legendFormat": "{{agent_id}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "7.5.0",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "green",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 8,
+        "title": "Agent LLM Provider Usage",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_llm_provider_usage",
+            "legendFormat": "{{provider}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 35
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "pluginVersion": "7.5.0",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              }
+            },
+            "mappings": []
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 9,
+        "title": "Agent Tool Usage",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "llamaagent_agent_tool_usage_total",
+            "legendFormat": "{{agent_id}} - {{tool}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 35
+        },
+        "options": {
+          "showHeader": true
+        },
+        "pluginVersion": "7.5.0",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "width": null
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 10,
+        "title": "Agent Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(llamaagent_agent_errors_total[5m])",
+            "legendFormat": "{{agent_id}} - {{error_type}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 44
+        },
+        "xAxes": [
+          {
+            "type": "time",
+            "show": true
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "short",
+            "show": true
+          }
+        ],
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "nullPointMode": "null",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          },
+          "hide": 0,
+          "label": "Agent",
+          "name": "agent",
+          "options": [],
+          "query": "label_values(llamaagent_agent_health_status, agent_id)",
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "style": "dark",
+    "uid": "llamaagent-agents",
+    "weekStart": ""
+  }
+} 

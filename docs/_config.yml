@@ -1,0 +1,145 @@
+# Jekyll Configuration for LlamaAgent Documentation
+
+# Site settings
+title: "LlamaAgent Documentation"
+description: "Advanced AI Agent Framework with Enterprise Features"
+url: "https://yourusername.github.io"
+baseurl: "/llamaagent"
+author: "Nik Jois"
+email: "nikjois@llamasearch.ai"
+
+# Theme
+theme: minima
+remote_theme: "mmistakes/minimal-mistakes"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-redirect-from
+  - jekyll-paginate
+  - jekyll-gist
+  - jekyll-include-cache
+
+# Markdown processing
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+
+# Sass
+sass:
+  style: compressed
+
+# Outputting
+permalink: /:categories/:title/
+timezone: America/New_York
+
+# Pagination
+paginate: 5
+paginate_path: /page:num/
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "single"
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+  - scope:
+      path: "_docs"
+      type: "docs"
+    values:
+      layout: "single"
+      author_profile: false
+      sidebar:
+        nav: "docs"
+
+# Site navigation
+navigation:
+  - title: "Home"
+    url: "/"
+  - title: "Documentation"
+    url: "/docs/"
+  - title: "API Reference"
+    url: "/api/"
+  - title: "Examples"
+    url: "/examples/"
+  - title: "GitHub"
+    url: "https://github.com/yourusername/llamaagent"
+
+# Footer
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/yourusername/llamaagent"
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:nikjois@llamasearch.ai"
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://llamasearch.ai"
+
+# SEO
+logo: "/assets/images/logo.png"
+social:
+  type: Organization
+  name: "LlamaAgent"
+  links:
+    - "https://github.com/yourusername/llamaagent"
+
+# Analytics
+google_analytics: "UA-XXXXXXXX-X"
+
+# Search
+search: true
+search_full_content: true
+
+# Comments
+comments:
+  provider: "disqus"
+  disqus:
+    shortname: "llamaagent"
+
+# Exclude from processing
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - "*.pyc"
+  - __pycache__/
+  - .pytest_cache/
+  - .mypy_cache/
+  - .ruff_cache/
+
+# Include
+include:
+  - .htaccess
+  - _pages 

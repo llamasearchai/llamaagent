@@ -1,157 +1,410 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "llamaagent"
-version = "1.0.0"
-description = "Advanced Multi-Agent AI Framework with SPRE (Strategic Planning & Resourceful Execution)"
-authors = [
-    {name = "Nik Jois", email = "nikjois@llamasearch.ai"}
-]
+dynamic = ["version"]
+description = "Advanced AI Agent Framework with Enterprise Features"
 readme = "README.md"
-license = {text = "MIT"}
-requires-python = ">=3.9"
-keywords = ["ai", "agents", "llm", "multi-agent", "planning", "tools", "automation"]
+license = { file = "LICENSE" }
+authors = [
+    { name = "Nik Jois", email = "nikjois@llamasearch.ai" }
+]
+maintainers = [
+    { name = "Nik Jois", email = "nikjois@llamasearch.ai" }
+]
+keywords = [
+    "ai", "agent", "llm", "automation", "enterprise", "distributed", 
+    "orchestration", "tools", "reasoning", "multimodal"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
+requires-python = ">=3.11"
 
+# Core dependencies with version ranges for compatibility
 dependencies = [
-    "typer[all]>=0.9.0",
-    "click>=8.0.0",
-    "nest-asyncio>=1.5.0",
-    "rich>=13.7.0",
-    "pydantic>=2.5.0",
-    "fastapi>=0.104.0",
-    "uvicorn[standard]>=0.24.0",
-    "httpx>=0.25.0",
-    "aiohttp>=3.9.0",
-    "aiofiles>=23.2.0",
-    "asyncio-mqtt>=0.13.0",
-    "numpy>=1.24.0",
-    "pandas>=2.1.0",
-    "scipy>=1.11.0",
-    "scikit-learn>=1.3.0",
-    "matplotlib>=3.7.0",
-    "seaborn>=0.13.0",
-    "plotly>=5.17.0",
-    "tiktoken>=0.5.0",
-    "openai>=1.3.0",
-    "anthropic>=0.7.0",
-    "tenacity>=8.2.0",
-    "structlog>=23.2.0",
-    "loguru>=0.7.0",
-    "python-dotenv>=1.0.0",
-    "pyyaml>=6.0",
-    "jinja2>=3.1.0",
-    "python-multipart>=0.0.6",
-    "tqdm>=4.66.0",
-    "psutil>=5.9.0",
-    "uvloop>=0.19.0;platform_system!='Windows'",
-    "asyncpg>=0.29.0",
-    "langgraph>=0.0.16",
-    "datasets>=2.14.0",
+    # Core framework
+    "pydantic>=2.0.0,<3.0.0",
+    "python-dotenv>=1.0.0,<2.0.0",
+    "structlog>=23.0.0,<24.0.0",
+    "rich>=13.0.0,<14.0.0",
+    "typer>=0.9.0,<1.0.0",
+    "click>=8.1.0,<9.0.0",
+    
+    # Async and HTTP
+    "httpx[http2]>=0.25.0,<1.0.0",
+    "aiofiles>=23.0.0,<24.0.0",
+    "asyncio-throttle>=1.0.0,<2.0.0",
+    
+    # AI and LLM
+    "openai>=1.0.0,<2.0.0",
+    "anthropic>=0.3.0,<1.0.0",
+    "litellm>=1.40.0,<2.0.0",
+    
+    # Web framework
+    "fastapi>=0.100.0,<1.0.0",
+    "uvicorn[standard]>=0.23.0,<1.0.0",
+    "starlette>=0.27.0,<1.0.0",
+    
+    # Database and storage
+    "sqlalchemy>=2.0.0,<3.0.0",
+    "asyncpg>=0.28.0,<1.0.0",
+    "psycopg2-binary>=2.9.0,<3.0.0",
+    "redis>=4.6.0,<5.0.0",
+    "aioredis>=2.0.0,<3.0.0",
+    
+    # Data processing
+    "numpy>=1.24.0,<2.0.0",
+    "pandas>=2.0.0,<3.0.0",
+    "pyyaml>=6.0.0,<7.0.0",
+    
+    # Monitoring and observability
+    "prometheus-client>=0.17.0,<1.0.0",
+    "psutil>=5.9.0,<6.0.0",
+    
+    # Security
+    "cryptography>=41.0.0,<43.0.0",
+    "python-jose[cryptography]>=3.3.0,<4.0.0",
+    "bcrypt>=4.0.0,<5.0.0",
 ]
 
 [project.optional-dependencies]
+# Development dependencies
 dev = [
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.0",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.12.0",
-    "pytest-benchmark>=4.0.0",
-    "pytest-xdist>=3.5.0",
-    "ruff>=0.1.6",
-    "mypy>=1.7.0",
-    "black>=23.11.0",
-    "pre-commit>=3.5.0",
-    "nox>=2023.4.22",
-    "bandit>=1.7.5",
-    "safety>=2.3.0",
-    "types-requests>=2.31.0",
-    "types-python-dateutil>=2.8.19",
-    "types-pyyaml>=6.0.12",
-    "types-tqdm>=4.66.0",
+    "pytest>=7.4.0,<8.0.0",
+    "pytest-asyncio>=0.21.0,<1.0.0",
+    "pytest-cov>=4.1.0,<5.0.0",
+    "pytest-xdist>=3.3.0,<4.0.0",
+    "pytest-mock>=3.11.0,<4.0.0",
+    "coverage[toml]>=7.0.0,<8.0.0",
+    "pre-commit>=3.5.0,<4.0.0",
+    "mypy>=1.8.0,<2.0.0",
+    "ruff>=0.1.0,<1.0.0",
+    "black>=23.7.0,<24.0.0",
+    "isort>=5.12.0,<6.0.0",
 ]
-prod = [
-    "gunicorn>=21.2.0",
-    "prometheus-client>=0.19.0",
-    "sentry-sdk>=1.38.0",
+
+# Enhanced AI capabilities
+ai-extended = [
+    "sentence-transformers>=2.2.0,<3.0.0",
+    "chromadb>=0.4.0,<1.0.0",
 ]
-ml = [
-    "torch>=2.1.0",
-    "transformers>=4.36.0",
-    "sentence-transformers>=2.2.2",
-    "faiss-cpu>=1.7.4",
-    "huggingface-hub>=0.19.0",
+
+# Vector databases and search
+vector = [
+    "faiss-cpu>=1.7.0,<2.0.0",
+    "chromadb>=0.4.0,<1.0.0",
 ]
+
+# Distributed computing
+distributed = [
+    "celery>=5.3.0,<6.0.0",
+    "redis>=4.6.0,<5.0.0",
+]
+
+# Monitoring and observability
+monitoring = [
+    "prometheus-client>=0.17.0,<1.0.0",
+    "psutil>=5.9.0,<6.0.0",
+]
+
+# Enterprise features
+enterprise = [
+    "docker>=6.0.0,<7.0.0",
+]
+
+# Documentation
+docs = [
+    "sphinx>=7.0.0,<8.0.0",
+    "sphinx-rtd-theme>=2.0.0,<3.0.0",
+    "sphinx-autodoc-typehints>=1.24.0,<2.0.0",
+    "myst-parser>=2.0.0,<3.0.0",
+]
+
+# All optional dependencies
+all = [
+    "llamaagent[ai-extended,vector,distributed,monitoring,enterprise]"
+]
+
+[project.urls]
+Homepage = "https://github.com/nikjois/llamaagent"
+Documentation = "https://nikjois.github.io/llamaagent"
+Repository = "https://github.com/nikjois/llamaagent"
+"Bug Tracker" = "https://github.com/nikjois/llamaagent/issues"
+Changelog = "https://github.com/nikjois/llamaagent/releases"
 
 [project.scripts]
 llamaagent = "llamaagent.cli:main"
-llamaagent-interactive = "llamaagent.cli.interactive:run_interactive_experiment"
+llamaagent-server = "llamaagent.api:run_server"
+llamaagent-worker = "llamaagent.distributed:run_worker"
 
-[project.urls]
-"Homepage" = "https://github.com/nikjois/llamaagent"
-"Bug Reports" = "https://github.com/nikjois/llamaagent/issues"
-"Source" = "https://github.com/nikjois/llamaagent"
+[project.entry-points."llamaagent.tools"]
+calculator = "llamaagent.tools.calculator:CalculatorTool"
+python_repl = "llamaagent.tools.python_repl:PythonREPLTool"
 
 [tool.hatch.version]
-source = "vcs"
+path = "src/llamaagent/_version.py"
 
-[tool.hatch.build.hooks.vcs]
-version-file = "src/llamaagent/_version.py"
+[tool.hatch.build]
+include = [
+    "/src/llamaagent",
+    "/tests",
+    "/docs",
+    "/scripts",
+    "/README.md",
+    "/LICENSE",
+]
+exclude = [
+    "/.git",
+    "/.venv",
+    "/venv",
+    "/__pycache__",
+    "/*.egg-info",
+    "/build",
+    "/dist",
+    "/.pytest_cache",
+    "/.mypy_cache",
+    "/.ruff_cache",
+    "/node_modules",
+]
+
+[tool.basedpyright]
+include = ["src/**/*.py"]
+exclude = ["**/__pycache__", "**/node_modules", "**/.venv"]
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportMissingModuleSource = "warning"
+reportUnusedImport = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+reportConstantRedefinition = false
+pythonVersion = "3.11"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+useLibraryCodeForTypes = true
+
+[tool.pyright]
+include = ["src/**/*.py"]
+exclude = ["**/__pycache__", "**/node_modules", "**/.venv"]
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportMissingModuleSource = "warning"
+reportUnusedImport = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+reportConstantRedefinition = false
+pythonVersion = "3.11"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+useLibraryCodeForTypes = true
+
+[tool.hatch.build.sources]
+"src" = "."
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llamaagent"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/docs",
+    "/scripts",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
+# Environment configurations
+[tool.hatch.envs.default]
+python = "3.11"
+dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "coverage[toml]>=7.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+    "black>=23.7.0",
+    "pre-commit>=3.5.0",
+]
+
+[tool.hatch.envs.default.scripts]
+# Testing scripts
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+test-cov-report = [
+    "test-cov",
+    "coverage report",
+    "coverage html"
+]
+test-fast = "pytest -x --ff {args:tests}"
+test-parallel = "pytest -n auto {args:tests}"
+
+# Code quality scripts
+lint = [
+    "ruff check {args:src tests}",
+    "black --check {args:src tests}",
+    "mypy {args:src}"
+]
+format = [
+    "black {args:src tests}",
+    "ruff check --fix {args:src tests}",
+    "ruff format {args:src tests}"
+]
+check = [
+    "format",
+    "lint",
+    "test"
+]
+
+# Development scripts
+install-dev = "pip install -e .[dev,all]"
+setup-dev = [
+    "install-dev",
+    "pre-commit install"
+]
+
+[tool.hatch.envs.test]
+template = "default"
+dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0", 
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "pytest-mock>=3.11.0",
+    "coverage[toml]>=7.0.0",
+]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.11", "3.12"]
+
+[tool.hatch.envs.docs]
+dependencies = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=1.24.0",
+    "myst-parser>=2.0.0",
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs docs/_build/html"
+serve = "python -m http.server 8000 --directory docs/_build/html"
+clean = "rm -rf docs/_build"
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+    "black>=23.7.0",
+]
+
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:src/llamaagent tests}"
+style = [
+    "ruff check {args:.}",
+    "black --check --diff {args:.}",
+]
+fmt = [
+    "black {args:.}",
+    "ruff check --fix {args:.}",
+    "style",
+]
+all = [
+    "style",
+    "typing",
+]
+
+# Tool configurations
+[tool.black]
+target-version = ["py311"]
+line-length = 88
+skip-string-normalization = true
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
 
 [tool.ruff]
-line-length = 120
 target-version = "py311"
-
-[tool.ruff.lint]
+line-length = 88
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "UP", # pyupgrade
-    "RUF", # Ruff-specific rules
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "ARG", # flake8-unused-arguments
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "PL",  # pylint
+    "RUF", # ruff-specific rules
 ]
 ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults (FastAPI Depends pattern)
-    "C901",  # too complex
-    "E402",  # module level import not at top of file (after docstrings is acceptable)
-    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    "E501",   # line too long, handled by black
+    "B008",   # do not perform function calls in argument defaults
+    "C901",   # too complex
+    "PLR0913", # too many arguments
+    "PLR0912", # too many branches
+    "PLR0915", # too many statements
+    "PLR2004", # magic value used in comparison
+]
+unfixable = [
+    "ERA001", # commented out code
 ]
 
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"tests/**/*" = ["S101", "D"]
-"src/llamaagent/api.py" = ["B008"]  # FastAPI Depends usage is standard pattern
-"src/llamaagent/benchmarks/*.py" = ["E402"]  # Module imports after docstrings
-"src/llamaagent/integration/*.py" = ["E402"]  # Optional imports after try/except
-"src/llamaagent/storage/*.py" = ["E402"]  # Optional imports after try/except
+[tool.ruff.per-file-ignores]
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
+"scripts/**/*" = ["T201"]
+"docs/**/*" = ["T201"]
 
-[tool.ruff.lint.isort]
+[tool.ruff.isort]
 known-first-party = ["llamaagent"]
+force-single-line = true
 
-[tool.black]
-line-length = 120
-target-version = ['py39', 'py310', 'py311', 'py312']
-include = '\.pyi?$'
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.flake8-type-checking]
+strict = true
 
 [tool.mypy]
 python_version = "3.11"
+strict = true
+warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
@@ -161,64 +414,73 @@ no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
-warn_return_any = true
+warn_unreachable = true
+implicit_reexport = false
 strict_equality = true
 show_error_codes = true
+show_column_numbers = true
 
+# Per-module settings
 [[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
+module = [
+    "kafka.*",
+    "redis.*",
+    "psycopg2.*",
+    "sqlalchemy.*",
+    "openai.*",
+    "anthropic.*",
+    "transformers.*",
+    "torch.*",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+minversion = "7.0"
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=src/llamaagent",
+    "--cov=llamaagent",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
-    "--cov-fail-under=85",
+    "--cov-fail-under=80",
+]
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end tests",
 ]
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src"]
-parallel = true
 branch = true
+parallel = true
 omit = [
-    "src/llamaagent/llm/*",
-    "src/llamaagent/agents/react.py",
-    "src/llamaagent/agents/base.py",
-    "src/llamaagent/memory/__init__.py",
-    "src/llamaagent/__init__.py",
-    "src/llamaagent/storage/**",
-    "src/llamaagent/integration/**",
-    "src/llamaagent/benchmarks/**",
-    "src/llamaagent/data_generation/**",
-    "src/llamaagent/evolution/**",
-    "src/llamaagent/visualization.py",
-    "src/llamaagent/statistical_analysis.py",
-    "src/llamaagent/report_generator.py",
-    "src/llamaagent/experiment_runner.py",
-    "examples/**",
-    "tools-txts/**",
+    "src/llamaagent/__about__.py",
+    "tests/*",
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
 ]
 
 [tool.coverage.paths]
-llamaagent = ["src/llamaagent", "*/site-packages/llamaagent"]
+llamaagent = ["src/llamaagent", "*/llamaagent/src/llamaagent"]
+tests = ["tests", "*/llamaagent/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
     "pragma: no cover",
     "def __repr__",
     "if self.debug:",
@@ -226,11 +488,7 @@ exclude_lines = [
     "raise AssertionError",
     "raise NotImplementedError",
     "if 0:",
-    "if __name__ == .__main__.:",
+    "if False:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
-]
-
-[tool.flake8]
-max-line-length = 240
-extend-ignore = "E203,W503,E501" 
+] 

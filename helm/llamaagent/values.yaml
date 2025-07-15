@@ -1,0 +1,313 @@
+# Default values for llamaagent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: "fast-ssd"
+
+nameOverride: ""
+fullnameOverride: ""
+
+# API Configuration
+api:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: llamaagent/api
+    pullPolicy: IfNotPresent
+    tag: ""  # Overrides the image tag whose default is the chart appVersion
+  
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+    annotations: {}
+  
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    hosts:
+      - host: api.llamaagent.io
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: llamaagent-tls
+        hosts:
+          - api.llamaagent.io
+  
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: api
+          topologyKey: kubernetes.io/hostname
+
+# Worker Configuration
+worker:
+  enabled: true
+  replicaCount: 5
+  image:
+    repository: llamaagent/worker
+    pullPolicy: IfNotPresent
+    tag: ""
+  
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 80
+  
+  config:
+    concurrency: 10
+    prefetch: 2
+
+# Multimodal Worker Configuration
+multimodalWorker:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: llamaagent/multimodal-worker
+    pullPolicy: IfNotPresent
+    tag: ""
+  
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+      nvidia.com/gpu: 1
+    requests:
+      cpu: 2000m
+      memory: 4Gi
+      nvidia.com/gpu: 1
+  
+  nodeSelector:
+    accelerator: nvidia-tesla-t4
+  
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+
+# Database Configuration
+postgresql:
+  enabled: true
+  auth:
+    username: llamaagent
+    database: llamaagent
+    existingSecret: ""
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+      requests:
+        memory: 1Gi
+        cpu: 500m
+
+# Redis Configuration
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+    existingSecret: ""
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      limits:
+        memory: 1Gi
+        cpu: 500m
+      requests:
+        memory: 512Mi
+        cpu: 250m
+
+# Vector Database Configuration
+qdrant:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: qdrant/qdrant
+    tag: latest
+  persistence:
+    enabled: true
+    size: 100Gi
+  resources:
+    limits:
+      memory: 4Gi
+      cpu: 2000m
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+
+# LLM Provider Configuration
+llmProviders:
+  openai:
+    enabled: true
+    apiKeySecret: llamaagent-api-keys
+    apiKeyKey: openai-api-key
+  anthropic:
+    enabled: true
+    apiKeySecret: llamaagent-api-keys
+    apiKeyKey: anthropic-api-key
+  deepseek:
+    enabled: true
+    apiKeySecret: llamaagent-api-keys
+    apiKeyKey: deepseek-api-key
+  mistral:
+    enabled: true
+    apiKeySecret: llamaagent-api-keys
+    apiKeyKey: mistral-api-key
+
+# Application Configuration
+config:
+  environment: production
+  logLevel: info
+  
+  server:
+    workers: 4
+    timeout: 120
+    keepAlive: 5
+  
+  database:
+    poolSize: 20
+    maxOverflow: 10
+  
+  redis:
+    maxConnections: 50
+  
+  llm:
+    defaultProvider: litellm
+    timeout: 300
+    maxRetries: 3
+    temperature: 0.7
+    maxTokens: 4096
+    budgetLimit: 100.0
+    enableCaching: true
+  
+  multimodal:
+    enableVision: true
+    enableReasoning: true
+    maxImageSize: 10485760
+  
+  evolution:
+    maxGenerations: 50
+    populationSize: 20
+    mutationRate: 0.1
+  
+  prompting:
+    optimizationMethod: genetic
+    chainOfThoughtMaxDepth: 5
+  
+  features:
+    enableMultimodal: true
+    enableReasoning: true
+    enableEvolution: true
+    enablePromptOptimization: true
+    enableStreaming: true
+
+# Security Configuration
+security:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+  
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+  
+  networkPolicy:
+    enabled: true
+  
+  rbac:
+    create: true
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+  
+  grafana:
+    enabled: true
+    dashboards:
+      enabled: true
+  
+  alerts:
+    enabled: true
+    rules:
+      - name: HighErrorRate
+        expr: 'rate(http_requests_total{status=~"5.."}[5m]) > 0.05'
+        severity: critical
+      - name: HighResponseTime
+        expr: 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1'
+        severity: warning
+
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: 30
+  s3:
+    bucket: llamaagent-backups
+    region: us-east-1
+    credentialsSecret: backup-aws-credentials
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  api:
+    minAvailable: 2
+  worker:
+    minAvailable: 3
+  database:
+    minAvailable: 1

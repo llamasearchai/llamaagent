@@ -1,17 +1,36 @@
+"""Calculator tool implementation"""
+
 from __future__ import annotations
 
 import ast
 import operator
+from typing import Any, Callable, Dict, Type, Union, overload
 
 from .base import Tool
 
+# --------------------------------------------------------------------------- #
+# Type aliases                                                                #
+# --------------------------------------------------------------------------- #
+
+Number = Union[int, float]
+
+# A binary operator takes two numbers, a unary operator takes one number.
+BinaryOp = Callable[[Number, Number], Number]
+UnaryOp = Callable[[Number], Number]
+OpFunc = Union[BinaryOp, UnaryOp]
+
+
+# --------------------------------------------------------------------------- #
+# Public tool                                                                 #
+# --------------------------------------------------------------------------- #
+
 
 class CalculatorTool(Tool):
-    """Safe calculator tool for mathematical operations"""
+    """A tiny safe calculator utility used by LlamaAgent tools/tests."""
 
-    # ------------------------------------------------------------------
-    # Meta information required by the *Tool* ABC
-    # ------------------------------------------------------------------
+    # ------------------------------------------------------------------ #
+    # Meta information required by the Tool ABC                          #
+    # ------------------------------------------------------------------ #
 
     @property
     def name(self) -> str:  # type: ignore[override]
@@ -21,48 +40,81 @@ class CalculatorTool(Tool):
     def description(self) -> str:  # type: ignore[override]
         return "Performs mathematical calculations safely"
 
-    # Supported operations
-    operators = {
+    # ------------------------------------------------------------------ #
+    # Supported operators                                                #
+    # ------------------------------------------------------------------ #
+    _ops: Dict[Type[ast.AST], OpFunc] = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
         ast.Mult: operator.mul,
         ast.Div: operator.truediv,
         ast.Pow: operator.pow,
-        ast.BitXor: operator.xor,
         ast.USub: operator.neg,
+        ast.BitXor: operator.xor,
     }
 
-    def eval_expr(self, node):
-        """Safely evaluate mathematical expressions"""
-        if isinstance(node, ast.Constant):  # Python 3.8+
-            return node.value
-        elif isinstance(node, ast.BinOp):
-            return self.operators[type(node.op)](self.eval_expr(node.left), self.eval_expr(node.right))
-        elif isinstance(node, ast.UnaryOp):
-            return self.operators[type(node.op)](self.eval_expr(node.operand))
-        else:
-            raise TypeError(f"Unsupported type: {type(node)}")
+    # ------------------------------------------------------------------ #
+    # Expression evaluation – kept synchronous and side-effect free      #
+    # ------------------------------------------------------------------ #
 
-    async def execute(self, expression: str) -> str:  # type: ignore[override]
-        """Asynchronously evaluate *expression* and return the result as a *string*.
+    def _eval_expr(self, node: ast.AST) -> Number:  # noqa: C901  (small & clear)
+        """Recursively evaluate node.
 
-        This implementation purposefully keeps the surface extremely simple to
-        satisfy the expectations of the test-suite – on success it returns a
-        plain string representation of the calculated value, while on failure
-        it returns an explanatory error message that contains the word
-        "error" or "invalid" so the tests can detect the failure condition.
+        Only numbers and the operators from _ops are allowed; any other
+        AST node raises TypeError.
         """
+        if isinstance(node, ast.Constant):  # Python 3.8+: covers Num/Str/…
+            value: Any = node.value
+            if not isinstance(value, (int, float)):
+                raise TypeError(f"Unsupported literal: {value!r}")
+            return value
 
-        def _sync_eval() -> str:
-            try:
-                node = ast.parse(expression, mode="eval")
-                result = self.eval_expr(node.body)
-                return str(result)
-            except Exception as exc:
-                return f"Error: {exc}"
+        if isinstance(node, ast.BinOp):
+            op_func = self._require_op(node.op)
+            lhs = self._eval_expr(node.left)
+            rhs = self._eval_expr(node.right)
+            # mypy/pyright know the call is legal because we cast in _require_op
+            return op_func(lhs, rhs)  # type: ignore[arg-type]
 
-        # Run in default loop's executor to avoid blocking.
-        import asyncio
+        if isinstance(node, ast.UnaryOp):
+            op_func = self._require_op(node.op)
+            operand = self._eval_expr(node.operand)
+            return op_func(operand)  # type: ignore[arg-type]
 
-        loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, _sync_eval)
+        raise TypeError(f"Unsupported expression: {ast.dump(node)}")
+
+    # ------------------------------------------------------------------ #
+    # Tool interface                                                     #
+    # ------------------------------------------------------------------ #
+
+    def execute(self, expression: str) -> str:  # type: ignore[override]
+        """Evaluate expression and return the result as a string.
+
+        Any error yields a message containing the word "Error" so the upstream
+        test-suite can detect failure reliably.
+        """
+        try:
+            tree = ast.parse(expression, mode="eval")
+            result = self._eval_expr(tree.body)
+            return str(result)
+        except Exception as exc:  # pylint: disable=broad-except
+            return f"Error: {exc}"
+
+    # ------------------------------------------------------------------ #
+    # Helpers                                                            #
+    # ------------------------------------------------------------------ #
+
+    @overload
+    def _require_op(self, op: ast.operator) -> BinaryOp:
+        ...  # noqa: D401
+
+    @overload
+    def _require_op(self, op: ast.unaryop) -> UnaryOp:
+        ...  # noqa: D401
+
+    def _require_op(self, op: Union[ast.operator, ast.unaryop]) -> OpFunc:
+        """Return the function implementing op or raise TypeError."""
+        op_type: Type[ast.AST] = type(op)
+        if op_type in self._ops:
+            return self._ops[op_type]
+        raise TypeError(f"Operator {op_type.__name__} is not supported")

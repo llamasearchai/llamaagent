@@ -1,0 +1,89 @@
+{
+  "conversations": [
+    {
+      "id": "demo_conv_0",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample question 0"
+        },
+        {
+          "role": "assistant",
+          "content": "Sample response 0"
+        }
+      ],
+      "metadata": {
+        "generated_at": "2025-07-02T11:45:35.189901"
+      }
+    },
+    {
+      "id": "demo_conv_1",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample question 1"
+        },
+        {
+          "role": "assistant",
+          "content": "Sample response 1"
+        }
+      ],
+      "metadata": {
+        "generated_at": "2025-07-02T11:45:35.189909"
+      }
+    },
+    {
+      "id": "demo_conv_2",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample question 2"
+        },
+        {
+          "role": "assistant",
+          "content": "Sample response 2"
+        }
+      ],
+      "metadata": {
+        "generated_at": "2025-07-02T11:45:35.189911"
+      }
+    },
+    {
+      "id": "demo_conv_3",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample question 3"
+        },
+        {
+          "role": "assistant",
+          "content": "Sample response 3"
+        }
+      ],
+      "metadata": {
+        "generated_at": "2025-07-02T11:45:35.189912"
+      }
+    },
+    {
+      "id": "demo_conv_4",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample question 4"
+        },
+        {
+          "role": "assistant",
+          "content": "Sample response 4"
+        }
+      ],
+      "metadata": {
+        "generated_at": "2025-07-02T11:45:35.189913"
+      }
+    }
+  ],
+  "metadata": {
+    "total_conversations": 5,
+    "generation_method": "demo",
+    "created_at": "2025-07-02T11:45:35.189914"
+  }
+}

@@ -1,17 +1,25 @@
+"""Storage module for LlamaAgent."""
+
 from __future__ import annotations
 
-"""Database and vector-store support for LlamaAgent.
+# Import database components
+try:
+    from .database import Database, DatabaseConfig
+except ImportError:
+    Database = None  # type: ignore
+    DatabaseConfig = None  # type: ignore
 
-This sub-package provides optional but production-grade persistence layers for
-agent traces, short-term memories, and vector search.  The default in-memory
-implementation (`SimpleMemory`) remains available for offline or ephemeral
-workloads – applications can opt into the Postgres-backed variant simply by
-setting the ``DATABASE_URL`` environment variable (any DSN supported by
-``asyncpg``).  Tests are skipped automatically if no database is reachable so
-that CI pipelines remain self-contained.
+# Import vector memory components
+try:
+    from .vector_memory import PostgresVectorMemory, VectorMemory
+except ImportError:
+    VectorMemory = None  # type: ignore
+    PostgresVectorMemory = None  # type: ignore
 
-Author: Nik Jois <nikjois@llamasearch.ai>
-"""
-
-from .database import Database  # noqa: F401
-from .vector_memory import PostgresVectorMemory  # noqa: F401
+# Public API
+__all__ = [
+    "Database",
+    "DatabaseConfig",
+    "VectorMemory",
+    "PostgresVectorMemory",
+]

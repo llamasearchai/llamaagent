@@ -1,0 +1,681 @@
+{
+  "gsm8k": {
+    "Vanilla-GSM8K": {
+      "dataset": "GSM8K",
+      "total_tasks": 15,
+      "correct_answers": 1,
+      "accuracy": 0.06666666666666667,
+      "avg_time": 2.8785069783528646e-05,
+      "total_tokens": 2834,
+      "task_results": [
+        {
+          "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for ...",
+          "expected": "18",
+          "predicted": "2.0",
+          "correct": false,
+          "time": 0.00018095970153808594
+        },
+        {
+          "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it ...",
+          "expected": "3",
+          "predicted": "2.0",
+          "correct": false,
+          "time": 2.1696090698242188e-05
+        },
+        {
+          "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repai...",
+          "expected": "70000",
+          "predicted": "150.0",
+          "correct": false,
+          "time": 1.7881393432617188e-05
+        },
+        {
+          "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meter...",
+          "expected": "540",
+          "predicted": "60.0",
+          "correct": false,
+          "time": 1.2874603271484375e-05
+        },
+        {
+          "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, meal...",
+          "expected": "20",
+          "predicted": "20.0",
+          "correct": true,
+          "time": 2.193450927734375e-05
+        },
+        {
+          "question": "Kylar went to the store to buy glasses for his new apartment. One glass costs $5, but every second g...",
+          "expected": "64",
+          "predicted": "16.0",
+          "correct": false,
+          "time": 1.5020370483398438e-05
+        },
+        {
+          "question": "Toulouse has twice as many sheep as Charleston. Charleston has 4 times as many sheep as Seattle. How...",
+          "expected": "260",
+          "predicted": "20.0",
+          "correct": false,
+          "time": 1.2159347534179688e-05
+        },
+        {
+          "question": "Carla is downloading a 200 GB file. Normally she can download 2 GB/minute, but 40% of the way throug...",
+          "expected": "160",
+          "predicted": "20.0",
+          "correct": false,
+          "time": 1.5735626220703125e-05
+        },
+        {
+          "question": "John drives for 3 hours at a speed of 60 mph and then turns around because he realizes he forgot som...",
+          "expected": "45",
+          "predicted": "4.0",
+          "correct": false,
+          "time": 1.7881393432617188e-05
+        },
+        {
+          "question": "Eliza's rate per hour for the first 40 hours she works each week is $10. She also receives an overti...",
+          "expected": "460",
+          "predicted": "45.0",
+          "correct": false,
+          "time": 1.4781951904296875e-05
+        },
+        {
+          "question": "A new program had 60 downloads in the first month. The number of downloads in the second month was t...",
+          "expected": "366",
+          "predicted": "30.0",
+          "correct": false,
+          "time": 2.7894973754882812e-05
+        },
+        {
+          "question": "Toula went to the bakery and bought various types of pastries. She bought 3 dozen donuts which cost ...",
+          "expected": "694",
+          "predicted": "55.0",
+          "correct": false,
+          "time": 2.7894973754882812e-05
+        },
+        {
+          "question": "Carlos is planting a lemon tree. The tree will cost $90 to plant. Each year it will grow 7 lemons, w...",
+          "expected": "13",
+          "predicted": "3.0",
+          "correct": false,
+          "time": 1.6927719116210938e-05
+        },
+        {
+          "question": "Melanie is a door-to-door saleswoman. She sold a third of her vacuum cleaners at the green house, 2 ...",
+          "expected": "18",
+          "predicted": "5.0",
+          "correct": false,
+          "time": 1.4066696166992188e-05
+        },
+        {
+          "question": "In a dance class of 20 students, 20% enrolled in contemporary dance, 25% of the remaining enrolled i...",
+          "expected": "60",
+          "predicted": "25.0",
+          "correct": false,
+          "time": 1.4066696166992188e-05
+        }
+      ]
+    },
+    "SPRE-GSM8K": {
+      "dataset": "GSM8K",
+      "total_tasks": 15,
+      "correct_answers": 0,
+      "accuracy": 0.0,
+      "avg_time": 5.1244099934895834e-05,
+      "total_tokens": 10635,
+      "task_results": [
+        {
+          "question": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for ...",
+          "expected": "18",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 0.00016117095947265625
+        },
+        {
+          "question": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it ...",
+          "expected": "3",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 6.604194641113281e-05
+        },
+        {
+          "question": "Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repai...",
+          "expected": "70000",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 5.0067901611328125e-05
+        },
+        {
+          "question": "James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meter...",
+          "expected": "540",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 4.1961669921875e-05
+        },
+        {
+          "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, meal...",
+          "expected": "20",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 5.626678466796875e-05
+        },
+        {
+          "question": "Kylar went to the store to buy glasses for his new apartment. One glass costs $5, but every second g...",
+          "expected": "64",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 4.291534423828125e-05
+        },
+        {
+          "question": "Toulouse has twice as many sheep as Charleston. Charleston has 4 times as many sheep as Seattle. How...",
+          "expected": "260",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.7670135498046875e-05
+        },
+        {
+          "question": "Carla is downloading a 200 GB file. Normally she can download 2 GB/minute, but 40% of the way throug...",
+          "expected": "160",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.981590270996094e-05
+        },
+        {
+          "question": "John drives for 3 hours at a speed of 60 mph and then turns around because he realizes he forgot som...",
+          "expected": "45",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 4.291534423828125e-05
+        },
+        {
+          "question": "Eliza's rate per hour for the first 40 hours she works each week is $10. She also receives an overti...",
+          "expected": "460",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 4.291534423828125e-05
+        },
+        {
+          "question": "A new program had 60 downloads in the first month. The number of downloads in the second month was t...",
+          "expected": "366",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 4.00543212890625e-05
+        },
+        {
+          "question": "Toula went to the bakery and bought various types of pastries. She bought 3 dozen donuts which cost ...",
+          "expected": "694",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.814697265625e-05
+        },
+        {
+          "question": "Carlos is planting a lemon tree. The tree will cost $90 to plant. Each year it will grow 7 lemons, w...",
+          "expected": "13",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.695487976074219e-05
+        },
+        {
+          "question": "Melanie is a door-to-door saleswoman. She sold a third of her vacuum cleaners at the green house, 2 ...",
+          "expected": "18",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.600120544433594e-05
+        },
+        {
+          "question": "In a dance class of 20 students, 20% enrolled in contemporary dance, 25% of the remaining enrolled i...",
+          "expected": "60",
+          "predicted": "N/A",
+          "correct": false,
+          "time": 3.5762786865234375e-05
+        }
+      ]
+    }
+  },
+  "humaneval": {
+    "Vanilla-Code": {
+      "dataset": "HumanEval",
+      "total_tasks": 10,
+      "correct_answers": 4,
+      "accuracy": 0.4,
+      "avg_time": 1.6283988952636718e-05,
+      "total_tokens": 2604,
+      "task_results": [
+        {
+          "prompt": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n  ...",
+          "entry_point": "has_close_elements",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 3.409385681152344e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input t...",
+          "entry_point": "separate_paren_groups",
+          "has_function": true,
+          "has_return": true,
+          "correct": true,
+          "time": 2.002716064453125e-05
+        },
+        {
+          "prompt": "\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it ca...",
+          "entry_point": "truncate_number",
+          "has_function": true,
+          "has_return": true,
+          "correct": true,
+          "time": 1.5020370483398438e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list...",
+          "entry_point": "below_zero",
+          "has_function": true,
+          "has_return": true,
+          "correct": true,
+          "time": 1.52587890625e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a ...",
+          "entry_point": "mean_absolute_deviation",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 1.52587890625e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef intersperse(numbers: List[int], delimeter: int) -> List[int]:\n    \"\"\" ...",
+          "entry_point": "intersperse",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 1.2159347534179688e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    \"\"\" Input to ...",
+          "entry_point": "parse_nested_parens",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 1.4066696166992188e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef filter_by_substring(strings: List[str], substring: str) -> List[str]:\n...",
+          "entry_point": "filter_by_substring",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 1.1920928955078125e-05
+        },
+        {
+          "prompt": "from typing import List, Tuple\n\n\ndef sum_product(numbers: List[int]) -> Tuple[int, int]:\n    \"\"\" For...",
+          "entry_point": "sum_product",
+          "has_function": true,
+          "has_return": true,
+          "correct": true,
+          "time": 1.4066696166992188e-05
+        },
+        {
+          "prompt": "from typing import List, Tuple\n\n\ndef rolling_max(numbers: List[int]) -> List[int]:\n    \"\"\" From a gi...",
+          "entry_point": "rolling_max",
+          "has_function": true,
+          "has_return": false,
+          "correct": false,
+          "time": 1.0967254638671875e-05
+        }
+      ]
+    },
+    "SPRE-Code": {
+      "dataset": "HumanEval",
+      "total_tasks": 10,
+      "correct_answers": 0,
+      "accuracy": 0.0,
+      "avg_time": 4.2390823364257815e-05,
+      "total_tokens": 9195,
+      "task_results": [
+        {
+          "prompt": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n  ...",
+          "entry_point": "has_close_elements",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 8.20159912109375e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input t...",
+          "entry_point": "separate_paren_groups",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 4.887580871582031e-05
+        },
+        {
+          "prompt": "\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it ca...",
+          "entry_point": "truncate_number",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.933906555175781e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list...",
+          "entry_point": "below_zero",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.886222839355469e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a ...",
+          "entry_point": "mean_absolute_deviation",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.790855407714844e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef intersperse(numbers: List[int], delimeter: int) -> List[int]:\n    \"\"\" ...",
+          "entry_point": "intersperse",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.3855438232421875e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    \"\"\" Input to ...",
+          "entry_point": "parse_nested_parens",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.814697265625e-05
+        },
+        {
+          "prompt": "from typing import List\n\n\ndef filter_by_substring(strings: List[str], substring: str) -> List[str]:\n...",
+          "entry_point": "filter_by_substring",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.409385681152344e-05
+        },
+        {
+          "prompt": "from typing import List, Tuple\n\n\ndef sum_product(numbers: List[int]) -> Tuple[int, int]:\n    \"\"\" For...",
+          "entry_point": "sum_product",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.719329833984375e-05
+        },
+        {
+          "prompt": "from typing import List, Tuple\n\n\ndef rolling_max(numbers: List[int]) -> List[int]:\n    \"\"\" From a gi...",
+          "entry_point": "rolling_max",
+          "has_function": false,
+          "has_return": false,
+          "correct": false,
+          "time": 3.361701965332031e-05
+        }
+      ]
+    }
+  },
+  "commonsense_qa": {
+    "Vanilla-QA": {
+      "dataset": "CommonsenseQA",
+      "total_tasks": 15,
+      "correct_answers": 1,
+      "accuracy": 0.06666666666666667,
+      "avg_time": 1.3907750447591146e-05,
+      "total_tokens": 2161,
+      "task_results": [
+        {
+          "question": "A revolving door is convenient for two direction travel, but it also serves as a security measure at...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 2.9325485229492188e-05
+        },
+        {
+          "question": "What do people aim to do at work?...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.71661376953125e-05
+        },
+        {
+          "question": "Where would you find magazines along side many other printed works?...",
+          "expected": "B",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.3113021850585938e-05
+        },
+        {
+          "question": "Where are  you likely to find a hamburger?...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.2159347534179688e-05
+        },
+        {
+          "question": "James was looking for a good place to buy farmland.  Where might he look?...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.2159347534179688e-05
+        },
+        {
+          "question": "What island country is ferret popular?...",
+          "expected": "C",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.0967254638671875e-05
+        },
+        {
+          "question": "In what Spanish speaking North American country can you get a great cup of coffee?...",
+          "expected": "B",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.1920928955078125e-05
+        },
+        {
+          "question": "What do animals do when an enemy is approaching?...",
+          "expected": "D",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.2159347534179688e-05
+        },
+        {
+          "question": "Reading newspaper one of many ways to practice your what?...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.0967254638671875e-05
+        },
+        {
+          "question": "What do people typically do while playing guitar?...",
+          "expected": "C",
+          "predicted": "E",
+          "correct": false,
+          "time": 2.7179718017578125e-05
+        },
+        {
+          "question": "What would vinyl be an odd thing to replace?...",
+          "expected": "E",
+          "predicted": "E",
+          "correct": true,
+          "time": 1.2874603271484375e-05
+        },
+        {
+          "question": "If you want harmony, what is something you should try to do with the world?...",
+          "expected": "D",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.0967254638671875e-05
+        },
+        {
+          "question": "Where does a heifer's master live?...",
+          "expected": "A",
+          "predicted": "E",
+          "correct": false,
+          "time": 1.0013580322265625e-05
+        },
+        {
+          "question": "Aside from water and nourishment what does your dog need?...",
+          "expected": "D",
+          "predicted": "E",
+          "correct": false,
+          "time": 8.821487426757812e-06
+        },
+        {
+          "question": "Janet was watching the film because she liked what?...",
+          "expected": "C",
+          "predicted": "E",
+          "correct": false,
+          "time": 8.821487426757812e-06
+        }
+      ]
+    },
+    "SPRE-QA": {
+      "dataset": "CommonsenseQA",
+      "total_tasks": 15,
+      "correct_answers": 4,
+      "accuracy": 0.26666666666666666,
+      "avg_time": 5.5519739786783856e-05,
+      "total_tokens": 8604,
+      "task_results": [
+        {
+          "question": "A revolving door is convenient for two direction travel, but it also serves as a security measure at...",
+          "expected": "A",
+          "predicted": "A",
+          "correct": true,
+          "time": 0.0002849102020263672
+        },
+        {
+          "question": "What do people aim to do at work?...",
+          "expected": "A",
+          "predicted": null,
+          "correct": false,
+          "time": 4.410743713378906e-05
+        },
+        {
+          "question": "Where would you find magazines along side many other printed works?...",
+          "expected": "B",
+          "predicted": null,
+          "correct": false,
+          "time": 3.886222839355469e-05
+        },
+        {
+          "question": "Where are  you likely to find a hamburger?...",
+          "expected": "A",
+          "predicted": "A",
+          "correct": true,
+          "time": 4.100799560546875e-05
+        },
+        {
+          "question": "James was looking for a good place to buy farmland.  Where might he look?...",
+          "expected": "A",
+          "predicted": "A",
+          "correct": true,
+          "time": 4.1961669921875e-05
+        },
+        {
+          "question": "What island country is ferret popular?...",
+          "expected": "C",
+          "predicted": null,
+          "correct": false,
+          "time": 4.029273986816406e-05
+        },
+        {
+          "question": "In what Spanish speaking North American country can you get a great cup of coffee?...",
+          "expected": "B",
+          "predicted": null,
+          "correct": false,
+          "time": 4.00543212890625e-05
+        },
+        {
+          "question": "What do animals do when an enemy is approaching?...",
+          "expected": "D",
+          "predicted": null,
+          "correct": false,
+          "time": 3.814697265625e-05
+        },
+        {
+          "question": "Reading newspaper one of many ways to practice your what?...",
+          "expected": "A",
+          "predicted": null,
+          "correct": false,
+          "time": 4.076957702636719e-05
+        },
+        {
+          "question": "What do people typically do while playing guitar?...",
+          "expected": "C",
+          "predicted": null,
+          "correct": false,
+          "time": 3.695487976074219e-05
+        },
+        {
+          "question": "What would vinyl be an odd thing to replace?...",
+          "expected": "E",
+          "predicted": null,
+          "correct": false,
+          "time": 3.695487976074219e-05
+        },
+        {
+          "question": "If you want harmony, what is something you should try to do with the world?...",
+          "expected": "D",
+          "predicted": null,
+          "correct": false,
+          "time": 3.814697265625e-05
+        },
+        {
+          "question": "Where does a heifer's master live?...",
+          "expected": "A",
+          "predicted": "A",
+          "correct": true,
+          "time": 3.695487976074219e-05
+        },
+        {
+          "question": "Aside from water and nourishment what does your dog need?...",
+          "expected": "D",
+          "predicted": null,
+          "correct": false,
+          "time": 3.6716461181640625e-05
+        },
+        {
+          "question": "Janet was watching the film because she liked what?...",
+          "expected": "C",
+          "predicted": null,
+          "correct": false,
+          "time": 3.695487976074219e-05
+        }
+      ]
+    }
+  },
+  "hellaswag": {
+    "error": "The repository for hellaswag contains custom code which must be executed to correctly load the dataset. You can inspect the repository content at https://hf.co/datasets/hellaswag.\nPlease pass the argument `trust_remote_code=True` to allow custom code to be run."
+  },
+  "summary": {
+    "evaluation_timestamp": 1750351431.959672,
+    "total_evaluation_time": 37.70725393295288,
+    "datasets_evaluated": [
+      {
+        "name": "GSM8K",
+        "url": "https://huggingface.co/datasets/gsm8k",
+        "description": "Grade school math word problems"
+      },
+      {
+        "name": "HumanEval",
+        "url": "https://huggingface.co/datasets/openai_humaneval",
+        "description": "Code generation benchmark"
+      },
+      {
+        "name": "CommonsenseQA",
+        "url": "https://huggingface.co/datasets/commonsense_qa",
+        "description": "Multiple-choice commonsense reasoning"
+      },
+      {
+        "name": "HellaSwag",
+        "url": "https://huggingface.co/datasets/hellaswag",
+        "description": "Commonsense natural language inference"
+      }
+    ],
+    "agent_configurations": [
+      "Vanilla ReAct (baseline without SPRE)",
+      "SPRE-enabled (Strategic Planning & Resourceful Execution)"
+    ]
+  }
+}

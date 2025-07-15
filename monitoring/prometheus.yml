@@ -1,0 +1,157 @@
+# Prometheus configuration for LlamaAgent production monitoring
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'llamaagent-production'
+    environment: 'production'
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # LlamaAgent API metrics
+  - job_name: 'llamaagent-api'
+    static_configs:
+      - targets: ['api:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # LlamaAgent Worker metrics  
+  - job_name: 'llamaagent-worker'
+    static_configs:
+      - targets: ['worker:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # PostgreSQL metrics
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+
+  # Qdrant vector database metrics
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+
+  # Nginx metrics
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 30s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Jaeger metrics
+  - job_name: 'jaeger'
+    static_configs:
+      - targets: ['jaeger:14269']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # LLM Provider Health Checks
+  - job_name: 'llm-health-check'
+    metrics_path: '/health/llm'
+    static_configs:
+      - targets: ['api:8000']
+    scrape_interval: 60s
+
+  # Task Planning System Metrics
+  - job_name: 'task-planning'
+    metrics_path: '/metrics/planning'
+    static_configs:
+      - targets: ['api:8000']
+    scrape_interval: 30s
+
+  # Agent Spawning Metrics
+  - job_name: 'agent-spawning'
+    metrics_path: '/metrics/agents'
+    static_configs:
+      - targets: ['api:8000']
+    scrape_interval: 30s
+
+  # Research Module Metrics
+  - job_name: 'research-modules'
+    metrics_path: '/metrics/research'
+    static_configs:
+      - targets: ['api:8000']
+    scrape_interval: 60s
+
+# Recording rules for efficiency
+recording_rules:
+  - name: llamaagent_api_rules
+    rules:
+      - record: api:request_rate_5m
+        expr: rate(http_requests_total[5m])
+      
+      - record: api:error_rate_5m
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+      
+      - record: api:response_time_p95_5m
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
+
+  - name: llamaagent_system_rules
+    rules:
+      - record: system:cpu_usage
+        expr: 100 - (avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+      
+      - record: system:memory_usage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+      
+      - record: system:disk_usage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100
+
+  - name: llamaagent_business_rules
+    rules:
+      - record: business:agent_spawn_rate_1h
+        expr: rate(llamaagent_agents_spawned_total[1h])
+      
+      - record: business:task_completion_rate_1h
+        expr: rate(llamaagent_tasks_completed_total[1h])
+      
+      - record: business:llm_request_rate_1h
+        expr: rate(llamaagent_llm_requests_total[1h])

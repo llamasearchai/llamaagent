@@ -20,21 +20,21 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Security, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from llamaagent import ReactAgent, AgentConfig
+from llamaagent import AgentConfig, ReactAgent
 from llamaagent.llm import create_provider
+from llamaagent.storage.database import DatabaseConfig, DatabaseManager
 from llamaagent.tools import ToolRegistry, get_all_tools
-from llamaagent.storage.database import DatabaseManager, DatabaseConfig
 
 # Configure logging
 logging.basicConfig(
@@ -183,8 +183,8 @@ async def health_check():
         try:
             create_provider(provider_name, api_key="test")
             providers_available.append(provider_name)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Error: {e}")
     
     return HealthCheckResponse(
         status="healthy",

@@ -1,0 +1,55 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: llamaagent-api-pdb
+  namespace: llamaagent
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: llamaagent-api
+  maxUnavailable: 33%
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: llamaagent-worker-pdb
+  namespace: llamaagent
+spec:
+  minAvailable: 5
+  selector:
+    matchLabels:
+      app: llamaagent-worker
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres-pdb
+  namespace: llamaagent
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: postgres
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-pdb
+  namespace: llamaagent
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: redis
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: qdrant-pdb
+  namespace: llamaagent
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: qdrant

@@ -1,0 +1,124 @@
+# Simon Willison's LLM Ecosystem - Docker Image
+# Complete integration with all LLM providers and tools
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    sqlite3 \
+    nodejs \
+    npm \
+    jq \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+COPY requirements-openai.txt .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install -r requirements-openai.txt
+
+# Install Simon's LLM ecosystem
+RUN pip install \
+    llm>=0.17.0 \
+    llm-anthropic>=0.3.0 \
+    llm-openai-plugin>=0.2.0 \
+    llm-gemini>=0.2.0 \
+    llm-mistral>=0.1.0 \
+    llm-cmd>=0.1.0 \
+    llm-tools-sqlite>=0.2.0 \
+    llm-tools-datasette>=0.1.0 \
+    llm-tools-docker>=0.1.0 \
+    llm-tools-quickjs>=0.1.0 \
+    llm-tools-simpleeval>=0.1.0 \
+    sqlite-utils>=3.37.0 \
+    datasette>=1.0.0
+
+# Install QuickJS for JavaScript execution
+RUN npm install -g quickjs
+
+# Copy application code
+COPY . .
+
+# Install llamaagent in development mode
+RUN pip install -e .
+
+# Create data directory for persistence
+RUN mkdir -p /app/data && \
+    chmod 755 /app/data
+
+# Create non-root user
+RUN useradd -m -u 1000 llamaagent && \
+    chown -R llamaagent:llamaagent /app
+USER llamaagent
+
+# Expose ports
+EXPOSE 8000 8001 8002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command
+CMD ["python", "-m", "src.llamaagent.api.simon_ecosystem_api"]
+
+
+# Multi-stage build for production
+FROM base as production
+
+# Production optimizations
+ENV PYTHONOPTIMIZE=1
+
+# Install production dependencies only
+RUN pip install gunicorn uvicorn[standard]
+
+# Remove development dependencies
+RUN pip uninstall -y pytest pytest-asyncio pytest-mock pytest-cov
+
+# Production command with Gunicorn
+CMD ["gunicorn", "src.llamaagent.api.simon_ecosystem_api:app", \
+     "-w", "4", \
+     "-k", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8000", \
+     "--timeout", "120", \
+     "--keep-alive", "2", \
+     "--max-requests", "1000", \
+     "--max-requests-jitter", "100"]
+
+
+# Development stage
+FROM base as development
+
+# Install development dependencies
+RUN pip install \
+    pytest \
+    pytest-asyncio \
+    pytest-mock \
+    pytest-cov \
+    black \
+    isort \
+    mypy \
+    ruff
+
+# Development command
+CMD ["uvicorn", "src.llamaagent.api.simon_ecosystem_api:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--reload", \
+     "--log-level", "debug"] 

@@ -1,0 +1,128 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: llamaagent
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: postgres-backup
+            image: postgres:16-alpine
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: llamaagent-db-secret
+                  key: postgres-password
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET
+              value: llamaagent-backups
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              DATE=$(date +%Y%m%d_%H%M%S)
+              FILENAME="postgres_backup_${DATE}.sql.gz"
+              
+              echo "Starting backup at $(date)"
+              pg_dump -h postgres -U llamaagent -d llamaagent | gzip > /tmp/${FILENAME}
+              
+              echo "Uploading to S3"
+              aws s3 cp /tmp/${FILENAME} s3://${S3_BUCKET}/postgres/${FILENAME}
+              
+              echo "Backup completed at $(date)"
+              
+              # Cleanup old backups (keep last 30 days)
+              aws s3 ls s3://${S3_BUCKET}/postgres/ | while read -r line; do
+                createDate=$(echo $line | awk '{print $1" "$2}')
+                createDate=$(date -d "$createDate" +%s)
+                olderThan=$(date -d "30 days ago" +%s)
+                if [[ $createDate -lt $olderThan ]]; then
+                  fileName=$(echo $line | awk '{print $4}')
+                  if [[ $fileName != "" ]]; then
+                    aws s3 rm s3://${S3_BUCKET}/postgres/$fileName
+                  fi
+                fi
+              done
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: qdrant-backup
+  namespace: llamaagent
+spec:
+  schedule: "0 3 * * *"  # Daily at 3 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: qdrant-backup
+            image: curlimages/curl:latest
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET
+              value: llamaagent-backups
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              DATE=$(date +%Y%m%d_%H%M%S)
+              
+              echo "Starting Qdrant snapshot at $(date)"
+              
+              # Create snapshot
+              curl -X POST http://qdrant:6333/snapshots
+              
+              # Wait for snapshot to complete
+              sleep 30
+              
+              # Get snapshot list
+              SNAPSHOT=$(curl -s http://qdrant:6333/snapshots | jq -r '.result[0].name')
+              
+              # Download snapshot
+              curl -o /tmp/qdrant_snapshot_${DATE}.tar http://qdrant:6333/snapshots/${SNAPSHOT}
+              
+              # Upload to S3
+              aws s3 cp /tmp/qdrant_snapshot_${DATE}.tar s3://${S3_BUCKET}/qdrant/
+              
+              # Delete local snapshot
+              curl -X DELETE http://qdrant:6333/snapshots/${SNAPSHOT}
+              
+              echo "Qdrant backup completed at $(date)"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backup-aws-credentials
+  namespace: llamaagent
+type: Opaque
+stringData:
+  access-key-id: CHANGE_ME
+  secret-access-key: CHANGE_ME

@@ -1,0 +1,85 @@
+# MANIFEST.in for LlamaAgent PyPI package
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
+# Include essential files
+include README.md
+include LICENSE
+include CONTRIBUTING.md
+include CHANGELOG.md
+include pyproject.toml
+include setup.py
+
+# Include configuration files
+include config/*.json
+include config/*.yaml
+include config/*.yml
+
+# Include documentation
+recursive-include docs *
+recursive-include docs/_docs *
+recursive-include docs/_data *
+prune docs/_build
+prune docs/_site
+
+# Include scripts
+recursive-include scripts *
+
+# Include tests
+recursive-include tests *
+
+# Include examples
+recursive-include examples *
+
+# Include monitoring configurations
+recursive-include monitoring *
+recursive-include prometheus *
+
+# Include deployment configurations
+recursive-include k8s *
+recursive-include helm *
+recursive-include docker *
+include docker-compose*.yml
+include Dockerfile*
+
+# Include GitHub workflows
+recursive-include .github *
+
+# Include source code (already handled by setup.py but explicit is better)
+recursive-include src/llamaagent *
+
+# Exclude development and build artifacts
+prune build
+prune dist
+prune *.egg-info
+prune __pycache__
+prune .pytest_cache
+prune .mypy_cache
+prune .ruff_cache
+prune .coverage
+prune htmlcov
+prune .git
+prune .venv
+prune venv
+prune node_modules
+
+# Exclude specific file types
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude *.dylib
+global-exclude *.dll
+
+# Exclude temporary files
+global-exclude *~
+global-exclude *.tmp
+global-exclude *.bak
+global-exclude *.swp
+global-exclude *.swo
+
+# Exclude IDE files
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.sublime-*

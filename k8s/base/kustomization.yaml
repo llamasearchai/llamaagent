@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: llamaagent
+
+resources:
+  - namespace.yaml
+  - rbac.yaml
+  - configmap.yaml
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - statefulset.yaml
+  - hpa.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/name: llamaagent
+  app.kubernetes.io/managed-by: kustomize
+
+configMapGenerator:
+  - name: postgres-config
+    files:
+      - postgresql.conf
+  - name: redis-config
+    files:
+      - redis.conf
+
+secretGenerator:
+  - name: llamaagent-db-secret
+    literals:
+      - database-url=postgresql://llamaagent:CHANGE_ME@postgres:5432/llamaagent
+      - postgres-password=CHANGE_ME
+  - name: llamaagent-redis-secret
+    literals:
+      - redis-url=redis://:CHANGE_ME@redis:6379
+      - redis-password=CHANGE_ME
+  - name: llamaagent-api-keys
+    literals:
+      - openai-api-key=CHANGE_ME
+      - anthropic-api-key=CHANGE_ME
+      - deepseek-api-key=CHANGE_ME
+      - mistral-api-key=CHANGE_ME
+
+images:
+  - name: llamaagent/api
+    newTag: latest
+  - name: llamaagent/worker
+    newTag: latest
+  - name: llamaagent/multimodal-worker
+    newTag: latest
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: llamaagent-api
+      namespace: llamaagent
+    spec:
+      sessionAffinity: ClientIP
+      sessionAffinityConfig:
+        clientIP:
+          timeoutSeconds: 10800

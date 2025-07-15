@@ -1,0 +1,123 @@
+# LlamaAgent Advanced - Cutting-Edge AI System
+# Multi-stage Docker build for production deployment
+
+# Stage 1: Base Python environment with cutting-edge dependencies
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies for advanced features
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libfontconfig1 \
+    libxrender1 \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Dependencies installation
+FROM base as dependencies
+
+# Copy requirements
+COPY requirements.txt /tmp/requirements.txt
+
+# Install Python dependencies with optimization
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Stage 3: Application build
+FROM dependencies as application
+
+# Create app directory
+WORKDIR /app
+
+# Create non-root user for security
+RUN groupadd -r llamaagent && useradd -r -g llamaagent llamaagent
+
+# Copy application code
+COPY src/ /app/src/
+COPY config/ /app/config/
+COPY tests/ /app/tests/
+COPY scripts/ /app/scripts/
+
+# Copy startup scripts
+COPY docker/entrypoint.sh /app/entrypoint.sh
+COPY docker/healthcheck.sh /app/healthcheck.sh
+
+# Make scripts executable
+RUN chmod +x /app/entrypoint.sh /app/healthcheck.sh
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/cache && \
+    chown -R llamaagent:llamaagent /app
+
+# Install the package
+RUN pip install -e /app
+
+# Stage 4: Production image
+FROM application as production
+
+# Set user
+USER llamaagent
+
+# Expose ports
+EXPOSE 8000 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /app/healthcheck.sh
+
+# Environment variables for production
+ENV ENVIRONMENT=production \
+    LOG_LEVEL=INFO \
+    WORKERS=4 \
+    HOST=0.0.0.0 \
+    PORT=8000
+
+# Volume for persistent data
+VOLUME ["/app/data", "/app/logs"]
+
+# Entry point
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["uvicorn", "src.llamaagent.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
+# Stage 5: Development image with additional tools
+FROM application as development
+
+# Install development tools
+RUN pip install --no-cache-dir \
+    jupyter \
+    ipython \
+    pytest-xdist \
+    pytest-cov \
+    black \
+    ruff \
+    mypy
+
+# Expose additional ports for development
+EXPOSE 8000 8001 8888
+
+# Development environment variables
+ENV ENVIRONMENT=development \
+    LOG_LEVEL=DEBUG \
+    RELOAD=true
+
+# Development command
+CMD ["uvicorn", "src.llamaagent.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# Labels for metadata
+LABEL maintainer="Nik Jois <nikjois@llamasearch.ai>" \
+      version="2.0.0" \
+      description="Advanced LlamaAgent with cutting-edge AI capabilities" \
+      features="litellm,multimodal,reasoning,vision,orchestration" 

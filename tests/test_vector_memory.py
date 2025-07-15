@@ -1,23 +1,28 @@
 import os
+
 import pytest
-import asyncio
 
 pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture()
 async def memory():
-    os.environ.setdefault("DATABASE_URL", "postgresql://llama:llama@localhost:5432/llamaagent")
-    from llamaagent.storage.database import Database
-    try:
-        await Database.initialise()
-        # Attempt trivial query to verify connectivity
-        try:
-            await Database.execute("SELECT 1")
-        except Exception as exc:
-            pytest.skip(f"Database not available – {exc}")
+    os.environ.setdefault(
+        "DATABASE_URL", "postgresql://llama:llama@localhost:5432/llamaagent"
+    )
+    from src.llamaagent.storage.database import DatabaseManager, DatabaseConfig
 
-        from llamaagent.storage.vector_memory import PostgresVectorMemory
+    try:
+        # Create database instance
+        config = DatabaseConfig()
+        db = DatabaseManager(config)
+        await db.initialize()
+
+        # Skip test if database is not available
+        if db.pool is None:
+            pytest.skip("Database not available")
+
+        from src.llamaagent.storage.vector_memory import VectorMemory as PostgresVectorMemory
 
         mem = PostgresVectorMemory(agent_id="test")
         yield mem
@@ -36,4 +41,4 @@ async def test_add_and_search(memory):
         await memory.add(p)
 
     results = await memory.search("Hello", limit=1)
-    assert results 
+    assert results

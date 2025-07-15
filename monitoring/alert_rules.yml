@@ -1,0 +1,274 @@
+# Prometheus alerting rules for LlamaAgent
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
+groups:
+  - name: llamaagent_critical_alerts
+    rules:
+      # API Service Health
+      - alert: LlamaAgentAPIDown
+        expr: up{job="llamaagent-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "LlamaAgent API is down"
+          description: "LlamaAgent API has been down for more than 1 minute"
+
+      - alert: LlamaAgentWorkerDown
+        expr: up{job="llamaagent-worker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: worker
+        annotations:
+          summary: "LlamaAgent Worker is down"
+          description: "LlamaAgent Worker has been down for more than 2 minutes"
+
+      # Database Health
+      - alert: PostgreSQLDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "PostgreSQL database has been unreachable for more than 1 minute"
+
+      - alert: RedisDown
+        expr: up{job="redis-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: cache
+        annotations:
+          summary: "Redis cache is down"
+          description: "Redis cache has been unreachable for more than 1 minute"
+
+      # Vector Database
+      - alert: QdrantDown
+        expr: up{job="qdrant"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: vector_db
+        annotations:
+          summary: "Qdrant vector database is down"
+          description: "Qdrant has been unreachable for more than 2 minutes"
+
+  - name: llamaagent_performance_alerts
+    rules:
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: api:error_rate_5m > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+
+      # High Response Time
+      - alert: HighResponseTime
+        expr: api:response_time_p95_5m > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile response time is {{ $value }}s over the last 5 minutes"
+
+      # Low Request Rate (potential issue)
+      - alert: LowRequestRate
+        expr: api:request_rate_5m < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "Unusually low request rate"
+          description: "API request rate is only {{ $value }} requests/second over the last 5 minutes"
+
+  - name: llamaagent_resource_alerts
+    rules:
+      # System Resources
+      - alert: HighCPUUsage
+        expr: system:cpu_usage > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }} for more than 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: system:memory_usage > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }} for more than 5 minutes"
+
+      - alert: HighDiskUsage
+        expr: system:disk_usage > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "High disk usage"
+          description: "Disk usage is {{ $value | humanizePercentage }} for more than 5 minutes"
+
+      # Container Resources
+      - alert: ContainerHighMemory
+        expr: container_memory_usage_bytes{name=~"llamaagent-.*"} / container_spec_memory_limit_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container using high memory"
+          description: "Container {{ $labels.name }} is using {{ $value | humanizePercentage }} of its memory limit"
+
+      - alert: ContainerHighCPU
+        expr: rate(container_cpu_usage_seconds_total{name=~"llamaagent-.*"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container using high CPU"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value | humanizePercentage }}"
+
+  - name: llamaagent_business_alerts
+    rules:
+      # Agent Spawning Issues
+      - alert: AgentSpawningFailures
+        expr: rate(llamaagent_agent_spawn_failures_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          component: agent_spawning
+        annotations:
+          summary: "High agent spawning failure rate"
+          description: "Agent spawning is failing at {{ $value }} failures/second"
+
+      # Task Planning Issues
+      - alert: TaskPlanningFailures
+        expr: rate(llamaagent_task_planning_failures_total[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: warning
+          component: task_planning
+        annotations:
+          summary: "High task planning failure rate"
+          description: "Task planning is failing at {{ $value }} failures/second"
+
+      # LLM Provider Issues
+      - alert: LLMProviderErrors
+        expr: rate(llamaagent_llm_request_errors_total[5m]) > 0.2
+        for: 2m
+        labels:
+          severity: warning
+          component: llm_providers
+        annotations:
+          summary: "High LLM provider error rate"
+          description: "LLM requests are failing at {{ $value }} errors/second for provider {{ $labels.provider }}"
+
+      # Research Module Issues
+      - alert: ResearchModuleErrors
+        expr: rate(llamaagent_research_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: research
+        annotations:
+          summary: "Research module errors"
+          description: "Research operations are failing at {{ $value }} errors/second"
+
+  - name: llamaagent_security_alerts
+    rules:
+      # Security Events
+      - alert: UnauthorizedAccess
+        expr: rate(llamaagent_unauthorized_requests_total[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Unauthorized access attempts detected"
+          description: "{{ $value }} unauthorized requests/second detected"
+
+      - alert: SuspiciousActivity
+        expr: rate(llamaagent_suspicious_commands_total[5m]) > 0.01
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Suspicious command activity detected"
+          description: "{{ $value }} suspicious commands/second detected"
+
+  - name: llamaagent_data_alerts
+    rules:
+      # Database Performance
+      - alert: DatabaseSlowQueries
+        expr: rate(postgresql_slow_queries_total[5m]) > 1
+        for: 3m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database slow queries detected"
+          description: "{{ $value }} slow queries/second detected in PostgreSQL"
+
+      - alert: DatabaseConnectionsHigh
+        expr: postgresql_connections_active / postgresql_connections_max > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connections are {{ $value | humanizePercentage }} of maximum"
+
+      # Vector Database Performance
+      - alert: QdrantHighLatency
+        expr: qdrant_request_duration_seconds_p95 > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: vector_db
+        annotations:
+          summary: "High Qdrant query latency"
+          description: "95th percentile query latency is {{ $value }}s"
+
+  - name: llamaagent_availability_alerts
+    rules:
+      # Service Availability
+      - alert: ServiceDegradation
+        expr: (api:request_rate_5m > 0 and api:error_rate_5m > 0.05) or api:response_time_p95_5m > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: service
+        annotations:
+          summary: "Service degradation detected"
+          description: "Service is experiencing degraded performance"
+
+      # Health Check Failures
+      - alert: HealthCheckFailures
+        expr: rate(llamaagent_health_check_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: health
+        annotations:
+          summary: "Health check failures"
+          description: "Health checks are failing at {{ $value }} failures/second"
