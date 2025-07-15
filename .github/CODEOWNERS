@@ -1,0 +1,17 @@
+# Default code owners for the entire repository
+* @nikjois
+
+# Documentation
+/docs/ @nikjois
+*.md @nikjois
+
+# Core framework
+/src/llamaagent/ @nikjois
+
+# Tests
+/tests/ @nikjois
+
+# Configuration
+*.yml @nikjois
+*.yaml @nikjois
+*.toml @nikjois
