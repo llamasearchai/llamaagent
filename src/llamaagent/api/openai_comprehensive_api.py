@@ -471,13 +471,13 @@ async def batch_process(requests: List[Dict[str, Any]]):
                     )
                 elif operation_type == "reasoning":
                     tool = get_tool("reasoning")
-                    result = await tool.aexecute(**request_data.get("params", {})
+                    result = await tool.aexecute(**request_data.get("params", {})))
                 elif operation_type == "embeddings":
                     tool = get_tool("embeddings")
-                    result = await tool.aexecute(**request_data.get("params", {})
+                    result = await tool.aexecute(**request_data.get("params", {}))
                 elif operation_type == "image_generation":
                     tool = get_tool("image_generation")
-                    result = await tool.aexecute(**request_data.get("params", {})
+                    result = await tool.aexecute(**request_data.get("params", {}))
                 else:
                     result = {
                         "success": False,

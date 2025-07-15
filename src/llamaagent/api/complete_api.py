@@ -226,8 +226,28 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
     if not credentials:
         return {"user_id": "anonymous", "permissions": ["read"]}
     
-    # TODO: Implement proper JWT token validation
-    return {"user_id": "authenticated", "permissions": ["read", "write", "admin"]}
+    try:
+        # Decode JWT token
+        import jwt
+        from datetime import datetime
+        
+        # In production, use proper secret key from environment
+        SECRET_KEY = os.getenv("JWT_SECRET", "development-secret-key-change-in-production")
+        ALGORITHM = "HS256"
+        
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # Check expiration
+        if "exp" in payload and datetime.fromtimestamp(payload["exp"]) < datetime.now():
+            raise HTTPException(status_code=401, detail="Token expired")
+        
+        # Extract user info from payload
+        user_id = payload.get("sub", "unknown")
+        permissions = payload.get("permissions", ["read"])
+        
+        return {"user_id": user_id, "permissions": permissions}
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
 
 
 def update_metrics() -> None:
@@ -242,11 +262,43 @@ async def health_check() -> HealthResponse:
     uptime = time.time() - app_state["metrics"]["uptime_start"]
     
     # Check services
-    services = {
-        "database": True,  # TODO: Actual database check
-        "redis": True,     # TODO: Actual redis check
-        "llm_providers": True,  # TODO: Check LLM providers
-    }
+    services = {}
+    
+    # Database check
+    try:
+        from llamaagent.storage import DatabaseManager
+        db = DatabaseManager()
+        db.get_session()  # Test connection
+        services["database"] = True
+    except Exception:
+        services["database"] = False
+    
+    # Redis check
+    try:
+        import redis
+        r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"),
+                       port=int(os.getenv("REDIS_PORT", 6379)),
+                       decode_responses=True)
+        r.ping()
+        services["redis"] = True
+    except Exception:
+        services["redis"] = False
+    
+    # LLM providers check
+    try:
+        from llamaagent.llm import ProviderFactory
+        factory = ProviderFactory()
+        # Check if at least one provider is available
+        available_providers = []
+        for provider_name in ["openai", "anthropic", "ollama"]:
+            try:
+                factory.create(provider_name)
+                available_providers.append(provider_name)
+            except Exception:
+                pass
+        services["llm_providers"] = len(available_providers) > 0
+    except Exception:
+        services["llm_providers"] = False
     
     return HealthResponse(
         status="healthy" if all(services.values()) else "degraded",

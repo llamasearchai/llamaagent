@@ -55,7 +55,8 @@ class ProviderMetrics:
     hourly_requests: Deque[Tuple[datetime, int]] = field(
         default_factory=lambda: deque(maxlen=24)
     )
-    recent_latencies: Deque[float] = field(default_factory=lambda: deque(maxlen=100)
+    recent_latencies: Deque[float] = field(default_factory=lambda: deque(maxlen=100))
+    
     @property
     def success_rate(self) -> float:
         """Calculate success rate."""
