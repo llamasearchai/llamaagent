@@ -5,15 +5,33 @@ All notable changes to LlamaAgent will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.1] - 2025-07-15
 
 ### Added
-- Initial release preparation
-- Complete documentation system with GitHub Pages
-- Comprehensive CI/CD pipeline
-- Full PyPI package configuration
+- Proper JWT token validation with expiration checks
+- Real health checks for database, Redis, and LLM providers
+- MLX provider implementation with Apple Silicon support
+- Comprehensive test coverage reporting
+- GitHub Actions workflow for documentation deployment
+- Pre-commit hooks for code quality
 
-## [0.1.0] - 2024-12-XX
+### Fixed
+- Import paths in openai_cli.py
+- Syntax errors in routing metrics and API endpoints
+- Missing closing parentheses in multiple files
+- Test import errors and coverage configuration
+
+### Security
+- JWT tokens now properly validated with configurable secret key
+- Token expiration enforced before granting access
+- Invalid tokens raise proper 401 Unauthorized errors
+
+### Changed
+- Health endpoint now performs actual service availability checks
+- MLX provider falls back to Ollama when MLX is not available
+- Improved error handling throughout the codebase
+
+## [0.1.0] - 2024-12-15
 
 ### Added
 - Advanced AI Agent Framework with Enterprise Features
