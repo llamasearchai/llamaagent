@@ -165,13 +165,13 @@ class CompleteCliApp:
         menu_text = """
 [bold]Main Menu:[/bold]
 
-1. 💬 Start Conversation
-2. 🤖 Manage Agents
-3. 📋 View Tasks
-4. 📊 System Analytics
-5. ⚙️  Configuration
-6. 📚 Documentation
-7. 🚪 Exit
+1. Start Conversation
+2. Manage Agents
+3. View Tasks
+4. System Analytics
+5. Configuration
+6. Documentation
+7. Exit
 
 Choose an option (1-7): """
         return Prompt.ask(menu_text, choices=["1", "2", "3", "4", "5", "6", "7"])
@@ -615,7 +615,7 @@ Choose an option: """
             tasks_completed = int(data['performance'] * 100)
             success_rate = f"{data['performance']*100:.1f}%"
             avg_response = f"{(1-data['performance'])*5+0.5:.2f}s"
-            rating = "⭐" * int(data['performance'] * 5)
+            rating = "*" * int(data['performance'] * 5)
             
             table.add_row(
                 data['name'],

@@ -1,19 +1,23 @@
 # LlamaAgent: Advanced AI Agent Framework
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+<p align="center">
+  <img src="llamaagent.svg" alt="LlamaAgent" width="160"/>
+</p>
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/llamaagent.svg)](https://pypi.org/project/llamaagent/)
 [![Downloads](https://img.shields.io/pypi/dm/llamaagent.svg)](https://pypi.org/project/llamaagent/)
-[![GitHub Stars](https://img.shields.io/github/stars/nikjois/llamaagent.svg)](https://github.com/nikjois/llamaagent)
-[![Code Coverage](https://img.shields.io/codecov/c/github/nikjois/llamaagent.svg)](https://codecov.io/gh/nikjois/llamaagent)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/nikjois/llamaagent/ci.yml?branch=main)](https://github.com/nikjois/llamaagent/actions)
-[![Documentation Status](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://nikjois.github.io/llamaagent/)
+[![GitHub Stars](https://img.shields.io/github/stars/llamasearchai/llamaagent.svg)](https://github.com/llamasearchai/llamaagent)
+[![Code Coverage](https://img.shields.io/codecov/c/github/llamasearchai/llamaagent.svg)](https://codecov.io/gh/llamasearchai/llamaagent)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/llamasearchai/llamaagent/ci.yml?branch=main)](https://github.com/llamasearchai/llamaagent/actions)
+[![Documentation Status](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://llamasearchai.github.io/llamaagent/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
 [![Type Checked: mypy](https://img.shields.io/badge/type_checked-mypy-blue.svg)](https://mypy-lang.org/)
 [![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-green.svg)](https://openai.com/)
-[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://hub.docker.com/r/nikjois/llamaagent)
+[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://hub.docker.com/r/llamasearchai/llamaagent)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-blue.svg)](https://kubernetes.io/)
 
 **LlamaAgent** is a production-ready, enterprise-grade AI agent framework that combines the power of multiple LLM providers with advanced reasoning capabilities, comprehensive tool integration, and enterprise-level security features.
@@ -329,7 +333,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Development Setup
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/llamaagent.git
+git clone https://github.com/llamasearchai/llamaagent.git
 cd llamaagent
 
 # Install for development
@@ -354,16 +358,16 @@ pytest
 ### Documentation
 - [**API Reference**](https://llamaagent.readthedocs.io/en/latest/api/)
 - [**User Guide**](https://llamaagent.readthedocs.io/en/latest/guide/)
-- [**Examples**](https://github.com/yourusername/llamaagent/tree/main/examples)
+- [**Examples**](https://github.com/llamasearchai/llamaagent/tree/main/examples)
 - [**Architecture Guide**](https://llamaagent.readthedocs.io/en/latest/architecture/)
 
 ### Community
-- [**GitHub Discussions**](https://github.com/yourusername/llamaagent/discussions)
+- [**GitHub Discussions**](https://github.com/llamasearchai/llamaagent/discussions)
 - [**Discord Server**](https://discord.gg/llamaagent)
 - [**Stack Overflow**](https://stackoverflow.com/questions/tagged/llamaagent)
 
 ### Support
-- [**Issue Tracker**](https://github.com/yourusername/llamaagent/issues)
+- [**Issue Tracker**](https://github.com/llamasearchai/llamaagent/issues)
 - [**Security Reports**](mailto:security@llamaagent.ai)
 - [**Commercial Support**](mailto:support@llamaagent.ai)
 
@@ -394,6 +398,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by [Nik Jois](https://github.com/nikjois) and the LlamaAgent community**
+**Made with love by [Nik Jois](https://github.com/nikjois) and the LlamaAgent community**
 
 For questions, support, or contributions, please contact [nikjois@llamasearch.ai](mailto:nikjois@llamasearch.ai)
