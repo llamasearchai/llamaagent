@@ -76,6 +76,11 @@ mkdocs.yml
 secrets/
 credentials/
 
+# AI Related files
+.mcp 
+.claude 
+CLAUDE.md 
+
 # API Keys - Additional safety
 *api_key*
 *apikey*

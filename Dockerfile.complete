@@ -32,14 +32,15 @@ RUN apt-get update && apt-get install -y \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy requirements
-COPY requirements.txt pyproject.toml setup.py ./
-COPY src/ ./src/
+# Copy pyproject.toml and necessary files
+COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Install Python dependencies
 RUN pip install --upgrade pip wheel setuptools && \
-    pip install -r requirements.txt && \
-    pip install -e .
+    pip install -e ".[all]"
 
 # Production stage
 FROM python:3.11-slim as production
@@ -77,7 +78,10 @@ RUN mkdir -p /app/{config,data,logs,uploads,cache,checkpoints} && \
     chown -R llamaagent:llamaagent /app
 
 # Copy application code
-COPY --chown=llamaagent:llamaagent . /app/
+COPY --chown=llamaagent:llamaagent src/ /app/src/
+COPY --chown=llamaagent:llamaagent pyproject.toml /app/
+COPY --chown=llamaagent:llamaagent README.md /app/
+COPY --chown=llamaagent:llamaagent LICENSE /app/
 WORKDIR /app
 
 # Copy configuration files

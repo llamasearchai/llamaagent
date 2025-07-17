@@ -31,7 +31,7 @@ if str(SRC_DIR) not in sys.path:
 
 # Import OpenAI stub early to prevent real network calls
 try:
-    from src.llamaagent.integration._openai_stub import install_openai_stub  # type: ignore
+    from llamaagent.integration._openai_stub import install_openai_stub  # type: ignore
     install_openai_stub()
 except Exception:  # pylint: disable=broad-except
     # Ignore if stub cannot be imported due to syntax errors.

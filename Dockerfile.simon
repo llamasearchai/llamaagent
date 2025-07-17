@@ -25,14 +25,15 @@ RUN apt-get update && apt-get install -y \
 # Create app directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-COPY requirements-openai.txt .
+# Copy pyproject.toml and necessary files for better caching
+COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install -r requirements-openai.txt
+    pip install -e ".[openai-extended]"
 
 # Install Simon's LLM ecosystem
 RUN pip install \
@@ -105,16 +106,8 @@ CMD ["gunicorn", "src.llamaagent.api.simon_ecosystem_api:app", \
 # Development stage
 FROM base as development
 
-# Install development dependencies
-RUN pip install \
-    pytest \
-    pytest-asyncio \
-    pytest-mock \
-    pytest-cov \
-    black \
-    isort \
-    mypy \
-    ruff
+# Install development dependencies from pyproject.toml
+RUN pip install -e ".[dev]"
 
 # Development command
 CMD ["uvicorn", "src.llamaagent.api.simon_ecosystem_api:app", \

@@ -14,15 +14,20 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy pyproject.toml and necessary files for better caching
+COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
+
+# Install dependencies
+RUN pip install --no-cache-dir -e ".[all]"
 
 # Copy application code
-COPY . .
+COPY src/ ./src/
+COPY llamaagent_master_program.py ./
 
-# Install the package
-RUN pip install -e .
+# Package already installed above
 
 # Create necessary directories
 RUN mkdir -p /var/log/llamaagent /app/data /app/cache

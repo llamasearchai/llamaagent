@@ -27,6 +27,8 @@ WORKDIR /app
 
 # Copy dependency files
 COPY pyproject.toml poetry.lock* ./
+COPY README.md LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Stage 2: Development and testing environment
 FROM base as development
@@ -36,7 +38,10 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
 # Copy application code
-COPY . .
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY master_llamaagent_system.py comprehensive_syntax_fixer.py fastapi_app.py ./
+COPY monitoring/ ./monitoring/
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/results /app/data
@@ -54,7 +59,10 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-dev --no-interaction --no-ansi
 
 # Copy application code
-COPY . .
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY master_llamaagent_system.py comprehensive_syntax_fixer.py fastapi_app.py ./
+COPY monitoring/ ./monitoring/
 
 # Create non-root user
 RUN groupadd -r llamaagent && useradd -r -g llamaagent llamaagent
@@ -82,8 +90,7 @@ FROM production as fastapi
 # Install additional FastAPI dependencies
 RUN pip install fastapi uvicorn[standard] gunicorn
 
-# Copy FastAPI application
-COPY fastapi_app.py ./
+# FastAPI application already copied above
 
 # Expose FastAPI port
 EXPOSE 8000

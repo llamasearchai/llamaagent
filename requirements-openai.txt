@@ -1,3 +1,9 @@
+# ⚠️ DEPRECATION NOTICE ⚠️
+# This requirements-openai.txt file is deprecated and will be removed in a future release.
+# Please use pyproject.toml instead:
+#   pip install 'llamaagent[openai-extended]'
+# See scripts/migrate_to_pyproject.sh for migration help
+
 # OpenAI Comprehensive Integration Requirements
 # Author: Nik Jois
 # Email: nikjois@llamasearch.ai

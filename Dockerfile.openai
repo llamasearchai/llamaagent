@@ -19,21 +19,21 @@ RUN apt-get update && apt-get install -y \
 # Create application directory
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-COPY requirements-openai.txt .
+# Copy pyproject.toml and necessary files
+COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Install Python dependencies
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install -r requirements-openai.txt
+    pip install -e ".[openai-extended]"
 
 # Development stage
 FROM base as development
 
 # Install development dependencies
-COPY requirements-dev.txt .
-RUN pip install -r requirements-dev.txt
+RUN pip install -e ".[dev,dev-profiling]"
 
 # Copy source code
 COPY . .
@@ -62,12 +62,12 @@ FROM base as production
 
 # Copy only necessary files
 COPY src/ /app/src/
-COPY setup.py /app/
 COPY pyproject.toml /app/
 COPY README.md /app/
+COPY LICENSE /app/
 
 # Install package
-RUN pip install .
+RUN pip install -e "."
 
 # Create application user
 RUN groupadd -r llamaagent && useradd -r -g llamaagent llamaagent
