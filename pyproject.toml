@@ -171,7 +171,7 @@ observability = [
     "opentelemetry-sdk>=1.21.0,<2.0.0",
     "opentelemetry-instrumentation-fastapi>=0.42b0,<1.0.0",
     "opentelemetry-instrumentation-requests>=0.42b0,<1.0.0",
-    "opentelemetry-exporter-prometheus>=1.12.0,<2.0.0",
+    "opentelemetry-exporter-prometheus>=0.42b0,<1.0.0",
     "jaeger-client>=4.8.0,<5.0.0",
 ]
 

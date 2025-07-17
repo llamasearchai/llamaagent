@@ -24,8 +24,10 @@ RUN apt-get update && apt-get install -y \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy pyproject.toml and install Python dependencies
+# Copy pyproject.toml and necessary files for installation
 COPY pyproject.toml ./
+COPY README.md ./
+COPY LICENSE ./
 COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 RUN pip install --upgrade pip setuptools wheel && \
     pip install -e ".[dev,all]"

@@ -12,13 +12,15 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /build
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock* requirements*.txt ./
+COPY pyproject.toml poetry.lock* ./
+COPY README.md LICENSE ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Install poetry and dependencies
 RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi || \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -e ".[all]"
 
 # Production stage
 FROM python:3.11-slim
@@ -40,7 +42,10 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
-COPY --chown=llamaagent:llamaagent . .
+COPY --chown=llamaagent:llamaagent src/ ./src/
+COPY --chown=llamaagent:llamaagent pyproject.toml ./
+COPY --chown=llamaagent:llamaagent README.md ./
+COPY --chown=llamaagent:llamaagent LICENSE ./
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/cache /app/models && \

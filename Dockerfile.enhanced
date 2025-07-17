@@ -90,20 +90,21 @@ USER builder
 WORKDIR /app
 
 # Copy dependency files
-COPY --chown=builder:builder pyproject.toml poetry.lock* requirements*.txt ./
+COPY --chown=builder:builder pyproject.toml poetry.lock* ./
+COPY --chown=builder:builder README.md LICENSE ./
+COPY --chown=builder:builder src/llamaagent/_version.py ./src/llamaagent/_version.py
 
 # Install Python dependencies with security checks
-RUN if [ -f pyproject.toml ]; then \
+RUN if [ -f poetry.lock ]; then \
         poetry config virtualenvs.create false && \
         poetry install --no-dev --no-interaction --no-ansi; \
     else \
-        pip install --no-cache-dir --user -r requirements.txt; \
+        pip install --no-cache-dir --user -e ".[all,monitoring,enterprise]"; \
     fi
 
 # Copy source code
 COPY --chown=builder:builder src/ ./src/
 COPY --chown=builder:builder tests/ ./tests/
-COPY --chown=builder:builder setup.py README.md LICENSE ./
 
 # Install package
 RUN pip install --no-cache-dir --user -e .

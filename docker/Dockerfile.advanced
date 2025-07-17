@@ -28,13 +28,15 @@ RUN apt-get update && apt-get install -y \
 # Stage 2: Dependencies installation
 FROM base as dependencies
 
-# Copy pyproject.toml
+# Copy pyproject.toml and necessary files
 COPY pyproject.toml /tmp/pyproject.toml
+COPY README.md /tmp/README.md
+COPY LICENSE /tmp/LICENSE
 COPY src/llamaagent/_version.py /tmp/src/llamaagent/_version.py
 
 # Install Python dependencies with optimization
 RUN pip install --upgrade pip setuptools wheel && \
-    cd /tmp && pip install --no-cache-dir ".[all,openai-extended]" && \
+    cd /tmp && pip install --no-cache-dir -e ".[all,openai-extended]" && \
     pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # Stage 3: Application build
@@ -63,7 +65,8 @@ RUN chmod +x /app/entrypoint.sh /app/healthcheck.sh
 RUN mkdir -p /app/data /app/logs /app/cache && \
     chown -R llamaagent:llamaagent /app
 
-# Install the package
+# Install the package from current directory
+COPY pyproject.toml README.md LICENSE /app/
 RUN pip install -e /app
 
 # Stage 4: Production image
