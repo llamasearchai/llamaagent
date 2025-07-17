@@ -24,11 +24,11 @@ RUN apt-get update && apt-get install -y \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt requirements-dev.txt ./
+# Copy pyproject.toml and install Python dependencies
+COPY pyproject.toml ./
+COPY src/llamaagent/_version.py ./src/llamaagent/_version.py
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install -r requirements.txt && \
-    pip install -r requirements-dev.txt
+    pip install -e ".[dev,all]"
 
 # =====================================
 # Stage 2: Production Runtime

@@ -1,3 +1,10 @@
+# ⚠️ DEPRECATION NOTICE ⚠️
+# This requirements.txt file is deprecated and will be removed in a future release.
+# Please use pyproject.toml instead:
+#   pip install llamaagent
+#   pip install -e '.[dev]'  # for development
+# See scripts/migrate_to_pyproject.sh for migration help
+
 # Core dependencies
 asyncpg>=0.29.0
 numpy>=1.24.0

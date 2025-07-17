@@ -28,12 +28,13 @@ RUN apt-get update && apt-get install -y \
 # Stage 2: Dependencies installation
 FROM base as dependencies
 
-# Copy requirements
-COPY requirements.txt /tmp/requirements.txt
+# Copy pyproject.toml
+COPY pyproject.toml /tmp/pyproject.toml
+COPY src/llamaagent/_version.py /tmp/src/llamaagent/_version.py
 
 # Install Python dependencies with optimization
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    cd /tmp && pip install --no-cache-dir ".[all,openai-extended]" && \
     pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # Stage 3: Application build

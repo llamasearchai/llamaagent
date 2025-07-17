@@ -1,3 +1,9 @@
+# ⚠️ DEPRECATION NOTICE ⚠️
+# This requirements-dev.txt file is deprecated and will be removed in a future release.
+# Please use pyproject.toml instead:
+#   pip install -e '.[dev]'
+# See scripts/migrate_to_pyproject.sh for migration help
+
 # Development and testing dependencies
 -r requirements.txt
 
