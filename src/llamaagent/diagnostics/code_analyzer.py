@@ -277,11 +277,11 @@ class CodeAnalyzer:
         complexity = 1
 
         for node in ast.walk(func_node):
-            if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor):
+            if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor)):
                 complexity += 1
             elif isinstance(node, ast.Try):
                 complexity += len(node.handlers)
-            elif isinstance(node, (ast.And, ast.Or):
+            elif isinstance(node, (ast.And, ast.Or)):
                 complexity += 1
 
         return complexity

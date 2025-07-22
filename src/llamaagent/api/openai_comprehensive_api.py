@@ -481,24 +481,20 @@ async def batch_process(requests: List[Dict[str, Any]]):
                         "error": f"Unknown operation type: {operation_type}",
                     }
 
-                results.append()
-                    {
-                        "index": i,
-                        "request_id": request_data.get("id", f"batch_{i}"),
-                        "success": result.get("success", True),
-                        "result": result,
-                    }
-                )
+                results.append({
+                    "index": i,
+                    "request_id": request_data.get("id", f"batch_{i}"),
+                    "success": result.get("success", True),
+                    "result": result,
+                })
 
             except Exception as e:
-                results.append()
-                    {
-                        "index": i,
-                        "request_id": request_data.get("id", f"batch_{i}"),
-                        "success": False,
-                        "error": str(e),
-                    }
-                )
+                results.append({
+                    "index": i,
+                    "request_id": request_data.get("id", f"batch_{i}"),
+                    "success": False,
+                    "error": str(e),
+                })
 
         # Calculate batch statistics
         successful_requests = sum(1 for r in results if r["success"])
@@ -560,7 +556,7 @@ async def use_tool(tool_type: str, operation_data: Dict[str, Any]):
             return APIResponse(
                 success=False,
                 error=f"Unknown tool type: {tool_type}",
-                data={"available_tools": list(OPENAI_TOOLS.keys()},
+                data={"available_tools": list(OPENAI_TOOLS.keys())},
             )
 
         tool = get_tool(tool_type)

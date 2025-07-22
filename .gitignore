@@ -1,3 +1,6 @@
+# LlamaAgent Professional .gitignore
+# Author: Nik Jois <nikjois@llamasearch.ai>
+
 # Python
 __pycache__/
 *.py[cod]
@@ -22,7 +25,85 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environments
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
 .env
 .venv
 env/
@@ -31,125 +112,246 @@ ENV/
 env.bak/
 venv.bak/
 
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.project
-.pydevproject
-.settings/
-.DS_Store
+# Spyder project settings
+.spyderproject
+.spyproject
 
-# Testing
-.pytest_cache/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
-*.log
-.hypothesis/
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
-.ruff_cache/
-.pyright/
 
-# Documentation
-docs/_build/
-docs/.doctrees/
-site/
-mkdocs.yml
+# Pyre type checker
+.pyre/
 
-# Security - NEVER commit these
-.env
-.env.local
-.env.production
-.env.*.local
-*.key
-*.pem
-*.cert
-*.crt
-*.p12
-*.pfx
-secrets/
-credentials/
+# pytype static type analyzer
+.pytype/
 
-# API Keys - Additional safety
-*api_key*
-*apikey*
-*API_KEY*
-*APIKEY*
-*secret*
-*SECRET*
-*password*
-*PASSWORD*
-config/production.json
-config/secrets.json
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# AI/ML Specific
+*.model
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pb
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.mlmodel
+checkpoints/
+models/
+data/raw/
+data/processed/
+data/external/
+logs/
+runs/
+wandb/
+mlruns/
+.neptune/
+.tensorboard/
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
-instance/
-migrations/versions/
+*.sql
 
-# Logs
-logs/
+# Configuration files with secrets
+config/local.yaml
+config/secrets.yaml
+config/production.yaml
+.env.local
+.env.production
+.env.development
+secrets.json
+credentials.json
+
+# API Keys and Tokens
+.openai_key
+.anthropic_key
+.together_key
+.cohere_key
+api_keys.txt
+tokens.txt
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.out
+*.err
 
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Project specific
-llamaagent.db
-demo_results.json
-openai_integration_demo_report.json
-benchmark_results/
-data/
-ollama-models/
-.ollama/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints
+# Build artifacts
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.dmg
+*.iso
 
 # Docker
 .dockerignore
 docker-compose.override.yml
 
-# Monitoring
-prometheus-data/
-grafana-data/
-elasticsearch-data/
+# Kubernetes
+*.kubeconfig
 
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.backup
-*.old
-.cache/
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
 
-# CI/CD
-.github/workflows/local/
-
-# Package managers
+# Node.js (for documentation tools)
 node_modules/
-package-lock.json
-yarn.lock
-poetry.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Generated files
-htmlcov/
-.benchmarks/
+*.generated.*
+*_pb2.py
+*_pb2_grpc.py
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Project specific
+benchmark_results/
+demo_output/
+reports/
+results/
+syntax_backups/
+remove_emojis.py
+DEPLOYMENT_SUMMARY.md
+FINAL_RELEASE_SUMMARY.md
+
+# Multiple workflow files (keep only one)
+.github/workflows/ci-cd-complete.yml
+.github/workflows/ci.yml
+.github/workflows/comprehensive-ci.yml
+
+# Cleanup unnecessary demo and test files
+*demo*.py
+*test_comprehensive*.py
+comprehensive_*.py
+complete_*.py
+*_fixer.py
+*_cleanup.py
+batch_*.py
+auto_fix*.py
+automated_*.py
+build_*.py
+clean_*.py
+deploy_*.py
+diagnostic*.py
+
+# Remove duplicate documentation files
+*COMPLETION*.md
+*COMPREHENSIVE*.md
+*FIXES*.md
+*IMPLEMENTATION*.md
+*INTEGRATION*.md
+*RESEARCH*.md
+*SHELL_GPT*.md
+*SYSTEM*.md
+BASE_AGENT*.md
+DATABASE_FIX*.md
+
+# Remove benchmark and test result files
+benchmark_results*.json
+comprehensive_test*.json
+demo_results*.json
+complete_demo_results.json
+
+# Remove temporary configuration files
+config/cutting_edge_config.yaml
+config/example_config.json
