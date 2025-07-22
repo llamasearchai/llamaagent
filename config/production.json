@@ -1,0 +1,29 @@
+{
+  "llm_providers": {
+    "openai": {
+      "api_key": "${OPENAI_API_KEY}",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7
+    },
+    "anthropic": {
+      "api_key": "${ANTHROPIC_API_KEY}",
+      "model": "claude-3-sonnet-20240229",
+      "temperature": 0.7
+    },
+    "mock": {
+      "model": "mock-model",
+      "responses": [
+        "Mock response for testing"
+      ]
+    }
+  },
+  "database": {
+    "url": "${DATABASE_URL}",
+    "pool_size": 10
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "debug": false
+  }
+}
