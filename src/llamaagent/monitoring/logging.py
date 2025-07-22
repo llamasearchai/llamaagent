@@ -22,6 +22,7 @@ from typing import Any, Callable, Dict, Iterator, Optional, Type
 
 try:
     import psutil
+
     _psutil_available = True
     del psutil  # Remove from module namespace
 except ImportError:
@@ -31,7 +32,7 @@ except ImportError:
 @dataclass
 class LogContext:
     """Context information for structured logging."""
-    
+
     trace_id: Optional[str] = None
     span_id: Optional[str] = None
     user_id: Optional[str] = None
@@ -53,7 +54,7 @@ log_context: ContextVar[Dict[str, Any]] = ContextVar("log_context", default={})
 
 class StructuredFormatter(logging.Formatter):
     """Custom formatter for structured JSON logging."""
-    
+
     def __init__(self, include_traceback: bool = True):
         super().__init__()
         self.include_traceback = include_traceback
@@ -89,18 +90,21 @@ class StructuredFormatter(logging.Formatter):
         if record.exc_info and self.include_traceback:
             exc_type, exc_value, _ = record.exc_info
             if exc_type is not None:
-                log_data["exception"] = json.dumps({
-                    "type": exc_type.__name__,
-                    "message": str(exc_value),
-                    "traceback": self.formatException(record.exc_info),
-                }, default=str)
+                log_data["exception"] = json.dumps(
+                    {
+                        "type": exc_type.__name__,
+                        "message": str(exc_value),
+                        "traceback": self.formatException(record.exc_info),
+                    },
+                    default=str,
+                )
 
         return json.dumps(log_data, default=str)
 
 
 class StructuredLogger:
     """Structured logger with context support."""
-    
+
     def __init__(self, name: str, level: str = "INFO"):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(getattr(logging, level.upper()))
@@ -110,7 +114,7 @@ class StructuredLogger:
         # Merge context
         ctx = log_context.get().copy()
         ctx.update(kwargs)
-        
+
         # Create log record with extra fields
         self.logger.log(level, message, extra=ctx)
 
@@ -141,7 +145,7 @@ class StructuredLogger:
 
 class ContextualLogger:
     """Logger with context."""
-    
+
     def __init__(self, logger: logging.Logger, context: LogContext) -> None:
         self.logger = logger
         self.context = context
@@ -150,19 +154,19 @@ class ContextualLogger:
     def __enter__(self) -> "ContextualLogger":
         # Store previous context
         self._previous_context = log_context.get()
-        
+
         # Merge contexts
         new_context = self._previous_context.copy()
         new_context.update(self.context.to_dict())
         log_context.set(new_context)
-        
+
         return self
 
     def __exit__(
-        self, 
-        exc_type: Optional[Type[BaseException]], 
-        exc_val: Optional[BaseException], 
-        exc_tb: Optional[TracebackType]
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
     ) -> None:
         # Restore previous context
         log_context.set(self._previous_context)
@@ -189,52 +193,54 @@ def log_performance(
     level: int = logging.INFO,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator for logging performance of operations."""
-    
+
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
         async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             start_time = time.time()
             logger = logging.getLogger(func.__module__ if func.__module__ else __name__)
-            
+
             # Collect initial metrics
             initial_memory: Optional[float] = None
             if include_memory and _psutil_available:
                 try:
                     import psutil
+
                     process = psutil.Process()
                     initial_memory = process.memory_info().rss / 1024 / 1024  # MB
                 except Exception as e:
                     # Memory monitoring is not critical, but log the issue
                     logger.debug(f"Unable to collect initial memory metrics: {e}")
-            
+
             try:
                 result: Any = await func(*args, **kwargs)
                 duration = time.time() - start_time
-                
+
                 # Collect final metrics
                 extra: Dict[str, Any] = {
                     "operation": operation_name,
                     "duration_seconds": duration,
                     "status": "success",
                 }
-                
+
                 if initial_memory is not None and _psutil_available:
                     try:
                         import psutil
+
                         process = psutil.Process()
                         final_memory = process.memory_info().rss / 1024 / 1024
                         extra["memory_usage_mb"] = final_memory - initial_memory
                     except Exception as e:
                         # Memory monitoring is not critical, but log the issue
                         logger.debug(f"Unable to collect final memory metrics: {e}")
-                
+
                 logger.log(
                     level,
                     f"Operation '{operation_name}' completed in {duration:.3f}s",
                     extra=extra,
                 )
                 return result
-                
+
             except Exception as e:
                 duration = time.time() - start_time
                 logger.error(
@@ -253,12 +259,12 @@ def log_performance(
         def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             start_time = time.time()
             logger = logging.getLogger(func.__module__ if func.__module__ else __name__)
-            
+
             # Similar implementation for sync functions
             try:
                 result: Any = func(*args, **kwargs)
                 duration = time.time() - start_time
-                
+
                 logger.log(
                     level,
                     f"Operation '{operation_name}' completed in {duration:.3f}s",
@@ -269,7 +275,7 @@ def log_performance(
                     },
                 )
                 return result
-                
+
             except Exception as e:
                 duration = time.time() - start_time
                 logger.error(
@@ -307,12 +313,12 @@ def log_context_manager(**kwargs: Any) -> Iterator[None]:
         extra=kwargs.get("extra", {}),
     )
     previous_context = log_context.get()
-    
+
     # Merge contexts
     new_context = previous_context.copy()
     new_context.update(context.to_dict())
     log_context.set(new_context)
-    
+
     try:
         yield
     finally:
@@ -350,10 +356,10 @@ def configure_logging(
     # File handler
     if enable_file and file_path:
         from logging.handlers import RotatingFileHandler
-        
+
         # Create directory if needed
         Path(file_path).parent.mkdir(parents=True, exist_ok=True)
-        
+
         file_handler = RotatingFileHandler(
             file_path,
             maxBytes=max_bytes,

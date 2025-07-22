@@ -14,6 +14,8 @@ from typing import Any, Deque, Dict, List, Optional, Tuple
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+
 @dataclass
 class ExecutionRecord:
     """Record of a single task execution."""
@@ -27,6 +29,8 @@ class ExecutionRecord:
     cost: float = 0.0
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class RoutingRecord:
     """Record of a routing decision."""
@@ -39,6 +43,8 @@ class RoutingRecord:
     strategy: str
     alternative_providers: List[Tuple[str, float]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class ProviderMetrics:
     """Aggregated metrics for a provider."""
@@ -56,7 +62,7 @@ class ProviderMetrics:
         default_factory=lambda: deque(maxlen=24)
     )
     recent_latencies: Deque[float] = field(default_factory=lambda: deque(maxlen=100))
-    
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate."""
@@ -84,6 +90,7 @@ class ProviderMetrics:
         if not self.recent_latencies:
             return self.avg_latency
         return sum(self.recent_latencies) / len(self.recent_latencies)
+
     def get_percentile_latency(self, percentile: int) -> float:
         """Get latency percentile (e.g., p95, p99)."""
         if not self.recent_latencies:
@@ -109,6 +116,8 @@ class RoutingMetrics:
     cache_misses: int = 0
     fallback_invocations: int = 0
     ab_test_results: Dict[str, Dict[str, float]] = field(default_factory=dict)
+
+
 class PerformanceTracker:
     """Track and analyze routing and execution performance."""
 
@@ -464,6 +473,7 @@ class PerformanceTracker:
         self.routing_metrics = RoutingMetrics()
         self.active_requests.clear()
         logger.info("Reset all metrics")
+
     def save_metrics(self, path: Optional[Path] = None) -> None:
         """Save metrics to file."""
         save_path = path or self.metrics_file
@@ -514,6 +524,7 @@ class PerformanceTracker:
         with open(save_path, "w") as f:
             json.dump(data, f, indent=2)
         logger.info(f"Saved metrics to {save_path}")
+
     def load_metrics(self, path: Optional[Path] = None) -> None:
         """Load metrics from file."""
         load_path = path or self.metrics_file
@@ -569,6 +580,7 @@ class PerformanceTracker:
             logger.info(f"Loaded metrics from {load_path}")
         except Exception as e:
             logger.error(f"Failed to load metrics: {e}")
+
     def _get_recent_success_rate(
         self, provider_id: str, window_size: int = 20
     ) -> float:

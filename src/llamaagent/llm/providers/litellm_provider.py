@@ -34,7 +34,7 @@ except ImportError:
 class LiteLLMProvider(BaseLLMProvider):
     """
     LiteLLM Provider with support for multiple LLM backends.
-    
+
     Features:
     - Universal LLM interface through LiteLLM
     - Support for 100+ models (OpenAI, Anthropic, Cohere, etc.)
@@ -85,7 +85,7 @@ class LiteLLMProvider(BaseLLMProvider):
 
         # Configure LiteLLM settings
         litellm.set_verbose = False  # Reduce logging noise
-        
+
         # You can add custom model configurations here if needed
         # For example, custom endpoints, timeouts, etc.
 
@@ -179,7 +179,7 @@ class LiteLLMProvider(BaseLLMProvider):
             # Extract response data
             content = response.choices[0].message.content or ""
             usage = response.usage.dict() if response.usage else {}
-            
+
             # Calculate cost if available
             cost = self._calculate_cost(response)
 
@@ -188,7 +188,7 @@ class LiteLLMProvider(BaseLLMProvider):
                 usage["cost"] = cost
             else:
                 usage = {"cost": cost}
-            
+
             # Convert to our response format
             return LLMResponse(
                 content=content,
@@ -281,7 +281,7 @@ class LiteLLMProvider(BaseLLMProvider):
                 usage["cost"] = cost
             else:
                 usage = {"cost": cost}
-            
+
             return {
                 "embeddings": embeddings,
                 "model": embedding_model,
@@ -296,19 +296,24 @@ class LiteLLMProvider(BaseLLMProvider):
         """Format messages for LiteLLM."""
         formatted: List[Dict[str, Any]] = []
         for msg in messages:
-            formatted.append({
-                "role": msg.role,
-                "content": msg.content,
-            })
+            formatted.append(
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                }
+            )
         return formatted
 
     def _calculate_cost(self, response: Any) -> float:
         """Calculate cost based on LiteLLM response."""
         try:
             # LiteLLM provides cost calculation
-            if hasattr(response, "_hidden_params") and "response_cost" in response._hidden_params:
+            if (
+                hasattr(response, "_hidden_params")
+                and "response_cost" in response._hidden_params
+            ):
                 return response._hidden_params["response_cost"]
-            
+
             # Fallback to token-based calculation
             if hasattr(response, "usage") and response.usage:
                 # Basic cost calculation (would be enhanced with real pricing)
@@ -335,13 +340,21 @@ class LiteLLMProvider(BaseLLMProvider):
         try:
             # LiteLLM supports many models, we'll do a basic check
             # by trying to get model info
-            
+
             # Check if it's a known model pattern
             known_prefixes = [
-                "gpt-", "claude-", "command", "j2-", "text-",
-                "mistral", "mixtral", "llama", "palm", "gemini"
+                "gpt-",
+                "claude-",
+                "command",
+                "j2-",
+                "text-",
+                "mistral",
+                "mixtral",
+                "llama",
+                "palm",
+                "gemini",
             ]
-            
+
             return any(model.startswith(prefix) for prefix in known_prefixes)
         except Exception:
             return False

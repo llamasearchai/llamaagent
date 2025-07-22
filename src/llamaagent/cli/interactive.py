@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from rich.prompt import Prompt, Confirm
+from rich.prompt import Confirm, Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 
@@ -46,7 +46,9 @@ class InteractiveCLI:
 
     def _handle_signal(self, signum: int, frame: Any) -> None:
         """Handle system signals."""
-        console.print("\n[yellow]Received interrupt signal. Shutting down gracefully...[/yellow]")
+        console.print(
+            "\n[yellow]Received interrupt signal. Shutting down gracefully...[/yellow]"
+        )
         self.running = False
 
     async def initialize(self) -> None:
@@ -57,16 +59,16 @@ class InteractiveCLI:
             console=console,
         ) as progress:
             task = progress.add_task("Initializing LlamaAgent...", total=None)
-            
+
             try:
                 # Create agent with basic configuration
                 self.agent = ReactAgent(
                     name="Interactive-Agent",
                     description="Interactive CLI agent",
                 )
-                
+
                 progress.update(task, description="Agent initialized successfully")
-                
+
             except Exception as e:
                 progress.update(task, description=f"Failed to initialize: {e}")
                 console.print(f"[red]Error initializing agent: {e}[/red]")
@@ -149,7 +151,7 @@ Ready to chat!
         help_table = Table(title="Available Commands")
         help_table.add_column("Command", style="cyan")
         help_table.add_column("Description", style="white")
-        
+
         help_table.add_row("/help, /h", "Show this help message")
         help_table.add_row("/history, /hist", "Show conversation history")
         help_table.add_row("/clear, /c", "Clear conversation history")
@@ -158,7 +160,7 @@ Ready to chat!
         help_table.add_row("/debug", "Toggle debug mode")
         help_table.add_row("/spree", "Toggle SPREE mode")
         help_table.add_row("/quit, /q", "Exit the CLI")
-        
+
         console.print(help_table)
 
     def show_history(self) -> None:
@@ -167,8 +169,10 @@ Ready to chat!
             console.print("[yellow]No conversation history available[/yellow]")
             return
 
-        console.print(Panel("Conversation History", title="History", border_style="green"))
-        
+        console.print(
+            Panel("Conversation History", title="History", border_style="green")
+        )
+
         for i, entry in enumerate(self.conversation_history, 1):
             # User message
             console.print(f"[bold blue]{i}. You:[/bold blue]")
@@ -199,13 +203,15 @@ Ready to chat!
         config_table = Table(title="Current Configuration")
         config_table.add_column("Setting", style="cyan")
         config_table.add_column("Value", style="white")
-        
+
         config_table.add_row("Debug Mode", "Enabled" if self.debug else "Disabled")
-        config_table.add_row("SPREE Mode", "Enabled" if self.spree_enabled else "Disabled")
+        config_table.add_row(
+            "SPREE Mode", "Enabled" if self.spree_enabled else "Disabled"
+        )
         config_table.add_row("LLM Provider", self.config.llm.provider)
         config_table.add_row("Model", self.config.llm.model)
         config_table.add_row("Temperature", str(self.config.llm.temperature))
-        
+
         console.print(config_table)
 
     async def show_status(self) -> None:
@@ -213,7 +219,7 @@ Ready to chat!
         status_table = Table(title="Agent Status")
         status_table.add_column("Component", style="cyan")
         status_table.add_column("Status", style="white")
-        
+
         # Agent status
         if self.agent:
             try:
@@ -228,7 +234,7 @@ Ready to chat!
 
         status_table.add_row("Agent", status)
         status_table.add_row("Details", details)
-        
+
         # Tool status
         if hasattr(self.agent, 'tool_registry') and self.agent.tool_registry:
             status_table.add_row("Tools", "All tools loaded")
@@ -238,10 +244,12 @@ Ready to chat!
         # Conversation status
         msg_count = len(self.conversation_history)
         status_table.add_row("Messages", f"{msg_count} in history")
-        
+
         if msg_count > 0:
             last_msg = self.conversation_history[-1]
-            status_table.add_row("Last Message", "Success" if last_msg["success"] else "Error")
+            status_table.add_row(
+                "Last Message", "Success" if last_msg["success"] else "Error"
+            )
         else:
             status_table.add_row("Last Message", "None")
 
@@ -250,12 +258,16 @@ Ready to chat!
     def toggle_debug(self) -> None:
         """Toggle debug mode."""
         self.debug = not self.debug
-        console.print(f"[green]Debug mode {'enabled' if self.debug else 'disabled'}[/green]")
+        console.print(
+            f"[green]Debug mode {'enabled' if self.debug else 'disabled'}[/green]"
+        )
 
     def toggle_spree(self) -> None:
         """Toggle SPREE mode."""
         self.spree_enabled = not self.spree_enabled
-        console.print(f"[green]SPREE mode {'enabled' if self.spree_enabled else 'disabled'}[/green]")
+        console.print(
+            f"[green]SPREE mode {'enabled' if self.spree_enabled else 'disabled'}[/green]"
+        )
 
     async def process_message(self, user_input: str) -> None:
         """Process user message and generate response."""
@@ -269,33 +281,37 @@ Ready to chat!
             console=console,
         ) as progress:
             task = progress.add_task("Agent is thinking...", total=None)
-            
+
             try:
                 # Create task input
                 task_input = {
                     "task": user_input,
                     "context": {
-                        "conversation_history": self.conversation_history[-10:] if len(self.conversation_history) > 10 else self.conversation_history,
+                        "conversation_history": self.conversation_history[-10:]
+                        if len(self.conversation_history) > 10
+                        else self.conversation_history,
                         "spree_enabled": self.spree_enabled,
                         "debug": self.debug,
-                    }
+                    },
                 }
-                
+
                 # Execute task
                 response = await self.agent.execute_task(task_input)
-                
+
                 progress.update(task, description="Processing response...")
-                
+
                 # Process response
                 if response and hasattr(response, 'result'):
-                    result_text = response.result.get("response", "No response generated")
+                    result_text = response.result.get(
+                        "response", "No response generated"
+                    )
                     success = response.status.name == "SUCCESS"
                     error_msg = None
                 else:
                     result_text = str(response) if response else "No response"
                     success = True
                     error_msg = None
-                
+
                 # Store in history
                 history_entry = {
                     "user_message": user_input,
@@ -308,20 +324,20 @@ Ready to chat!
                     },
                     "timestamp": asyncio.get_event_loop().time(),
                 }
-                
+
                 self.conversation_history.append(history_entry)
-                
+
                 # Display response
                 self.display_response(result_text)
-                
+
                 # Display debug info if enabled
                 if self.debug:
                     self.display_debug_info(response)
-                    
+
             except Exception as e:
                 error_msg = f"Error processing message: {e}"
                 console.print(f"[red]{error_msg}[/red]")
-                
+
                 # Store error in history
                 history_entry = {
                     "user_message": user_input,
@@ -332,7 +348,7 @@ Ready to chat!
                     "timestamp": asyncio.get_event_loop().time(),
                 }
                 self.conversation_history.append(history_entry)
-                
+
                 if self.debug:
                     console.print_exception()
 
@@ -350,7 +366,9 @@ Ready to chat!
                 language = lines[0].strip() if lines else "text"
                 code = "\n".join(lines[1:]) if language != "text" else part.strip()
 
-                syntax = Syntax(code, language or "text", theme="monokai", line_numbers=True)
+                syntax = Syntax(
+                    code, language or "text", theme="monokai", line_numbers=True
+                )
                 console.print(syntax)
 
     def display_debug_info(self, response: Any) -> None:
@@ -361,12 +379,12 @@ Ready to chat!
         debug_table = Table(title="Debug Information")
         debug_table.add_column("Metric", style="cyan")
         debug_table.add_column("Value", style="white")
-        
+
         debug_table.add_row("Response Type", type(response).__name__)
         debug_table.add_row("Status", getattr(response, 'status', 'Unknown'))
         debug_table.add_row("Tokens Used", str(getattr(response, 'tokens_used', 0)))
         debug_table.add_row("Latency", f"{getattr(response, 'latency_ms', 0):.1f}ms")
-        
+
         if hasattr(response, 'metadata') and response.metadata:
             for key, value in response.metadata.items():
                 debug_table.add_row(f"Metadata: {key}", str(value))
@@ -375,8 +393,7 @@ Ready to chat!
 
 
 async def run_interactive_experiment(
-    spree_enabled: bool = False,
-    debug: bool = False
+    spree_enabled: bool = False, debug: bool = False
 ) -> None:
     """Entry-point helper for run_experiment.py.
 

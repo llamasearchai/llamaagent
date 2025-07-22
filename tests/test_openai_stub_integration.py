@@ -11,10 +11,8 @@ of the stub and potential future integrations.
 
 import pytest
 
-from src.llamaagent.integration._openai_stub import (
-    install_openai_stub,
-    uninstall_openai_stub,
-)
+from src.llamaagent.integration._openai_stub import (install_openai_stub,
+                                                     uninstall_openai_stub)
 
 
 class TestOpenAIStubIntegration:

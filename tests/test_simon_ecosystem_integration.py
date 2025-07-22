@@ -12,17 +12,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from src.llamaagent.integration.simon_tools import (
-    LLMChatTool,
-    SimonToolRegistry,
-    SQLiteQueryTool,
-    create_simon_tools,
-)
-from src.llamaagent.llm.simon_ecosystem import (
-    LLMTool,
-    SimonEcosystemConfig,
-    SimonLLMEcosystem,
-)
+from src.llamaagent.integration.simon_tools import (LLMChatTool,
+                                                    SimonToolRegistry,
+                                                    SQLiteQueryTool,
+                                                    create_simon_tools)
+from src.llamaagent.llm.simon_ecosystem import (LLMTool, SimonEcosystemConfig,
+                                                SimonLLMEcosystem)
 
 
 class TestSimonEcosystemConfig:

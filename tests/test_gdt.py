@@ -11,17 +11,10 @@ from typing import Any, Dict, List
 
 import pytest
 
-from src.llamaagent.data.gdt import (
-    ConversationDataGenerator,
-    DataType,
-    GDTDataset,
-    GDTGenerator,
-    GDTItem,
-    GDTTransformer,
-    GDTValidator,
-    TextDataGenerator,
-    ValidationStatus,
-)
+from src.llamaagent.data.gdt import (ConversationDataGenerator, DataType,
+                                     GDTDataset, GDTGenerator, GDTItem,
+                                     GDTTransformer, GDTValidator,
+                                     TextDataGenerator, ValidationStatus)
 
 
 class MockGDTGenerator:

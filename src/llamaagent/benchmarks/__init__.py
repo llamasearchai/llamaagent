@@ -27,6 +27,7 @@ except Exception:  # pylint: disable=broad-except
 try:
     from .spre_evaluator import BenchmarkResult, SPREEvaluator  # type: ignore
 except Exception:  # pylint: disable=broad-except
+
     class _EvaluatorStub:  # fallback stub
         ...
 

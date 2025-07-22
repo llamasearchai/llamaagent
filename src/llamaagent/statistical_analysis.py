@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 try:
     import numpy as np
     from scipy import stats
+
     SCIPY_AVAILABLE = True
 except ImportError:
     SCIPY_AVAILABLE = False
@@ -38,13 +39,13 @@ class StatisticalAnalyzer:
             }
 
         a_vals: List[float] = [
-            float(res[metric]) 
-            for res in self.results 
+            float(res[metric])
+            for res in self.results
             if res.get("technique") == technique_a and metric in res
         ]
         b_vals: List[float] = [
-            float(res[metric]) 
-            for res in self.results 
+            float(res[metric])
+            for res in self.results
             if res.get("technique") == technique_b and metric in res
         ]
 
@@ -80,13 +81,13 @@ class StatisticalAnalyzer:
             }
 
         vals1: List[float] = [
-            float(res[metric1]) 
-            for res in self.results 
+            float(res[metric1])
+            for res in self.results
             if metric1 in res and res[metric1] is not None
         ]
         vals2: List[float] = [
-            float(res[metric2]) 
-            for res in self.results 
+            float(res[metric2])
+            for res in self.results
             if metric2 in res and res[metric2] is not None
         ]
 
@@ -100,7 +101,7 @@ class StatisticalAnalyzer:
         r_raw, p_val = stats.pearsonr(vals1, vals2)
         r: float = float(r_raw)
         p_value: float = float(p_val)
-        
+
         return {
             "metric1": metric1,
             "metric2": metric2,
@@ -124,12 +125,11 @@ class StatisticalAnalyzer:
             ((nx - 1) * np.std(x, ddof=1) ** 2 + (ny - 1) * np.std(y, ddof=1) ** 2)
             / dof
         )
-        
+
         if pooled_std == 0:
             return 0.0
-        
-        return (np.mean(x) - np.mean(y)) / pooled_std
 
+        return (np.mean(x) - np.mean(y)) / pooled_std
 
     def analyze_benchmark_results(self) -> Dict[str, Any]:
         """Return a concise statistical summary for benchmark results."""

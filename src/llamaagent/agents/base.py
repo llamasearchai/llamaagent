@@ -11,45 +11,46 @@ import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, AsyncGenerator, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, List, Optional
 
 from ..types import TaskInput, TaskOutput, TaskResult, TaskStatus
 
 # Import the classes we need to fix the type errors
 if TYPE_CHECKING:
-    from ..tools import ToolRegistry as ToolRegistryType
     from ..memory.base import SimpleMemory as SimpleMemoryType
+    from ..tools import ToolRegistry as ToolRegistryType
 else:
     try:
         from ..tools import ToolRegistry as ToolRegistryType
     except ImportError:
         ToolRegistryType = None
-    
+
     try:
         from ..memory.base import SimpleMemory as SimpleMemoryType
     except ImportError:
         SimpleMemoryType = None
 
+
 # Create fallback classes for runtime
 class ToolRegistry:
     """Fallback ToolRegistry implementation."""
-    
+
     def __init__(self):
         self._tools: Dict[str, Any] = {}
-    
+
     def register(self, tool: Any) -> None:
         if hasattr(tool, 'name'):
             self._tools[tool.name] = tool
-    
+
     def get(self, name: str) -> Any:
         return self._tools.get(name)
-    
+
     def list_names(self) -> List[str]:
         return list(self._tools.keys())
-    
+
     def list_tools(self) -> List[Any]:
         return list(self._tools.values())
-    
+
     def get_tool_count(self) -> int:
         """Get the number of registered tools."""
         return len(self._tools)
@@ -57,16 +58,16 @@ class ToolRegistry:
 
 class SimpleMemory:
     """Fallback SimpleMemory implementation."""
-    
+
     def __init__(self):
         self._memories: List[Dict[str, Any]] = []
-    
+
     async def add(self, content: str, **metadata: Any) -> str:
         memory_id = str(len(self._memories))
         memory_entry: Dict[str, Any] = {"id": memory_id, "content": content, **metadata}
         self._memories.append(memory_entry)
         return memory_id
-    
+
     async def search(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         results: List[Dict[str, Any]] = []
         for memory in self._memories:
@@ -75,7 +76,7 @@ class SimpleMemory:
                 if len(results) >= limit:
                     break
         return results
-    
+
     def count(self) -> int:
         return len(self._memories)
 
@@ -263,7 +264,7 @@ class BaseAgent(ABC):
             memory: Optional memory implementation
         """
         self.config = config
-        
+
         # Initialize tools with proper fallback
         if tools is not None:
             self.tools = tools
@@ -273,7 +274,7 @@ class BaseAgent(ABC):
                 self.tools = ToolRegistryType() if ToolRegistryType else ToolRegistry()
             except Exception:
                 self.tools = ToolRegistry()
-        
+
         # Initialize memory with proper fallback
         if memory is not None:
             self.memory = memory
@@ -285,7 +286,7 @@ class BaseAgent(ABC):
                 self.memory = SimpleMemory()
         else:
             self.memory = None
-            
+
         self.trace: Optional[AgentTrace] = None
         self._current_step: Optional[Step] = None
 
@@ -336,7 +337,9 @@ class BaseAgent(ABC):
 
             return TaskOutputType(
                 task_id=task_input.id,
-                status=TaskStatusType.COMPLETED if response.success else TaskStatusType.FAILED,
+                status=TaskStatusType.COMPLETED
+                if response.success
+                else TaskStatusType.FAILED,
                 result=task_result,
             )
         except Exception as e:
@@ -347,9 +350,7 @@ class BaseAgent(ABC):
             )
 
             return TaskOutputType(
-                task_id=task_input.id, 
-                status=TaskStatusType.FAILED, 
-                result=task_result
+                task_id=task_input.id, status=TaskStatusType.FAILED, result=task_result
             )
 
     async def stream_execute(

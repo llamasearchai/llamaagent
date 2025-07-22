@@ -66,9 +66,7 @@ def run(
     else:
         project_path = Path.cwd()
 
-    console.print(
-        f"[blue]Running comprehensive diagnostics on: {project_path}[/blue]"
-    )
+    console.print(f"[blue]Running comprehensive diagnostics on: {project_path}[/blue]")
     console.print()
 
     # Create diagnostics instance
@@ -268,7 +266,9 @@ def _output_text_report(
         p for p in report.problems if p.severity == ProblemSeverity.CRITICAL
     ]
     if critical_issues:
-        console.print("\n[red]CRITICAL CRITICAL ISSUES REQUIRING IMMEDIATE ATTENTION:[/red]")
+        console.print(
+            "\n[red]CRITICAL CRITICAL ISSUES REQUIRING IMMEDIATE ATTENTION:[/red]"
+        )
         for issue in critical_issues:
             console.print(f"  • {issue.title} ({issue.location})")
 
@@ -334,7 +334,9 @@ def quick():
 
     # Summary
     if critical_issues:
-        console.print(f"\n[red]CRITICAL {len(critical_issues)} critical issues found![/red]")
+        console.print(
+            f"\n[red]CRITICAL {len(critical_issues)} critical issues found![/red]"
+        )
         for issue in critical_issues:
             console.print(f"  • {issue}")
         console.print(

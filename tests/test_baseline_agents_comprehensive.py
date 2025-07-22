@@ -6,13 +6,11 @@ from unittest.mock import Mock, patch
 import pytest
 
 from llamaagent.agents.base import AgentConfig, AgentRole
-from llamaagent.benchmarks.baseline_agents import (
-    BaselineAgentFactory,
-    BaselineType,
-    PreActOnlyAgent,
-    SEMOnlyAgent,
-    VanillaReactAgent,
-)
+from llamaagent.benchmarks.baseline_agents import (BaselineAgentFactory,
+                                                   BaselineType,
+                                                   PreActOnlyAgent,
+                                                   SEMOnlyAgent,
+                                                   VanillaReactAgent)
 
 
 class TestBaselineAgentFactory:

@@ -107,7 +107,7 @@ class CohereProvider(BaseLLMProvider):
         # Convert messages to Cohere format
         chat_history = []
         message = ""
-        
+
         for msg in messages:
             if msg.role == "system":
                 # Cohere doesn't have a system role, prepend to message
@@ -173,7 +173,7 @@ class CohereProvider(BaseLLMProvider):
 
                     # Add cost to usage dict
                     usage["cost"] = cost
-                    
+
                     return LLMResponse(
                         content=content,
                         model=model,
@@ -230,7 +230,7 @@ class CohereProvider(BaseLLMProvider):
         # Convert messages to Cohere format (same as chat_completion)
         chat_history = []
         message = ""
-        
+
         for msg in messages:
             if msg.role == "system":
                 message = f"{msg.content}\n\n" + message
@@ -323,7 +323,7 @@ class CohereProvider(BaseLLMProvider):
 
                     embeddings = data["embeddings"]
                     usage = data.get("meta", {}).get("billed_units", {})
-                    
+
                     return {
                         "embeddings": embeddings,
                         "model": model,

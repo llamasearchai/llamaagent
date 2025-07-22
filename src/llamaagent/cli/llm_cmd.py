@@ -6,9 +6,9 @@ Comprehensive CLI for interacting with various LLM providers and managing data.
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
-import logging
 import asyncio
 import json
+import logging
 import sqlite3
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -21,6 +21,7 @@ from rich.prompt import Prompt
 from rich.table import Table
 
 from llamaagent.llm.factory import LLMFactory
+
 logger = logging.getLogger(__name__)
 
 
@@ -356,7 +357,8 @@ class LLMCli:
 
             data = []
             for row in rows:
-                data.append({
+                data.append(
+                    {
                         "id": row[0],
                         "timestamp": row[1],
                         "provider": row[2],

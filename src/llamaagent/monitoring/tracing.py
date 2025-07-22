@@ -26,19 +26,24 @@ _opentelemetry_available = False
 try:
     from opentelemetry import trace
     from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-    from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor  # type: ignore
-    from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor  # type: ignore
-    from opentelemetry.instrumentation.redis import RedisInstrumentor  # type: ignore
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
+        OTLPSpanExporter
+    from opentelemetry.instrumentation.aiohttp_client import \
+        AioHttpClientInstrumentor  # type: ignore
+    from opentelemetry.instrumentation.psycopg2 import \
+        Psycopg2Instrumentor  # type: ignore
+    from opentelemetry.instrumentation.redis import \
+        RedisInstrumentor  # type: ignore
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.sdk.trace.export import (BatchSpanProcessor,
+                                                ConsoleSpanExporter)
     from opentelemetry.trace import SpanKind, Status, StatusCode
-    
+
     _opentelemetry_available = True
 except ImportError:
     logger.info("OpenTelemetry not available, using fallback tracing")
-    
+
     # Create fallback stubs for missing imports
     class _FallbackSpanKind:
         INTERNAL = "internal"
@@ -46,50 +51,50 @@ except ImportError:
         SERVER = "server"
         PRODUCER = "producer"
         CONSUMER = "consumer"
-    
+
     class _FallbackStatusCode:
         OK = "ok"
         ERROR = "error"
-    
+
     class _FallbackStatus:
         def __init__(self, status_code: str, description: Optional[str] = None):
             self.status_code = status_code
             self.description = description
-    
+
     class _FallbackTrace:
         def get_current_span(self):
             return None
-        
+
         def set_tracer_provider(self, provider: Any) -> None:
             pass
-        
+
         def get_tracer(self, name: str) -> Any:
             return None
-    
+
     class _FallbackResource:
         @staticmethod
         def create(attributes: Dict[str, Any]) -> Any:
             return None
-    
+
     class _FallbackTracerProvider:
         def __init__(self, resource: Any = None):
             pass
-        
+
         def add_span_processor(self, processor: Any) -> None:
             pass
-    
+
     class _FallbackExporter:
         def __init__(self, *args: Any, **kwargs: Any):
             pass
-    
+
     class _FallbackInstrumentor:
         def instrument(self) -> None:
             pass
-    
+
     class _FallbackBatchSpanProcessor:
         def __init__(self, exporter: Any):
             pass
-    
+
     # Assign fallback implementations
     SpanKind = _FallbackSpanKind()  # type: ignore
     StatusCode = _FallbackStatusCode()  # type: ignore
@@ -144,10 +149,10 @@ class LocalSpanManager:
         return self
 
     def __exit__(
-        self, 
-        exc_type: Optional[Type[BaseException]], 
-        exc_val: Optional[BaseException], 
-        exc_tb: Optional[TracebackType]
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
     ) -> None:
         if exc_type:
             self.context.status = "error"
@@ -160,10 +165,10 @@ class LocalSpanManager:
         return self.__enter__()
 
     async def __aexit__(
-        self, 
-        exc_type: Optional[Type[BaseException]], 
-        exc_val: Optional[BaseException], 
-        exc_tb: Optional[TracebackType]
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
     ) -> None:
         self.__exit__(exc_type, exc_val, exc_tb)
 
@@ -207,7 +212,7 @@ class TracingManager:
         try:
             # Create resource
             resource = Resource.create({"service.name": self.service_name})
-            
+
             # Create tracer provider
             provider = TracerProvider(resource=resource)
             trace.set_tracer_provider(provider)  # type: ignore
@@ -215,13 +220,19 @@ class TracingManager:
             # Configure exporters
             if self.jaeger_endpoint:
                 jaeger_exporter = JaegerExporter(
-                    agent_host_name=self.jaeger_endpoint.split(":")[0] if ":" in self.jaeger_endpoint else self.jaeger_endpoint,
-                    agent_port=int(self.jaeger_endpoint.split(":")[1]) if ":" in self.jaeger_endpoint else 6831,
+                    agent_host_name=self.jaeger_endpoint.split(":")[0]
+                    if ":" in self.jaeger_endpoint
+                    else self.jaeger_endpoint,
+                    agent_port=int(self.jaeger_endpoint.split(":")[1])
+                    if ":" in self.jaeger_endpoint
+                    else 6831,
                 )
                 provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))  # type: ignore
 
             if self.otlp_endpoint:
-                otlp_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint, insecure=True)
+                otlp_exporter = OTLPSpanExporter(
+                    endpoint=self.otlp_endpoint, insecure=True
+                )
                 provider.add_span_processor(BatchSpanProcessor(otlp_exporter))  # type: ignore
 
             if self.enable_console:
@@ -246,13 +257,13 @@ class TracingManager:
         try:
             # Auto-instrument HTTP client
             AioHttpClientInstrumentor().instrument()  # type: ignore
-            
+
             # Auto-instrument PostgreSQL
             Psycopg2Instrumentor().instrument()  # type: ignore
-            
+
             # Auto-instrument Redis
             RedisInstrumentor().instrument()  # type: ignore
-            
+
         except Exception as e:
             logger.warning(f"Failed to set up auto-instrumentation: {e}")
 
@@ -274,7 +285,7 @@ class TracingManager:
                 kind=span_kind,  # type: ignore
                 attributes=attributes or {},
             )
-            
+
             # Create our context wrapper with safe access
             try:
                 span_context = SpanContext(
@@ -291,7 +302,7 @@ class TracingManager:
                     name=name,
                     attributes=attributes or {},
                 )
-            
+
             return LocalSpanManager(self, span_context)
         else:
             # Fallback implementation
@@ -352,7 +363,7 @@ class TracingManager:
                     return format(span.get_span_context().trace_id, "032x")
                 except (AttributeError, TypeError):
                     pass
-        
+
         # Fallback
         ctx = current_span_context.get()
         return ctx.trace_id if ctx else None
@@ -409,7 +420,9 @@ def trace_async(
                 }
             )
 
-            with manager.create_span(span_name, attributes=span_attributes) as span_manager:
+            with manager.create_span(
+                span_name, attributes=span_attributes
+            ) as span_manager:
                 try:
                     result = await func(*args, **kwargs)
                     span_manager.set_status("ok")
@@ -444,7 +457,9 @@ def trace_sync(
                 }
             )
 
-            with manager.create_span(span_name, attributes=span_attributes) as span_manager:
+            with manager.create_span(
+                span_name, attributes=span_attributes
+            ) as span_manager:
                 try:
                     result = func(*args, **kwargs)
                     span_manager.set_status("ok")

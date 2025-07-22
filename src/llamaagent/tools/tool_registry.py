@@ -328,7 +328,7 @@ class PythonREPLTool(Tool):
         start_time = datetime.now(timezone.utc)
         old_stdout = None
         captured_output = None
-        
+
         try:
             code = parameters["code"]
 
@@ -365,7 +365,7 @@ class PythonREPLTool(Tool):
             }
 
             exec(code, safe_globals, {})
-            
+
             if old_stdout:
                 sys.stdout = old_stdout
 
@@ -539,7 +539,7 @@ class ToolRegistry:
 
             # Execute tool
             execution_id = context.execution_id
-            
+
             try:
                 task = asyncio.create_task(tool.execute(parameters, context))
                 self.active_executions[execution_id] = task

@@ -15,27 +15,33 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 try:
     from opentelemetry import trace
+
     tracer = trace.get_tracer(__name__)
 except ImportError:
     # Fallback tracer for when OpenTelemetry is not available
     class NoOpTracer:
         def start_as_current_span(self, name: str):
             return self
+
         def __enter__(self):
             return self
+
         def __exit__(self, *args: Any):
             pass
+
         def set_attribute(self, key: str, value: Any):
             pass
+
     tracer = NoOpTracer()
 
 
 class KnowledgeType(Enum):
     """Types of knowledge that can be generated"""
+
     TUTORIAL = "tutorial"
     GUIDE = "guide"
     API_DOCUMENTATION = "api_documentation"
@@ -48,6 +54,7 @@ class KnowledgeType(Enum):
 
 class GenerationStrategy(Enum):
     """Strategies for knowledge generation"""
+
     TEMPLATE_BASED = "template_based"
     LLM_BASED = "llm_based"
     HYBRID = "hybrid"
@@ -57,6 +64,7 @@ class GenerationStrategy(Enum):
 @dataclass
 class KnowledgeItem:
     """Represents a piece of generated knowledge"""
+
     id: str = ""
     title: str = ""
     content: str = ""
@@ -73,6 +81,7 @@ class KnowledgeItem:
 @dataclass
 class GenerationConfig:
     """Configuration for knowledge generation"""
+
     knowledge_type: KnowledgeType = KnowledgeType.GUIDE
     strategy: GenerationStrategy = GenerationStrategy.HYBRID
     target_audience: str = "general"
@@ -88,6 +97,7 @@ class GenerationConfig:
 @dataclass
 class GenerationResult:
     """Result of knowledge generation process"""
+
     generated_items: List[KnowledgeItem]
     generation_stats: Dict[str, Any]
     quality_metrics: Dict[str, float]
@@ -108,13 +118,15 @@ class KnowledgeGenerator:
         """Setup logger for knowledge generator"""
         logger = logging.getLogger("KnowledgeGenerator")
         logger.setLevel(logging.INFO)
-        
+
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
-        
+
         return logger
 
     def _load_templates(self) -> Dict[KnowledgeType, str]:
@@ -153,7 +165,6 @@ class KnowledgeGenerator:
                 - Additional resources
                 - Related documentation
             """,
-            
             KnowledgeType.GUIDE: """
                 # {title}
                 
@@ -184,7 +195,6 @@ class KnowledgeGenerator:
                 ## Conclusion
                 Summary and next steps.
             """,
-            
             KnowledgeType.API_DOCUMENTATION: """
                 # {title} API Documentation
                 
@@ -216,7 +226,6 @@ class KnowledgeGenerator:
                 - Available SDKs
                 - Integration examples
             """,
-            
             KnowledgeType.FAQ: """
                 # {title} - Frequently Asked Questions
                 
@@ -249,7 +258,6 @@ class KnowledgeGenerator:
                 **Q: How do I optimize performance?**
                 A: Performance optimization strategies.
             """,
-            
             KnowledgeType.TROUBLESHOOTING: """
                 # {title} Troubleshooting Guide
                 
@@ -288,26 +296,28 @@ class KnowledgeGenerator:
                 ## Getting Help
                 - Where to find additional support
                 - How to report issues
-            """
+            """,
         }
 
     async def generate_knowledge(
         self,
         topic: str,
         config: GenerationConfig,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> GenerationResult:
         """Generate knowledge item(s) on a given topic"""
         with tracer.start_as_current_span("generate_knowledge") as span:
             span.set_attribute("topic", topic)
             span.set_attribute("knowledge_type", config.knowledge_type.value)
             span.set_attribute("strategy", config.strategy.value)
-            
-            self.logger.info(f"Generating {config.knowledge_type.value} knowledge for topic: {topic}")
-            
+
+            self.logger.info(
+                f"Generating {config.knowledge_type.value} knowledge for topic: {topic}"
+            )
+
             context = context or {}
             generated_items: List[KnowledgeItem] = []
-            
+
             try:
                 # Generate based on strategy
                 if config.strategy == GenerationStrategy.TEMPLATE_BASED:
@@ -317,59 +327,64 @@ class KnowledgeGenerator:
                 elif config.strategy == GenerationStrategy.HYBRID:
                     items = await self._generate_hybrid(topic, config, context)
                 elif config.strategy == GenerationStrategy.RETRIEVAL_AUGMENTED:
-                    items = await self._generate_retrieval_augmented(topic, config, context)
+                    items = await self._generate_retrieval_augmented(
+                        topic, config, context
+                    )
                 else:
                     raise ValueError(f"Unknown generation strategy: {config.strategy}")
-                
+
                 # Validate and filter items
                 validated_items = []
                 for item in items:
                     if self._validate_item(item, config):
                         validated_items.append(item)
                         self._add_to_knowledge_base(item)
-                
+
                 # Calculate quality metrics
                 quality_metrics = self._calculate_quality_metrics(validated_items)
-                
+
                 # Generate recommendations
-                recommendations = self._generate_recommendations(validated_items, quality_metrics)
-                
+                recommendations = self._generate_recommendations(
+                    validated_items, quality_metrics
+                )
+
                 # Create result
                 result = GenerationResult(
                     generated_items=validated_items,
                     generation_stats={
                         "total_items": len(validated_items),
                         "average_quality": quality_metrics.get("average_quality", 0.0),
-                        "generation_time": datetime.now(timezone.utc).isoformat()
+                        "generation_time": datetime.now(timezone.utc).isoformat(),
                     },
                     quality_metrics=quality_metrics,
-                    recommendations=recommendations
+                    recommendations=recommendations,
                 )
-                
-                self.logger.info(f"Generated {len(validated_items)} knowledge items for {topic}")
+
+                self.logger.info(
+                    f"Generated {len(validated_items)} knowledge items for {topic}"
+                )
                 return result
-                
+
             except Exception as e:
                 self.logger.error(f"Failed to generate knowledge for {topic}: {e}")
                 raise
 
     async def _generate_template_based(
-        self,
-        topic: str,
-        config: GenerationConfig,
-        context: Dict[str, Any]
+        self, topic: str, config: GenerationConfig, context: Dict[str, Any]
     ) -> List[KnowledgeItem]:
         """Generate knowledge using templates"""
-        template = self.templates.get(config.knowledge_type, self.templates[KnowledgeType.GUIDE])
-        
+        template = self.templates.get(
+            config.knowledge_type, self.templates[KnowledgeType.GUIDE]
+        )
+
         # Format template with context
         formatted_content = template.format(
             title=f"{topic} {config.knowledge_type.value.title().replace('_', ' ')}",
             topic=topic,
             target_audience=config.target_audience,
-            **context
+            **context,
         )
-        
+
         # Create knowledge item
         item = KnowledgeItem(
             id=self._generate_item_id(topic, config.knowledge_type),
@@ -382,30 +397,29 @@ class KnowledgeGenerator:
             metadata={
                 "generation_strategy": config.strategy.value,
                 "target_audience": config.target_audience,
-                "complexity_level": config.complexity_level
-            }
+                "complexity_level": config.complexity_level,
+            },
         )
-        
+
         return [item]
 
     async def _generate_llm_based(
-        self,
-        topic: str,
-        config: GenerationConfig,
-        context: Dict[str, Any]
+        self, topic: str, config: GenerationConfig, context: Dict[str, Any]
     ) -> List[KnowledgeItem]:
         """Generate knowledge using LLM"""
         if not self.llm_provider:
             raise ValueError("LLM provider not configured")
-        
+
         # Build prompt based on knowledge type
         prompt = self._build_generation_prompt(topic, config, context)
-        
+
         try:
             # Generate content using LLM
             response = await self.llm_provider.complete(prompt)
-            content = response.content if hasattr(response, 'content') else str(response)
-            
+            content = (
+                response.content if hasattr(response, 'content') else str(response)
+            )
+
             # Create knowledge item
             item = KnowledgeItem(
                 id=self._generate_item_id(topic, config.knowledge_type),
@@ -419,30 +433,27 @@ class KnowledgeGenerator:
                     "generation_strategy": config.strategy.value,
                     "target_audience": config.target_audience,
                     "complexity_level": config.complexity_level,
-                    "llm_generated": True
-                }
+                    "llm_generated": True,
+                },
             )
-            
+
             return [item]
-            
+
         except Exception as e:
             self.logger.error(f"LLM generation failed: {e}")
             # Fallback to template-based
             return await self._generate_template_based(topic, config, context)
 
     async def _generate_hybrid(
-        self,
-        topic: str,
-        config: GenerationConfig,
-        context: Dict[str, Any]
+        self, topic: str, config: GenerationConfig, context: Dict[str, Any]
     ) -> List[KnowledgeItem]:
         """Generate knowledge using hybrid approach"""
         # Start with template-based generation
         template_items = await self._generate_template_based(topic, config, context)
-        
+
         if not self.llm_provider:
             return template_items
-        
+
         # Enhance with LLM
         enhanced_items = []
         for item in template_items:
@@ -452,27 +463,24 @@ class KnowledgeGenerator:
             except Exception as e:
                 self.logger.warning(f"Failed to enhance item with LLM: {e}")
                 enhanced_items.append(item)  # Keep original if enhancement fails
-        
+
         return enhanced_items
 
     async def _generate_retrieval_augmented(
-        self,
-        topic: str,
-        config: GenerationConfig,
-        context: Dict[str, Any]
+        self, topic: str, config: GenerationConfig, context: Dict[str, Any]
     ) -> List[KnowledgeItem]:
         """Generate knowledge using retrieval-augmented approach"""
         # Search for relevant existing knowledge
         relevant_items = self.search_knowledge_base(topic, config.knowledge_type)
-        
+
         # Use existing knowledge to inform generation
         augmented_context = context.copy()
         if relevant_items:
             augmented_context["existing_knowledge"] = [
-                {"title": item.title, "content": item.content[:500]} 
+                {"title": item.title, "content": item.content[:500]}
                 for item in relevant_items[:3]
             ]
-        
+
         # Generate with augmented context
         if self.llm_provider:
             return await self._generate_llm_based(topic, config, augmented_context)
@@ -480,10 +488,7 @@ class KnowledgeGenerator:
             return await self._generate_template_based(topic, config, augmented_context)
 
     def _build_generation_prompt(
-        self,
-        topic: str,
-        config: GenerationConfig,
-        context: Dict[str, Any]
+        self, topic: str, config: GenerationConfig, context: Dict[str, Any]
     ) -> str:
         """Build prompt for LLM generation"""
         prompts = {
@@ -499,7 +504,6 @@ class KnowledgeGenerator:
                 Topic: {topic}
                 Context: {context}
             """,
-            
             KnowledgeType.GUIDE: f"""
                 Write a comprehensive guide on {topic} for {config.target_audience}.
                 
@@ -513,7 +517,6 @@ class KnowledgeGenerator:
                 Topic: {topic}
                 Context: {context}
             """,
-            
             KnowledgeType.API_DOCUMENTATION: f"""
                 Generate API documentation for {topic}.
                 
@@ -527,7 +530,6 @@ class KnowledgeGenerator:
                 API: {topic}
                 Context: {context}
             """,
-            
             KnowledgeType.FAQ: f"""
                 Generate frequently asked questions about {topic}.
                 
@@ -540,7 +542,6 @@ class KnowledgeGenerator:
                 Topic: {topic}
                 Context: {context}
             """,
-            
             KnowledgeType.TROUBLESHOOTING: f"""
                 Create a troubleshooting guide for {topic}.
                 
@@ -552,21 +553,19 @@ class KnowledgeGenerator:
                 
                 Topic: {topic}
                 Context: {context}
-            """
+            """,
         }
-        
+
         base_prompt = prompts.get(config.knowledge_type, prompts[KnowledgeType.GUIDE])
-        
+
         # Add custom instructions
         if config.custom_instructions:
             base_prompt += f"\n\nAdditional instructions: {config.custom_instructions}"
-        
+
         return base_prompt
 
     async def _enhance_with_llm(
-        self,
-        item: KnowledgeItem,
-        config: GenerationConfig
+        self, item: KnowledgeItem, config: GenerationConfig
     ) -> KnowledgeItem:
         """Enhance template-based content with LLM"""
         enhancement_prompt = f"""
@@ -583,19 +582,21 @@ class KnowledgeGenerator:
         - Maintain the existing structure
         - Keep it appropriate for {config.target_audience}
         """
-        
+
         try:
             response = await self.llm_provider.complete(enhancement_prompt)
-            enhanced_content = response.content if hasattr(response, 'content') else str(response)
-            
+            enhanced_content = (
+                response.content if hasattr(response, 'content') else str(response)
+            )
+
             # Update item
             item.content = enhanced_content
             item.metadata["enhanced_with_llm"] = True
             item.quality_score = 0.85  # Higher score for hybrid approach
             item.source = "hybrid"
-            
+
             return item
-            
+
         except Exception as e:
             self.logger.error(f"Enhancement failed: {e}")
             return item
@@ -610,68 +611,68 @@ class KnowledgeGenerator:
         # Check minimum quality score
         if item.quality_score < config.min_quality_score:
             return False
-        
+
         # Check content length
         if len(item.content) < 100:  # Minimum content length
             return False
-        
+
         # Check maximum length
         if len(item.content) > config.max_length:
-            item.content = item.content[:config.max_length] + "..."
-        
+            item.content = item.content[: config.max_length] + "..."
+
         # Calculate and update quality score
         item.quality_score = self._calculate_item_quality(item)
-        
+
         return True
 
     def _calculate_item_quality(self, item: KnowledgeItem) -> float:
         """Calculate quality score for knowledge item"""
         score = 0.0
-        
+
         # Content length factor (0.3 weight)
         length_score = min(1.0, len(item.content) / 1000)
         score += 0.3 * length_score
-        
+
         # Structure factor (0.2 weight)
         structure_indicators = ["#", "*", "-", "1.", "2."]
-        structure_count = sum(1 for indicator in structure_indicators if indicator in item.content)
+        structure_count = sum(
+            1 for indicator in structure_indicators if indicator in item.content
+        )
         structure_score = min(1.0, structure_count / 10)
         score += 0.2 * structure_score
-        
+
         # Metadata completeness (0.15 weight)
         metadata_score = min(1.0, len(item.metadata) / 5)
         score += 0.15 * metadata_score
-        
+
         # Tag relevance (0.1 weight)
         tag_score = min(1.0, len(item.tags) / 5)
         score += 0.1 * tag_score
-        
+
         # Content diversity (0.25 weight)
         words = item.content.split()
         unique_words = len(set(words))
         total_words = len(words)
         diversity_score = unique_words / total_words if total_words > 0 else 0
         score += 0.25 * diversity_score
-        
+
         return min(1.0, score)
 
     def _add_to_knowledge_base(self, item: KnowledgeItem):
         """Add item to knowledge base and update indexes"""
         self.knowledge_base[item.id] = item
         self.knowledge_index[item.knowledge_type.value].append(item.id)
-        
+
         # Update tag index
         for tag in item.tags:
             self.knowledge_index[f"tag:{tag}"].append(item.id)
 
     def search_knowledge_base(
-        self,
-        query: str,
-        knowledge_type: Optional[KnowledgeType] = None
+        self, query: str, knowledge_type: Optional[KnowledgeType] = None
     ) -> List[KnowledgeItem]:
         """Search knowledge base"""
         candidates = []
-        
+
         # Filter by knowledge type
         if knowledge_type:
             candidates = [
@@ -680,60 +681,67 @@ class KnowledgeGenerator:
             ]
         else:
             candidates = list(self.knowledge_base.values())
-        
+
         # Simple text-based search
         query_lower = query.lower()
         results = []
-        
+
         for item in candidates:
-            if (query_lower in item.title.lower() or 
-                query_lower in item.content.lower() or
-                any(query_lower in tag.lower() for tag in item.tags)):
+            if (
+                query_lower in item.title.lower()
+                or query_lower in item.content.lower()
+                or any(query_lower in tag.lower() for tag in item.tags)
+            ):
                 results.append(item)
-        
+
         # Sort by quality score
         results.sort(key=lambda x: x.quality_score, reverse=True)
-        
+
         return results
 
-    def _calculate_quality_metrics(self, items: List[KnowledgeItem]) -> Dict[str, float]:
+    def _calculate_quality_metrics(
+        self, items: List[KnowledgeItem]
+    ) -> Dict[str, float]:
         """Calculate quality metrics for generated items"""
         if not items:
             return {}
-        
+
         quality_scores = [item.quality_score for item in items]
         content_lengths = [len(item.content) for item in items]
-        
+
         return {
             "average_quality": sum(quality_scores) / len(quality_scores),
             "max_quality": max(quality_scores),
             "min_quality": min(quality_scores),
             "average_length": sum(content_lengths) / len(content_lengths),
             "total_items": len(items),
-            "high_quality_ratio": sum(1 for score in quality_scores if score > 0.8) / len(quality_scores)
+            "high_quality_ratio": sum(1 for score in quality_scores if score > 0.8)
+            / len(quality_scores),
         }
 
     def _generate_recommendations(
-        self,
-        items: List[KnowledgeItem],
-        quality_metrics: Dict[str, float]
+        self, items: List[KnowledgeItem], quality_metrics: Dict[str, float]
     ) -> List[str]:
         """Generate recommendations for improving knowledge generation"""
         recommendations = []
-        
+
         if quality_metrics.get("average_quality", 0) < 0.7:
-            recommendations.append("Consider using hybrid generation strategy for better quality")
-        
+            recommendations.append(
+                "Consider using hybrid generation strategy for better quality"
+            )
+
         if quality_metrics.get("high_quality_ratio", 0) < 0.6:
-            recommendations.append("Improve content quality by adding more detailed examples")
-        
+            recommendations.append(
+                "Improve content quality by adding more detailed examples"
+            )
+
         if quality_metrics.get("average_length", 0) < 500:
             recommendations.append("Consider generating more comprehensive content")
-        
+
         # Check for content diversity
         if len(set(item.knowledge_type for item in items)) < 2:
             recommendations.append("Generate diverse types of knowledge content")
-        
+
         return recommendations
 
     def export_knowledge_base(self, output_path: Path) -> Dict[str, Any]:
@@ -749,20 +757,20 @@ class KnowledgeGenerator:
                     "metadata": item.metadata,
                     "quality_score": item.quality_score,
                     "generated_at": item.generated_at.isoformat(),
-                    "source": item.source
+                    "source": item.source,
                 }
                 for item in self.knowledge_base.values()
             ],
             "export_metadata": {
                 "total_items": len(self.knowledge_base),
                 "export_time": datetime.now(timezone.utc).isoformat(),
-                "knowledge_types": list(self.knowledge_index.keys())
-            }
+                "knowledge_types": list(self.knowledge_index.keys()),
+            },
         }
-        
+
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(export_data, f, indent=2, ensure_ascii=False)
-        
+
         return export_data
 
 
@@ -773,5 +781,5 @@ __all__ = [
     "GenerationStrategy",
     "KnowledgeItem",
     "GenerationConfig",
-    "GenerationResult"
+    "GenerationResult",
 ]

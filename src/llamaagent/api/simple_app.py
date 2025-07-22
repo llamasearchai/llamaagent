@@ -37,6 +37,7 @@ from ..tools import CalculatorTool, ToolRegistry
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # Properly typed global state
 class AppState:
     def __init__(self):
@@ -44,6 +45,7 @@ class AppState:
         self.providers: Dict[str, Any] = {}
         self.tools: Optional[ToolRegistry] = None
         self.start_time: float = time.time()
+
 
 # Global state instance
 app_state = AppState()
@@ -135,13 +137,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler."""
     # Startup
     logger.info("Starting LlamaAgent Simple API...")
-    
+
     # Initialize tools
     tool_registry = ToolRegistry()
     tool_registry.register(CalculatorTool())
     app_state.tools = tool_registry
-    logger.info("Tool registry initialized with %d tools", len(tool_registry.list_names()))
-    
+    logger.info(
+        "Tool registry initialized with %d tools", len(tool_registry.list_names())
+    )
+
     # Create a default agent
     try:
         provider = MockProvider(model_name="mock-model")
@@ -159,14 +163,14 @@ async def lifespan(app: FastAPI):
         logger.info("Default agent created successfully")
     except Exception as e:
         logger.error("Failed to create default agent: %s", e)
-    
+
     logger.info("LlamaAgent Simple API startup complete")
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down LlamaAgent Simple API...")
-    
+
     # Cleanup agents
     for agent in app_state.agents.values():
         if hasattr(agent, "cleanup"):
@@ -174,7 +178,7 @@ async def lifespan(app: FastAPI):
                 await agent.cleanup()
             except Exception as e:
                 logger.error("Agent cleanup error: %s", e)
-    
+
     logger.info("Shutdown complete")
 
 
@@ -204,8 +208,7 @@ async def general_exception_handler(request: Request, exc: Exception):
     """Handle general exceptions."""
     logger.error("Unhandled exception: %s", exc)
     return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal server error", "error": str(exc)}
+        status_code=500, content={"detail": "Internal server error", "error": str(exc)}
     )
 
 
@@ -234,7 +237,7 @@ async def root():
 async def health_check():
     """Comprehensive health check."""
     providers_available = ["mock"]
-    
+
     # Test other providers if available
     for provider_name in ["openai", "anthropic", "ollama"]:
         try:
@@ -244,7 +247,7 @@ async def health_check():
             # Provider not available, but this is expected in many environments
             logger.debug(f"Provider {provider_name} not available: {e}")
             continue
-    
+
     return HealthCheckResponse(
         status="healthy",
         timestamp=datetime.now(timezone.utc).isoformat(),
@@ -277,7 +280,7 @@ async def chat_completions(request: ChatCompletionRequest):
         # Get or create agent
         agent_name = request.agent_name or "default"
         agent = app_state.agents.get(agent_name)
-        
+
         if not agent:
             # Create agent on demand
             try:
@@ -285,7 +288,7 @@ async def chat_completions(request: ChatCompletionRequest):
                     provider = create_provider("openai", model_name=request.model)
                 else:
                     provider = MockProvider(model_name=request.model)
-                
+
                 config = AgentConfig(
                     name=agent_name,
                     role=AgentRole.GENERALIST,
@@ -303,23 +306,23 @@ async def chat_completions(request: ChatCompletionRequest):
                 agent = app_state.agents.get("default")
                 if not agent:
                     raise HTTPException(status_code=500, detail="No agents available")
-        
+
         # Extract task from messages
         if request.messages:
             task = request.messages[-1].content
         else:
             task = "Hello"
-        
+
         # Execute task
         response = await agent.execute(task)
-        
+
         # Format response
         choice = {
             "index": 0,
             "message": {"role": "assistant", "content": response.content},
             "finish_reason": "stop",
         }
-        
+
         return ChatCompletionResponse(
             id=f"chatcmpl-{uuid.uuid4().hex[:8]}",
             object="chat.completion",
@@ -332,7 +335,7 @@ async def chat_completions(request: ChatCompletionRequest):
                 "total_tokens": (len(task) // 4) + response.tokens_used,
             },
         )
-    
+
     except Exception as e:
         logger.error("Chat completion error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -348,29 +351,27 @@ async def create_agent(request: AgentCreateRequest):
             provider = MockProvider(model_name=request.model)
         else:
             provider = create_provider(
-                request.provider,
-                model_name=request.model,
-                api_key=request.api_key
+                request.provider, model_name=request.model, api_key=request.api_key
             )
-        
+
         # Create agent config
         config = AgentConfig(
             name=request.name,
             role=request.role,
             description=request.description,
         )
-        
+
         # Create agent
         agent = ReactAgent(
             config=config,
             llm_provider=provider,
             tools=app_state.tools,
         )
-        
+
         # Generate unique ID and store agent
         agent_id = str(uuid.uuid4())
         app_state.agents[agent_id] = agent
-        
+
         # Return response
         return AgentResponse(
             agent_id=agent_id,
@@ -381,7 +382,7 @@ async def create_agent(request: AgentCreateRequest):
             tools=request.tools,
             created_at=datetime.now(timezone.utc).isoformat(),
         )
-    
+
     except Exception as e:
         logger.error("Agent creation error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -392,14 +393,18 @@ async def list_agents():
     """List all agents."""
     agents: List[Dict[str, Any]] = []
     for agent_id, agent in app_state.agents.items():
-        agents.append({
-            "agent_id": agent_id,
-            "name": agent.config.name,
-            "role": agent.config.role.value if hasattr(agent.config.role, 'value') else str(agent.config.role),
-            "description": agent.config.description,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        })
-    
+        agents.append(
+            {
+                "agent_id": agent_id,
+                "name": agent.config.name,
+                "role": agent.config.role.value
+                if hasattr(agent.config.role, 'value')
+                else str(agent.config.role),
+                "description": agent.config.description,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        )
+
     return AgentListResponse(agents=agents, total=len(agents))
 
 
@@ -409,11 +414,13 @@ async def get_agent(agent_id: str):
     agent = app_state.agents.get(agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
-    
+
     return {
         "agent_id": agent_id,
         "name": agent.config.name,
-        "role": agent.config.role.value if hasattr(agent.config.role, 'value') else str(agent.config.role),
+        "role": agent.config.role.value
+        if hasattr(agent.config.role, 'value')
+        else str(agent.config.role),
         "description": agent.config.description,
         "status": "active",
     }
@@ -424,7 +431,7 @@ async def delete_agent(agent_id: str):
     """Delete an agent."""
     if agent_id not in app_state.agents:
         raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
-    
+
     # Cleanup agent
     agent = app_state.agents[agent_id]
     if hasattr(agent, "cleanup"):
@@ -432,10 +439,10 @@ async def delete_agent(agent_id: str):
             await agent.cleanup()
         except Exception as e:
             logger.error("Agent cleanup error: %s", e)
-    
+
     # Remove from state
     del app_state.agents[agent_id]
-    
+
     return {"message": f"Agent {agent_id} deleted successfully"}
 
 
@@ -445,16 +452,18 @@ async def list_tools():
     """List available tools."""
     if not app_state.tools:
         return ToolListResponse(tools=[], total=0)
-    
+
     tools: List[Dict[str, Any]] = []
     for tool_name in app_state.tools.list_names():
         tool = app_state.tools.get(tool_name)
-        tools.append({
-            "name": tool_name,
-            "description": getattr(tool, "description", "No description"),
-            "enabled": True,
-        })
-    
+        tools.append(
+            {
+                "name": tool_name,
+                "description": getattr(tool, "description", "No description"),
+                "enabled": True,
+            }
+        )
+
     return ToolListResponse(tools=tools, total=len(tools))
 
 
@@ -484,4 +493,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
         log_level="info",
-    ) 
+    )

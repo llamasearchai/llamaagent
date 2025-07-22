@@ -14,7 +14,6 @@ Author: Nik Jois <nikjois@llamasearch.ai>
 import asyncio
 import logging
 import os
-import psutil
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
@@ -22,17 +21,12 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+import psutil
+
 try:
-    from prometheus_client import (
-        Counter,
-        Gauge,
-        Histogram,
-        Info,
-        Summary,
-        CollectorRegistry,
-        generate_latest,
-        CONTENT_TYPE_LATEST,
-    )
+    from prometheus_client import (CONTENT_TYPE_LATEST, CollectorRegistry,
+                                   Counter, Gauge, Histogram, Info, Summary,
+                                   generate_latest)
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False

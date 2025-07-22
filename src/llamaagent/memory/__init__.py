@@ -11,6 +11,7 @@ from .base import SimpleMemory
 @dataclass
 class MemoryEntry:
     """A single memory entry."""
+
     content: str
     tags: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -20,14 +21,14 @@ class MemoryEntry:
 
 class MemoryManager:
     """Basic memory manager."""
-    
+
     def __init__(self):
         self.memory = {}
-    
+
     def store(self, key: str, value: Any) -> None:
         """Store a value in memory."""
         self.memory[key] = value
-    
+
     def retrieve(self, key: str) -> Optional[Any]:
         """Retrieve a value from memory."""
         return self.memory.get(key)

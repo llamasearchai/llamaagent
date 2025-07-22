@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class ProviderType(Enum):
     """Available LLM provider types."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     COHERE = "cohere"
@@ -31,6 +32,7 @@ class ProviderType(Enum):
 @dataclass
 class LLMConfig:
     """Configuration for LLM providers."""
+
     provider_type: ProviderType
     model_name: str
     temperature: float = 0.7
@@ -51,16 +53,17 @@ class LLMConfig:
 @dataclass
 class LLMResponse:
     """Standardized LLM response format."""
+
     content: str
     usage: Dict[str, int]
     model: str
     provider: str
     metadata: Dict[str, Any]
 
+
 # Base provider - always available
 from .base import BaseProvider
 from .base_provider import BaseLLMProvider
-
 # Mock provider - always available for testing/fallback
 from .mock_provider import MockProvider
 
@@ -152,11 +155,13 @@ def create_provider(
     """Create provider instance with enhanced configuration support."""
     # Handle both new and legacy parameter names
     provider = provider_type or provider_name or "mock"
-    
+
     provider_class = get_provider_class(provider)
 
     if not provider_class:
-        raise ValueError(f"Provider '{provider}' not available. Available providers: {get_available_providers()}")
+        raise ValueError(
+            f"Provider '{provider}' not available. Available providers: {get_available_providers()}"
+        )
 
     # Enhanced provider creation with better defaults
     if provider == "mock":
@@ -167,7 +172,9 @@ def create_provider(
         if not api_key:
             logger.warning("No OpenAI API key provided, falling back to mock provider")
             return MockProvider(model_name="mock-openai")
-        return provider_class(api_key=api_key, model_name=model_name or "gpt-3.5-turbo", **kwargs)
+        return provider_class(
+            api_key=api_key, model_name=model_name or "gpt-3.5-turbo", **kwargs
+        )
     else:
         return provider_class(api_key=api_key, model_name=model_name, **kwargs)
 
@@ -181,7 +188,7 @@ def list_available_providers() -> List[str]:
 __all__ = [
     # New types and configs
     "ProviderType",
-    "LLMConfig", 
+    "LLMConfig",
     "LLMResponse",
     # Base classes
     "BaseLLMProvider",

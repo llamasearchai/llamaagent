@@ -146,10 +146,10 @@ async def test_database_connection():
     """Test database connection and query execution."""
     # Use DatabaseManager with mock pool since it requires PostgreSQL
     from src.llamaagent.storage.database import DatabaseConfig
-    
+
     config = DatabaseConfig(database=":memory:")
     db = Database(config)
-    
+
     # Mock the pool since we can't actually connect to PostgreSQL in tests
     with patch('src.llamaagent.storage.database.asyncpg') as mock_asyncpg:
         mock_pool = AsyncMock()
@@ -160,12 +160,12 @@ async def test_database_connection():
         mock_pool.execute = AsyncMock()
         mock_pool.fetch = AsyncMock(return_value=[{"id": 1, "data": "test_data"}])
         mock_pool.close = AsyncMock()
-        
+
         # Since DatabaseManager doesn't expose execute/fetch directly,
         # we'll just verify the pool was created correctly
         assert db.pool is not None
         mock_asyncpg.create_pool.assert_called_once()
-        
+
         # Test cleanup method (DatabaseManager uses cleanup instead of disconnect)
         await db.cleanup()
 

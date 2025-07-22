@@ -17,6 +17,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import JSONResponse
 
+
 # Simple metrics collector implementation
 class MetricsCollector:
     """Simple metrics collector for monitoring."""

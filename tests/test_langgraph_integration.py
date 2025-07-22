@@ -5,7 +5,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.llamaagent.integration.langgraph import BudgetExceededError, LangGraphAgent
+from src.llamaagent.integration.langgraph import (BudgetExceededError,
+                                                  LangGraphAgent)
 from src.llamaagent.llm.providers.mock_provider import MockProvider
 from src.llamaagent.types import TaskInput
 

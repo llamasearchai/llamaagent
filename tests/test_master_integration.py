@@ -13,21 +13,16 @@ import asyncio
 import pytest
 
 from llamaagent import AgentConfig, AgentRole, ReactAgent
-from llamaagent.integration.openai_agents import (
-    OpenAIAgentMode,
-    OpenAIAgentsIntegration,
-    OpenAIIntegrationConfig,
-)
+from llamaagent.integration.openai_agents import (OpenAIAgentMode,
+                                                  OpenAIAgentsIntegration,
+                                                  OpenAIIntegrationConfig)
 from llamaagent.llm import create_provider
 from llamaagent.memory import SimpleMemory
 from llamaagent.tools import CalculatorTool, PythonREPLTool, ToolRegistry
 from llamaagent.types import TaskInput, TaskOutput, TaskStatus
-from src.llamaagent.orchestrator import (
-    AgentOrchestrator,
-    OrchestrationStrategy,
-    WorkflowDefinition,
-    WorkflowStep,
-)
+from src.llamaagent.orchestrator import (AgentOrchestrator,
+                                         OrchestrationStrategy,
+                                         WorkflowDefinition, WorkflowStep)
 
 
 class TestMasterIntegration:

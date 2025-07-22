@@ -24,6 +24,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 # Optional imports with fallbacks
 try:
     import redis
+
     redis_available = True
 except ImportError:
     redis = None
@@ -31,6 +32,7 @@ except ImportError:
 
 try:
     from opentelemetry import trace
+
     tracer = trace.get_tracer(__name__)
     tracing_available = True
 except ImportError:
@@ -42,6 +44,7 @@ logger = logging.getLogger(__name__)
 
 class ContextScope(Enum):
     """Scope levels for context sharing."""
+
     GLOBAL = "global"
     AGENT = "agent"
     SESSION = "session"
@@ -51,6 +54,7 @@ class ContextScope(Enum):
 
 class ConflictResolution(Enum):
     """Conflict resolution strategies."""
+
     LATEST_WINS = "latest_wins"
     MERGE = "merge"
     MANUAL = "manual"
@@ -60,6 +64,7 @@ class ConflictResolution(Enum):
 @dataclass
 class ContextUpdate:
     """Record of a context update."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     context_id: str = ""
     agent_id: str = ""
@@ -72,6 +77,7 @@ class ContextUpdate:
 @dataclass
 class SharedContext:
     """Shared context container."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     scope: ContextScope = ContextScope.GLOBAL
     data: Dict[str, Any] = field(default_factory=dict)
@@ -96,7 +102,7 @@ class SharedContext:
             "last_updated": self.last_updated.isoformat(),
             "contributors": list(self.contributors),
             "access_permissions": self.access_permissions,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
     @classmethod
@@ -110,7 +116,7 @@ class SharedContext:
             last_updated=datetime.fromisoformat(data["last_updated"]),
             contributors=set(data["contributors"]),
             access_permissions=data["access_permissions"],
-            metadata=data["metadata"]
+            metadata=data["metadata"],
         )
 
 
@@ -121,7 +127,7 @@ class ContextSharingProtocol:
         self,
         redis_client: Any = None,
         conflict_resolution: ConflictResolution = ConflictResolution.MERGE,
-        sync_interval: int = 30  # seconds
+        sync_interval: int = 30,  # seconds
     ):
         # Redis setup (optional)
         if redis_available and redis_client is not None:
@@ -164,14 +170,14 @@ class ContextSharingProtocol:
         context_id: str,
         scope: ContextScope,
         initial_data: Optional[Dict[str, Any]] = None,
-        permissions: Optional[Dict[str, Any]] = None
+        permissions: Optional[Dict[str, Any]] = None,
     ) -> SharedContext:
         """Create new shared context."""
         context = SharedContext(
             id=context_id,
             scope=scope,
             data=initial_data or {},
-            access_permissions=permissions or {}
+            access_permissions=permissions or {},
         )
 
         # Store locally and in Redis
@@ -181,7 +187,9 @@ class ContextSharingProtocol:
         self.logger.info(f"Created shared context: {context_id} (scope: {scope.value})")
         return context
 
-    async def get_context(self, context_id: str, agent_id: str = "") -> Optional[SharedContext]:
+    async def get_context(
+        self, context_id: str, agent_id: str = ""
+    ) -> Optional[SharedContext]:
         """Retrieve shared context."""
         # Check local cache first
         if context_id in self.local_contexts:
@@ -203,7 +211,7 @@ class ContextSharingProtocol:
         agent_id: str,
         updates: Dict[str, Any],
         merge: bool = True,
-        conflict_resolution: Optional[ConflictResolution] = None
+        conflict_resolution: Optional[ConflictResolution] = None,
     ) -> bool:
         """Update shared context."""
         if tracing_available and tracer:
@@ -223,7 +231,7 @@ class ContextSharingProtocol:
         agent_id: str,
         updates: Dict[str, Any],
         merge: bool,
-        conflict_resolution: Optional[ConflictResolution]
+        conflict_resolution: Optional[ConflictResolution],
     ) -> bool:
         """Internal implementation of context update."""
         context = await self.get_context(context_id, agent_id)
@@ -242,7 +250,7 @@ class ContextSharingProtocol:
             context_id=context_id,
             agent_id=agent_id,
             updates=updates,
-            update_type="merge" if merge else "replace"
+            update_type="merge" if merge else "replace",
         )
 
         # Apply update
@@ -266,10 +274,7 @@ class ContextSharingProtocol:
         return True
 
     async def merge_contexts(
-        self,
-        target_context_id: str,
-        source_context_id: str,
-        agent_id: str = ""
+        self, target_context_id: str, source_context_id: str, agent_id: str = ""
     ) -> bool:
         """Merge two contexts."""
         target = await self.get_context(target_context_id, agent_id)
@@ -285,23 +290,16 @@ class ContextSharingProtocol:
         # Resolve conflicts
         resolution = self.conflict_resolution
         merged_data = await self._resolve_conflicts(
-            target.data,
-            source.data,
-            resolution
+            target.data, source.data, resolution
         )
 
         # Update target context
         return await self.update_context(
-            target_context_id,
-            agent_id,
-            merged_data,
-            merge=False
+            target_context_id, agent_id, merged_data, merge=False
         )
 
     async def get_context_history(
-        self,
-        context_id: str,
-        limit: int = 100
+        self, context_id: str, limit: int = 100
     ) -> List[ContextUpdate]:
         """Get context update history."""
         if not self.redis_client:
@@ -310,7 +308,7 @@ class ContextSharingProtocol:
         try:
             key = f"context_history:{context_id}"
             history_data = self.redis_client.lrange(key, 0, limit - 1)
-            
+
             updates = []
             for data in history_data:
                 try:
@@ -322,7 +320,7 @@ class ContextSharingProtocol:
                         updates=update_dict["updates"],
                         timestamp=datetime.fromisoformat(update_dict["timestamp"]),
                         update_type=update_dict.get("update_type", "update"),
-                        metadata=update_dict.get("metadata", {})
+                        metadata=update_dict.get("metadata", {}),
                     )
                     updates.append(update)
                 except Exception as e:
@@ -334,9 +332,7 @@ class ContextSharingProtocol:
             return []
 
     async def subscribe_to_updates(
-        self,
-        context_id: str,
-        callback: Callable[[str, Dict[str, Any]], None]
+        self, context_id: str, callback: Callable[[str, Dict[str, Any]], None]
     ):
         """Subscribe to context updates."""
         if context_id not in self.update_subscribers:
@@ -344,9 +340,7 @@ class ContextSharingProtocol:
         self.update_subscribers[context_id].append(callback)
 
     async def unsubscribe_from_updates(
-        self,
-        context_id: str,
-        callback: Callable[[str, Dict[str, Any]], None]
+        self, context_id: str, callback: Callable[[str, Dict[str, Any]], None]
     ):
         """Unsubscribe from context updates."""
         if context_id in self.update_subscribers:
@@ -364,7 +358,7 @@ class ContextSharingProtocol:
             ),
             "redis_available": self.redis_client is not None,
             "sync_interval": self.sync_interval,
-            "conflict_resolution": self.conflict_resolution.value
+            "conflict_resolution": self.conflict_resolution.value,
         }
 
         # Add Redis stats if available
@@ -406,7 +400,7 @@ class ContextSharingProtocol:
                     merged_data = await self._resolve_conflicts(
                         local_context.data,
                         remote_context.data,
-                        self.conflict_resolution
+                        self.conflict_resolution,
                     )
                     local_context.data = merged_data
                     local_context.version = remote_context.version
@@ -422,19 +416,19 @@ class ContextSharingProtocol:
         try:
             key = f"context:{context.id}"
             data = json.dumps(context.to_dict())
-            
+
             # Set TTL based on scope
             ttl_map = {
                 ContextScope.GLOBAL: 86400 * 30,  # 30 days
-                ContextScope.AGENT: 3600 * 12,   # 12 hours
+                ContextScope.AGENT: 3600 * 12,  # 12 hours
                 ContextScope.SESSION: 3600 * 4,  # 4 hours
-                ContextScope.TASK: 86400 * 1,    # 1 day
-                ContextScope.WORKFLOW: 86400 * 7, # 7 days
+                ContextScope.TASK: 86400 * 1,  # 1 day
+                ContextScope.WORKFLOW: 86400 * 7,  # 7 days
             }
-            
+
             ttl = ttl_map.get(context.scope, 86400)
             self.redis_client.setex(key, ttl, data)
-            
+
         except Exception as e:
             self.logger.error(f"Error persisting context: {e}")
 
@@ -468,16 +462,16 @@ class ContextSharingProtocol:
                 "updates": update.updates,
                 "timestamp": update.timestamp.isoformat(),
                 "update_type": update.update_type,
-                "metadata": update.metadata
+                "metadata": update.metadata,
             }
-            
+
             # Add to history list (keep last 1000 updates)
             self.redis_client.lpush(key, json.dumps(update_data))
             self.redis_client.ltrim(key, 0, 999)
-            
+
             # Set expiry for history
             self.redis_client.expire(key, 86400 * 7)  # Keep for 7 days
-            
+
         except Exception as e:
             self.logger.error(f"Error recording update: {e}")
 
@@ -493,10 +487,7 @@ class ContextSharingProtocol:
                         self.logger.error(f"Error notifying subscriber: {e}")
 
     def _check_permissions(
-        self,
-        context: SharedContext,
-        agent_id: str,
-        operation: str
+        self, context: SharedContext, agent_id: str, operation: str
     ) -> bool:
         """Check if agent has permission for operation."""
         if not context.access_permissions:
@@ -514,7 +505,7 @@ class ContextSharingProtocol:
         self,
         local_data: Dict[str, Any],
         remote_data: Dict[str, Any],
-        resolution: ConflictResolution
+        resolution: ConflictResolution,
     ) -> Dict[str, Any]:
         """Resolve conflicts between local and remote data."""
         if resolution == ConflictResolution.LATEST_WINS:
@@ -528,7 +519,7 @@ class ContextSharingProtocol:
             # Merge based on data priority
             priority_keys = ["priority", "importance", "weight"]
             result = local_data.copy()
-            
+
             for key, value in remote_data.items():
                 if key in priority_keys:
                     result[key] = value
@@ -541,12 +532,18 @@ class ContextSharingProtocol:
             # Return local data unchanged for manual resolution
             return local_data
 
-    def _deep_merge(self, dict1: Dict[str, Any], dict2: Dict[str, Any]) -> Dict[str, Any]:
+    def _deep_merge(
+        self, dict1: Dict[str, Any], dict2: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Deep merge two dictionaries."""
         result = dict1.copy()
 
         for key, value in dict2.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
                 result[key] = self._deep_merge(result[key], value)
             else:
                 result[key] = value

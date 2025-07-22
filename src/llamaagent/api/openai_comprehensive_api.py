@@ -34,11 +34,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from ..integration.openai_comprehensive import (
-    BudgetExceededError,
-    OpenAIComprehensiveIntegration,
-    OpenAIModelType,
-    create_comprehensive_openai_integration,
-)
+    BudgetExceededError, OpenAIComprehensiveIntegration, OpenAIModelType,
+    create_comprehensive_openai_integration)
 from ..tools.openai_tools import OPENAI_TOOLS, create_openai_tool
 
 # Configure logging

@@ -77,6 +77,7 @@ class ServiceEndpoint:
     status: ServiceStatus = ServiceStatus.UNKNOWN
     last_health_check: Optional[datetime] = None
     registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
     @property
     def url(self) -> str:
         """Get service URL"""

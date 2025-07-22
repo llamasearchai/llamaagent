@@ -3,9 +3,9 @@ Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
 import pytest
-from httpx import AsyncClient, ASGITransport
-import llamaagent.types  # noqa: F401, imported to increase coverage
+from httpx import ASGITransport, AsyncClient
 
+import llamaagent.types  # noqa: F401, imported to increase coverage
 from llamaagent.api.complete_api import app, get_current_user
 
 
@@ -13,7 +13,10 @@ from llamaagent.api.complete_api import app, get_current_user
 async def test_spre_generate_smoke():
     """Call /spre/generate and expect 200 + basic dataset stats."""
     # Ensure authentication bypass
-    app.dependency_overrides[get_current_user] = lambda: {"user_id": "tester", "permissions": ["read", "write"]}
+    app.dependency_overrides[get_current_user] = lambda: {
+        "user_id": "tester",
+        "permissions": ["read", "write"],
+    }
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         resp = await ac.post("/spre/generate", json={"name": "demo", "count": 3})
@@ -28,7 +31,10 @@ async def test_spre_generate_smoke():
 async def test_agent_create_smoke():
     """Create a new agent via /agents/create and check response."""
     # Ensure authentication bypass
-    app.dependency_overrides[get_current_user] = lambda: {"user_id": "tester", "permissions": ["read", "write"]}
+    app.dependency_overrides[get_current_user] = lambda: {
+        "user_id": "tester",
+        "permissions": ["read", "write"],
+    }
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         resp = await ac.post(
@@ -41,4 +47,4 @@ async def test_agent_create_smoke():
             },
         )
     assert resp.status_code == 200
-    assert "agent_id" in resp.json() 
+    assert "agent_id" in resp.json()

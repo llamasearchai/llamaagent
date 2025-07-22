@@ -7,17 +7,9 @@ This package provides data generation capabilities for AI agent training and eva
 # The GDT data generation stack is optional during lightweight CI runs.
 # Import errors (including SyntaxError) are tolerated and replaced with stubs.
 try:
-    from ..data.gdt import (
-        ConversationDataGenerator,
-        DataType,
-        GDTDataset,
-        GDTGenerator,
-        GDTItem,
-        GDTTransformer,
-        GDTValidator,
-        TextDataGenerator,
-        ValidationStatus,
-    )
+    from ..data.gdt import (ConversationDataGenerator, DataType, GDTDataset,
+                            GDTGenerator, GDTItem, GDTTransformer,
+                            GDTValidator, TextDataGenerator, ValidationStatus)
 except Exception:  # pylint: disable=broad-except
     # Provide minimal fallbacks to satisfy type checkers and runtime imports.
     class _Stub:  # type: ignore
@@ -40,6 +32,7 @@ except Exception:  # pylint: disable=broad-except
         TEXT = "text"
         CONVERSATION = "conversation"
 
+
 __all__ = [
     "GDTGenerator",
     "GDTDataset",
@@ -57,5 +50,6 @@ try:
     # Late import to avoid circular dependencies during initial package loading.
     from .gdt import GDTOrchestrator  # type: ignore  # noqa: E402, F401
 except Exception:  # pylint: disable=broad-except
+
     class GDTOrchestrator:  # type: ignore
         ...

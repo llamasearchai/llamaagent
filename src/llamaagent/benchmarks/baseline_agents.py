@@ -136,7 +136,11 @@ class BaselineAgentFactory:
         if baseline_type == BaselineType.VANILLA_REACT:
             config = AgentConfig(
                 agent_name=f"{base_name}-Vanilla",
-                metadata={"role": AgentRole.GENERALIST, "spree_enabled": False, "max_iterations": 10},
+                metadata={
+                    "role": AgentRole.GENERALIST,
+                    "spree_enabled": False,
+                    "max_iterations": 10,
+                },
                 tools=tool_names,  # Pass list of tool names, not registry
             )
             return VanillaReactAgent(

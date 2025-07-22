@@ -15,6 +15,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DSPySignature:
     """Defines the signature for a DSPy module"""
+
     name: str
     description: str
     input_fields: Dict[str, str]
@@ -42,17 +44,17 @@ class DSPySignature:
             f"Task: {self.name}",
             f"Description: {self.description}",
             "",
-            "Input fields:"
+            "Input fields:",
         ]
-        
+
         for field, description in self.input_fields.items():
             prompt_parts.append(f"- {field}: {description}")
-        
+
         prompt_parts.extend(["", "Output fields:"])
-        
+
         for field, description in self.output_fields.items():
             prompt_parts.append(f"- {field}: {description}")
-        
+
         if self.constraints:
             prompt_parts.extend(["", "Constraints:"])
             for constraint in self.constraints:
@@ -75,6 +77,7 @@ class DSPySignature:
 @dataclass
 class OptimizationResult:
     """Result from DSPy optimization"""
+
     best_prompt: str
     best_score: float
     best_examples: List[Dict[str, Any]]
@@ -84,7 +87,9 @@ class OptimizationResult:
 class DSPyModule(ABC):
     """Base class for DSPy modules"""
 
-    def __init__(self, signature: DSPySignature, llm_provider: Optional[BaseLLMProvider] = None):
+    def __init__(
+        self, signature: DSPySignature, llm_provider: Optional[BaseLLMProvider] = None
+    ):
         self.signature = signature
         self.llm_provider = llm_provider
         self.call_history: List[Dict[str, Any]] = []
@@ -97,11 +102,13 @@ class DSPyModule(ABC):
     async def __call__(self, **kwargs) -> Dict[str, Any]:
         """Make the module callable"""
         result = await self.forward(**kwargs)
-        self.call_history.append({
-            "input": kwargs,
-            "output": result,
-            "timestamp": asyncio.get_event_loop().time()
-        })
+        self.call_history.append(
+            {
+                "input": kwargs,
+                "output": result,
+                "timestamp": asyncio.get_event_loop().time(),
+            }
+        )
         return result
 
     def _parse_response(self, response_text: str) -> Dict[str, Any]:
@@ -117,7 +124,7 @@ class DSPyModule(ABC):
             for field in self.signature.output_fields:
                 if line.lower().startswith(f"{field}:"):
                     current_field = field
-                    value = line[len(field) + 1:].strip()
+                    value = line[len(field) + 1 :].strip()
                     output[field] = value
                     break
             if current_field and line:
@@ -139,17 +146,12 @@ class ChainOfThought(DSPyModule):
         """Execute chain-of-thought reasoning"""
         # Build the prompt
         prompt_parts = [self.signature.to_prompt(), "", "Current input:"]
-        
+
         for field, value in kwargs.items():
             if field in self.signature.input_fields:
                 prompt_parts.append(f"{field}: {value}")
 
-        prompt_parts.extend([
-            "",
-            "Let's think step by step:",
-            "",
-            "Output:"
-        ])
+        prompt_parts.extend(["", "Let's think step by step:", "", "Output:"])
 
         prompt = "\n".join(prompt_parts)
 
@@ -157,12 +159,14 @@ class ChainOfThought(DSPyModule):
         if self.llm_provider:
             message = LLMMessage(role="user", content=prompt)
             response = await self.llm_provider.complete([message])
-            
+
             # Parse the response
             return self._parse_response(response.content)
-        
+
         # Fallback if no LLM provider
-        return {field: f"Mock output for {field}" for field in self.signature.output_fields}
+        return {
+            field: f"Mock output for {field}" for field in self.signature.output_fields
+        }
 
 
 class Pipeline(DSPyModule):
@@ -194,11 +198,11 @@ class DSPyOptimizer:
         training_data: List[Dict[str, Any]],
         metric: Callable[[Dict[str, Any], Dict[str, Any]], float],
         num_iterations: int = 5,
-        bootstrap_few_shot: int = 3
+        bootstrap_few_shot: int = 3,
     ) -> OptimizationResult:
         """
         Compile/optimize a DSPy module using training data.
-        
+
         Args:
             module: The DSPy module to optimize
             training_data: List of input/output examples
@@ -243,7 +247,11 @@ class DSPyOptimizer:
                     validation_scores.append(0.0)
 
             # Calculate average score
-            avg_score = np.mean(validation_scores) if validation_scores and NUMPY_AVAILABLE else 0.0
+            avg_score = (
+                np.mean(validation_scores)
+                if validation_scores and NUMPY_AVAILABLE
+                else 0.0
+            )
 
             # Update best if improved
             if avg_score > best_score:
@@ -253,9 +261,7 @@ class DSPyOptimizer:
 
             # Adaptive example selection
             if iteration < num_iterations - 1:
-                await self._adaptive_example_selection(
-                    module, training_data, metric
-                )
+                await self._adaptive_example_selection(module, training_data, metric)
 
         return OptimizationResult(
             best_prompt=best_prompt,
@@ -264,8 +270,8 @@ class DSPyOptimizer:
             metadata={
                 "iterations": num_iterations,
                 "bootstrap_size": bootstrap_few_shot,
-                "training_size": len(training_data)
-            }
+                "training_size": len(training_data),
+            },
         )
 
     def _select_best_examples(
@@ -281,15 +287,15 @@ class DSPyOptimizer:
             if "input" in call and "output" in call:
                 # Simple scoring based on output length and completeness
                 score = len(str(call["output"]))
-                scored_examples.append({
-                    "input": call["input"],
-                    "output": call["output"],
-                    "score": score
-                })
+                scored_examples.append(
+                    {"input": call["input"], "output": call["output"], "score": score}
+                )
 
         # Sort by score and return top k
         scored_examples.sort(key=lambda x: x["score"], reverse=True)
-        return [{"input": ex["input"], "output": ex["output"]} for ex in scored_examples[:k]]
+        return [
+            {"input": ex["input"], "output": ex["output"]} for ex in scored_examples[:k]
+        ]
 
     async def _adaptive_example_selection(
         self, module: DSPyModule, training_data: List[Dict[str, Any]], metric: Callable
@@ -335,13 +341,13 @@ def semantic_similarity_metric(
     # For now, using simple token overlap
     pred_text = " ".join(str(v) for v in prediction.values()).lower()
     target_text = " ".join(str(v) for v in target.values()).lower()
-    
+
     pred_tokens = set(pred_text.split())
     target_tokens = set(target_text.split())
-    
+
     if not target_tokens:
         return 0.0
-    
+
     overlap = len(pred_tokens & target_tokens)
     return overlap / len(target_tokens)
 
@@ -354,24 +360,23 @@ def create_qa_module(llm_provider: BaseLLMProvider) -> ChainOfThought:
         description="Answer questions based on given context",
         input_fields={
             "context": "The context or background information",
-            "question": "The question to answer"
+            "question": "The question to answer",
         },
         output_fields={
             "answer": "The answer to the question",
-            "confidence": "Confidence level (0-1)"
+            "confidence": "Confidence level (0-1)",
         },
         constraints=[
             "Answer must be based only on the given context",
-            "If answer is not in context, state that clearly"
-        ]
+            "If answer is not in context, state that clearly",
+        ],
     )
 
     return ChainOfThought(qa_signature, llm_provider)
 
 
 async def optimize_qa_module(
-    llm_provider: BaseLLMProvider,
-    training_data: List[Dict[str, Any]]
+    llm_provider: BaseLLMProvider, training_data: List[Dict[str, Any]]
 ) -> OptimizationResult:
     """Optimize a question-answering module"""
     # Create module
@@ -384,7 +389,7 @@ async def optimize_qa_module(
         training_data=training_data,
         metric=exact_match_metric,
         num_iterations=3,
-        bootstrap_few_shot=2
+        bootstrap_few_shot=2,
     )
 
     return result
@@ -395,21 +400,18 @@ EXAMPLE_TRAINING_DATA = [
     {
         "input": {
             "context": "The sky is blue because of light scattering.",
-            "question": "Why is the sky blue?"
+            "question": "Why is the sky blue?",
         },
         "output": {
             "answer": "The sky is blue because of light scattering.",
-            "confidence": "0.9"
-        }
+            "confidence": "0.9",
+        },
     },
     {
         "input": {
             "context": "Python is a programming language.",
-            "question": "What is Python?"
+            "question": "What is Python?",
         },
-        "output": {
-            "answer": "Python is a programming language.",
-            "confidence": "1.0"
-        }
-    }
+        "output": {"answer": "Python is a programming language.", "confidence": "1.0"},
+    },
 ]

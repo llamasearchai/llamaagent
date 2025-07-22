@@ -46,30 +46,22 @@ dependencies = [
     "click>=8.1.0,<9.0.0",
     
     # Async and HTTP
-    "httpx[http2]>=0.25.0,<1.0.0",
+    "httpx>=0.25.0,<1.0.0",
     "aiofiles>=23.0.0,<24.0.0",
-    "asyncio-throttle>=1.0.0,<2.0.0",
     
-    # AI and LLM
+    # AI and LLM (simplified)
     "openai>=1.0.0,<2.0.0",
-    "anthropic>=0.3.0,<1.0.0",
-    "litellm>=1.40.0,<2.0.0",
     
     # Web framework
     "fastapi>=0.100.0,<1.0.0",
     "uvicorn[standard]>=0.23.0,<1.0.0",
     "starlette>=0.27.0,<1.0.0",
     
-    # Database and storage
+    # Database and storage (lightweight)
     "sqlalchemy>=2.0.0,<3.0.0",
-    "asyncpg>=0.28.0,<1.0.0",
-    "psycopg2-binary>=2.9.0,<3.0.0",
-    "redis>=4.6.0,<5.0.0",
-    "aioredis>=2.0.0,<3.0.0",
     
     # Data processing
     "numpy>=1.24.0,<2.0.0",
-    "pandas>=2.0.0,<3.0.0",
     "pyyaml>=6.0.0,<7.0.0",
     
     # Monitoring and observability
@@ -78,7 +70,6 @@ dependencies = [
     
     # Security
     "cryptography>=41.0.0,<43.0.0",
-    "python-jose[cryptography]>=3.3.0,<4.0.0",
     "bcrypt>=4.0.0,<5.0.0",
 ]
 
@@ -100,13 +91,36 @@ dev = [
 
 # Enhanced AI capabilities
 ai-extended = [
+    "anthropic>=0.3.0,<1.0.0",
     "sentence-transformers>=2.2.0,<3.0.0",
-    "chromadb>=0.4.0,<1.0.0",
+    "tiktoken>=0.5.0,<1.0.0",
+]
+
+# Redis and caching
+redis = [
+    "redis>=4.6.0,<5.0.0",
+    "aioredis>=2.0.0,<3.0.0",
+]
+
+# Data processing
+data = [
+    "pandas>=2.0.0,<3.0.0",
+    "asyncio-throttle>=1.0.0,<2.0.0",
+]
+
+# Security and auth  
+auth = [
+    "python-jose[cryptography]>=3.3.0,<4.0.0",
+]
+
+# Database drivers (optional)
+postgres = [
+    "asyncpg>=0.28.0,<1.0.0",
+    "psycopg2-binary>=2.9.0,<3.0.0",
 ]
 
 # Vector databases and search
 vector = [
-    "faiss-cpu>=1.7.0,<2.0.0",
     "chromadb>=0.4.0,<1.0.0",
 ]
 
@@ -137,7 +151,7 @@ docs = [
 
 # All optional dependencies
 all = [
-    "llamaagent[ai-extended,vector,distributed,monitoring,enterprise]"
+    "llamaagent[ai-extended,redis,data,auth,postgres,vector,distributed,monitoring,enterprise]"
 ]
 
 [project.urls]

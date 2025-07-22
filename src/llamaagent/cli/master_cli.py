@@ -21,7 +21,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
-from ..agents import AdvancedReasoningAgent, MultiModalAdvancedAgent, ReactAgent
+from ..agents import (AdvancedReasoningAgent, MultiModalAdvancedAgent,
+                      ReactAgent)
 from ..agents.base import AgentConfig
 from ..cache import AdvancedCache, CacheStrategy
 from ..core import get_error_handler
@@ -177,7 +178,7 @@ class LlamaAgentCLI:
 
             self.session_history.append(
                 {"user": message, "agent": response.content, "time": elapsed}
-                )
+            )
 
         if Confirm.ask("\nSave conversation?"):
             self._save_conversation()

@@ -4,25 +4,16 @@ Comprehensive tests for the AI routing system.
 
 import pytest
 
-from llamaagent.routing import (
-    AIRouter,
-    PerformanceTracker,
-    ProviderRegistry,
-    RoutingDecision,
-    TaskAnalyzer,
-    TaskCharacteristics,
-)
+from llamaagent.routing import (AIRouter, PerformanceTracker, ProviderRegistry,
+                                RoutingDecision, TaskAnalyzer,
+                                TaskCharacteristics)
 from llamaagent.routing.ai_router import RoutingConfig, RoutingMode
 from llamaagent.routing.provider_registry import ProviderStatus, ProviderType
-from llamaagent.routing.strategies import (
-    AdaptiveRouting,
-    ConsensusRouting,
-    CostOptimizedRouting,
-    HybridRouting,
-    LanguageBasedRouting,
-    PerformanceBasedRouting,
-    TaskBasedRouting,
-)
+from llamaagent.routing.strategies import (AdaptiveRouting, ConsensusRouting,
+                                           CostOptimizedRouting, HybridRouting,
+                                           LanguageBasedRouting,
+                                           PerformanceBasedRouting,
+                                           TaskBasedRouting)
 from llamaagent.routing.task_analyzer import TaskComplexity, TaskType
 
 

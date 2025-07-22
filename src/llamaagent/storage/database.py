@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 # Optional imports with proper handling
 try:
     import asyncpg
+
     _asyncpg_available = True
 except ImportError:
     asyncpg = None  # type: ignore
@@ -214,15 +215,15 @@ class DatabaseManager:
             try:
                 rows = await conn.fetch(query, *args)
                 execution_time = time.time() - start_time
-                
+
                 # Convert asyncpg.Record to dict
                 result_rows: List[Dict[str, Any]] = [dict(row) for row in rows]
-                
+
                 return QueryResult(
                     rows=result_rows,
                     row_count=len(result_rows),
                     execution_time=execution_time,
-                    query=query
+                    query=query,
                 )
             except Exception as e:
                 self.logger.error(f"Query execution failed: {e}")
@@ -281,8 +282,16 @@ class DatabaseManager:
         if result.rows:
             agent = result.rows[0]
             # Parse JSON fields
-            agent["config"] = json.loads(agent["config"]) if isinstance(agent["config"], str) else agent["config"]
-            agent["metadata"] = json.loads(agent["metadata"]) if isinstance(agent["metadata"], str) else agent["metadata"]
+            agent["config"] = (
+                json.loads(agent["config"])
+                if isinstance(agent["config"], str)
+                else agent["config"]
+            )
+            agent["metadata"] = (
+                json.loads(agent["metadata"])
+                if isinstance(agent["metadata"], str)
+                else agent["metadata"]
+            )
             return agent
         return None
 
@@ -297,15 +306,23 @@ class DatabaseManager:
         LIMIT $1 OFFSET $2
         """
         result = await self.execute_query(query, limit, offset)
-        
+
         agents: List[Dict[str, Any]] = []
         for row in result.rows:
             agent = dict(row)
             # Parse JSON fields
-            agent["config"] = json.loads(agent["config"]) if isinstance(agent["config"], str) else agent["config"]
-            agent["metadata"] = json.loads(agent["metadata"]) if isinstance(agent["metadata"], str) else agent["metadata"]
+            agent["config"] = (
+                json.loads(agent["config"])
+                if isinstance(agent["config"], str)
+                else agent["config"]
+            )
+            agent["metadata"] = (
+                json.loads(agent["metadata"])
+                if isinstance(agent["metadata"], str)
+                else agent["metadata"]
+            )
             agents.append(agent)
-        
+
         return agents
 
     async def update_agent(self, agent_id: str, **updates: Any) -> bool:
@@ -382,7 +399,9 @@ class DatabaseManager:
         param_count = 1
 
         for key, value in updates.items():
-            if key in ["task_input", "task_output", "metadata"] and isinstance(value, dict):
+            if key in ["task_input", "task_output", "metadata"] and isinstance(
+                value, dict
+            ):
                 value = json.dumps(value)
             set_clauses.append(f"{key} = ${param_count}")
             values.append(value)
@@ -412,10 +431,22 @@ class DatabaseManager:
         if result.rows:
             task = result.rows[0]
             # Parse JSON fields
-            task["task_input"] = json.loads(task["task_input"]) if isinstance(task["task_input"], str) else task["task_input"]
+            task["task_input"] = (
+                json.loads(task["task_input"])
+                if isinstance(task["task_input"], str)
+                else task["task_input"]
+            )
             if task["task_output"]:
-                task["task_output"] = json.loads(task["task_output"]) if isinstance(task["task_output"], str) else task["task_output"]
-            task["metadata"] = json.loads(task["metadata"]) if isinstance(task["metadata"], str) else task["metadata"]
+                task["task_output"] = (
+                    json.loads(task["task_output"])
+                    if isinstance(task["task_output"], str)
+                    else task["task_output"]
+                )
+            task["metadata"] = (
+                json.loads(task["metadata"])
+                if isinstance(task["metadata"], str)
+                else task["metadata"]
+            )
             return task
         return None
 
@@ -433,12 +464,17 @@ class DatabaseManager:
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id
         """
-        
+
         # Convert embedding to string format for PostgreSQL
         embedding_str = f"[{','.join(map(str, embedding))}]"
-        
+
         result = await self.execute_query(
-            query, content, embedding_str, json.dumps(metadata or {}), source_type, source_id
+            query,
+            content,
+            embedding_str,
+            json.dumps(metadata or {}),
+            source_type,
+            source_id,
         )
         return str(result.rows[0]["id"])
 
@@ -454,18 +490,22 @@ class DatabaseManager:
         ORDER BY distance
         LIMIT $3
         """
-        
+
         # Convert embedding to string format for PostgreSQL
         embedding_str = f"[{','.join(map(str, query_embedding))}]"
-        
+
         result = await self.execute_query(query, embedding_str, 1 - threshold, limit)
-        
+
         results: List[Dict[str, Any]] = []
         for row in result.rows:
             item = dict(row)
-            item["metadata"] = json.loads(item["metadata"]) if isinstance(item["metadata"], str) else item["metadata"]
+            item["metadata"] = (
+                json.loads(item["metadata"])
+                if isinstance(item["metadata"], str)
+                else item["metadata"]
+            )
             results.append(item)
-        
+
         return results
 
     async def get_task_stats(
@@ -482,26 +522,26 @@ class DatabaseManager:
         FROM tasks
         WHERE created_at >= NOW() - INTERVAL '%s days'
         """
-        
+
         if agent_id:
             query = base_query + " AND agent_id = $1"
             result = await self.execute_query(query % days, agent_id)
         else:
             result = await self.execute_query(base_query % days)
-        
+
         if result.rows:
             stats = dict(result.rows[0])
             # Convert avg_completion_time to seconds if not None
             if stats["avg_completion_time"]:
                 stats["avg_completion_time"] = float(stats["avg_completion_time"])
             return stats
-        
+
         return {
             "total_tasks": 0,
             "completed_tasks": 0,
             "failed_tasks": 0,
             "pending_tasks": 0,
-            "avg_completion_time": None
+            "avg_completion_time": None,
         }
 
     async def health_check(self) -> Dict[str, Any]:
@@ -509,10 +549,10 @@ class DatabaseManager:
         try:
             if not self.pool:
                 return {"status": "error", "message": "Database not initialized"}
-            
+
             # Test connection
             result = await self.execute_query("SELECT 1 as test")
-            
+
             # Get connection pool stats
             pool_stats = {
                 "size": self.pool.get_size() if self.pool else 0,
@@ -520,16 +560,16 @@ class DatabaseManager:
                 "max_size": self.pool.get_max_size() if self.pool else 0,
                 "idle_size": self.pool.get_idle_size() if self.pool else 0,
             }
-            
+
             return {
                 "status": "healthy",
                 "connection_pool": pool_stats,
                 "query_test": result.rows[0]["test"] == 1,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             return {
                 "status": "error",
                 "message": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }

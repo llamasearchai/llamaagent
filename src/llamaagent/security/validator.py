@@ -228,7 +228,7 @@ class DataTypeValidator:
         value: Any,
         min_items: int = 0,
         max_items: int = 1000,
-        item_validator: Optional[Callable[[Any], bool]] = None
+        item_validator: Optional[Callable[[Any], bool]] = None,
     ) -> bool:
         """Validate list type and constraints."""
         if not isinstance(value, list):

@@ -10,6 +10,8 @@ from .ai_router import RoutingDecision
 from .task_analyzer import TaskCharacteristics, TaskComplexity, TaskType
 
 logger = logging.getLogger(__name__)
+
+
 class RoutingStrategy(ABC):
     """Base class for routing strategies."""
 
@@ -130,6 +132,8 @@ class TaskBasedRouting(RoutingStrategy):
             estimated_duration=0.0,  # Will be filled by router
             metadata={"task_type": task_type.value, "scores": scores},
         )
+
+
 class LanguageBasedRouting(RoutingStrategy):
     """Route based on programming language expertise."""
 
@@ -317,6 +321,8 @@ class ComplexityBasedRouting(RoutingStrategy):
             estimated_duration=0.0,
             metadata={"complexity": complexity.value, "scores": scores},
         )
+
+
 class PerformanceBasedRouting(RoutingStrategy):
     """Route based on historical performance metrics."""
 
@@ -396,6 +402,8 @@ class PerformanceBasedRouting(RoutingStrategy):
                 },
             },
         )
+
+
 class CostOptimizedRouting(RoutingStrategy):
     """Route to minimize costs while maintaining quality."""
 
@@ -463,6 +471,8 @@ class CostOptimizedRouting(RoutingStrategy):
                 "eligible_providers": [p[0] for p in eligible_providers],
             },
         )
+
+
 class HybridRouting(RoutingStrategy):
     """Combine multiple routing strategies with configurable weights."""
 
@@ -605,6 +615,8 @@ class ConsensusRouting(RoutingStrategy):
                 "consensus_threshold": self.consensus_threshold,
             },
         )
+
+
 class AdaptiveRouting(RoutingStrategy):
     """Routing strategy that adapts based on historical performance."""
 

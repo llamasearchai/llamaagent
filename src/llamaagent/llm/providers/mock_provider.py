@@ -31,11 +31,11 @@ class MockProvider(BaseLLMProvider):
         """Initialize mock provider."""
         super().__init__(api_key=api_key, model=model_name, **kwargs)
         self.call_count = 0
-        
+
     def _solve_math_problem(self, prompt: str) -> str:
         """Solve mathematical problems intelligently."""
         # Extract mathematical expressions and solve them
-        
+
         # Handle percentage calculations
         if "%" in prompt and "of" in prompt:
             # Pattern: "Calculate X% of Y"
@@ -44,16 +44,16 @@ class MockProvider(BaseLLMProvider):
                 percentage = float(match.group(1))
                 number = float(match.group(2))
                 result = (percentage / 100) * number
-                
+
                 # Check if we need to add something
                 if "add" in prompt.lower():
                     add_match = re.search(r'add\s+(\d+(?:\.\d+)?)', prompt)
                     if add_match:
                         add_value = float(add_match.group(1))
                         result += add_value
-                
+
                 return str(int(result) if result.is_integer() else result)
-        
+
         # Handle perimeter calculations
         if "perimeter" in prompt.lower() and "rectangle" in prompt.lower():
             # Extract length and width
@@ -64,23 +64,23 @@ class MockProvider(BaseLLMProvider):
                 width = float(width_match.group(1))
                 perimeter = 2 * (length + width)
                 return f"{int(perimeter) if perimeter.is_integer() else perimeter} cm"
-        
+
         # Handle compound interest
         if "compound interest" in prompt.lower():
             # Extract principal, rate, and time
             principal_match = re.search(r'\$(\d+(?:,\d+)?)', prompt)
             rate_match = re.search(r'(\d+(?:\.\d+)?)%', prompt)
             time_match = re.search(r'(\d+)\s+years?', prompt)
-            
+
             if principal_match and rate_match and time_match:
                 principal = float(principal_match.group(1).replace(',', ''))
                 rate = float(rate_match.group(1)) / 100
                 time = int(time_match.group(1))
-                
+
                 # Compound interest formula: A = P(1 + r)^t
                 amount = principal * (1 + rate) ** time
                 return f"${amount:.2f}"
-        
+
         # Handle derivatives
         if "derivative" in prompt.lower():
             # Simple polynomial derivative
@@ -89,14 +89,16 @@ class MockProvider(BaseLLMProvider):
                 if "x = 2" in prompt:
                     # Evaluate at x = 2: 9(4) - 4(2) + 5 = 36 - 8 + 5 = 33
                     return "33"
-        
+
         # Handle simple arithmetic
-        simple_math = re.search(r'(\d+(?:\.\d+)?)\s*([\+\-\*/])\s*(\d+(?:\.\d+)?)', prompt)
+        simple_math = re.search(
+            r'(\d+(?:\.\d+)?)\s*([\+\-\*/])\s*(\d+(?:\.\d+)?)', prompt
+        )
         if simple_math:
             left = float(simple_math.group(1))
             op = simple_math.group(2)
             right = float(simple_math.group(3))
-            
+
             if op == '+':
                 result = left + right
             elif op == '-':
@@ -107,41 +109,55 @@ class MockProvider(BaseLLMProvider):
                 result = left / right
             else:
                 return "Unable to solve"
-            
+
             return str(int(result) if result.is_integer() else result)
-        
+
         return "Unable to solve this mathematical problem"
-    
+
     def _generate_code(self, prompt: str) -> str:
         """Generate code based on the prompt."""
         if "python function" in prompt.lower() and "maximum" in prompt.lower():
             return """def max_two(a, b):
     return a if a > b else b"""
-        
+
         if "function" in prompt.lower() and "return" in prompt.lower():
             return "def example_function(): return 'example'"
-        
+
         return "# Code generation not implemented for this request"
-    
+
     def _analyze_prompt_intent(self, prompt: str) -> str:
         """Analyze prompt and provide intelligent response."""
         prompt_lower = prompt.lower()
-        
+
         # Mathematical problems
-        if any(word in prompt_lower for word in ['calculate', 'math', '%', 'perimeter', 'interest', 'derivative']):
+        if any(
+            word in prompt_lower
+            for word in [
+                'calculate',
+                'math',
+                '%',
+                'perimeter',
+                'interest',
+                'derivative',
+            ]
+        ):
             return self._solve_math_problem(prompt)
-        
+
         # Programming requests
-        if any(word in prompt_lower for word in ['function', 'python', 'code', 'write']):
+        if any(
+            word in prompt_lower for word in ['function', 'python', 'code', 'write']
+        ):
             return self._generate_code(prompt)
-        
+
         # Planning and reasoning
-        if any(word in prompt_lower for word in ['plan', 'strategy', 'approach', 'steps']):
+        if any(
+            word in prompt_lower for word in ['plan', 'strategy', 'approach', 'steps']
+        ):
             return """Let me break this down into steps:
 1. First, I'll analyze the requirements
 2. Then, I'll identify the key components needed
 3. Finally, I'll execute the solution step by step"""
-        
+
         # Default intelligent response
         return f"I understand you're asking about: {prompt[:100]}... Let me help you with that."
 
@@ -160,7 +176,7 @@ class MockProvider(BaseLLMProvider):
 
         # Get the last message content
         prompt = messages[-1].content if messages else "empty prompt"
-        
+
         # Generate intelligent response based on prompt analysis
         response_text = self._analyze_prompt_intent(prompt)
 

@@ -168,7 +168,7 @@ class MLXProvider(BaseLLMProvider):
         # Generate response using MLX
         # Run MLX generation in a thread pool since it's synchronous
         loop = asyncio.get_event_loop()
-        
+
         def _generate():
             try:
                 response = self.client.generate(
@@ -236,7 +236,7 @@ class MLXProvider(BaseLLMProvider):
             model=model,
             **kwargs,
         )
-        
+
         # Split response into chunks for streaming simulation
         words = response.content.split()
         for word in words:
@@ -260,6 +260,7 @@ class MLXProvider(BaseLLMProvider):
         """
         # For now, return mock embeddings
         import numpy as np
+
         return [np.random.rand(384).tolist() for _ in texts]
 
     async def validate_model(self, model: str) -> bool:
@@ -273,7 +274,7 @@ class MLXProvider(BaseLLMProvider):
         """
         if not self.client:
             return False
-        
+
         # MLX models are typically loaded from HuggingFace or local paths
         # For now, we'll assume the model is valid if it follows the pattern
         return "/" in model or model.startswith("mlx-community/")
@@ -286,10 +287,11 @@ class MLXProvider(BaseLLMProvider):
         """
         if self.client is None:
             return False
-        
+
         try:
             # Try to check if MLX is available
             import mlx
+
             return mlx.core.default_device().type.name == "gpu"
         except Exception:
             return False

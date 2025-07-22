@@ -53,6 +53,8 @@ class TaskCharacteristics:
     keywords: List[str] = field(default_factory=list)
     confidence: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class TaskAnalyzer:
     """Analyzes coding tasks to determine their characteristics."""
 
@@ -290,6 +292,7 @@ class TaskAnalyzer:
             confidence=confidence,
             metadata=context or {},
         )
+
     def _determine_task_type(self, task_lower: str) -> Tuple[TaskType, float]:
         """Determine the task type based on patterns."""
         scores = {}

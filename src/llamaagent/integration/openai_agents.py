@@ -77,6 +77,8 @@ class BudgetTracker:
     daily_usage: Dict[str, float] = field(default_factory=dict)
     monthly_usage: Dict[str, float] = field(default_factory=dict)
     last_reset: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 class OpenAIAgentAdapter:
     """
     Adapter for OpenAI Agents SDK integration.
@@ -546,12 +548,12 @@ def create_openai_integration(
     budget_limit: Optional[float] = None,
 ) -> OpenAIAgentsIntegration:
     """Create an OpenAI integration instance.
-    
+
     Args:
         openai_api_key: OpenAI API key
         model_name: Model to use
         budget_limit: Optional budget limit
-        
+
     Returns:
         OpenAI integration instance
     """
@@ -599,10 +601,10 @@ async def execute_openai_task(
 
 
 def create_openai_integration(
-    config: OpenAIIntegrationConfig
+    config: OpenAIIntegrationConfig,
 ) -> Optional[OpenAIAgentsIntegration]:
     """Create a new OpenAI integration instance."""
     if not OPENAI_AVAILABLE:
         return None
-    
+
     return OpenAIAgentsIntegration(config)

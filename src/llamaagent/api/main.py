@@ -26,16 +26,8 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import uvicorn
-from fastapi import (
-    BackgroundTasks,
-    Body,
-    Depends,
-    FastAPI,
-    HTTPException,
-    Request,
-    Response,
-    Security,
-)
+from fastapi import (BackgroundTasks, Body, Depends, FastAPI, HTTPException,
+                     Request, Response, Security)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -81,10 +73,8 @@ except ImportError:
     GAIABenchmark = None
 
 try:
-    from ..integration.openai_agents import (
-        OPENAI_AGENTS_AVAILABLE,
-        OpenAIAgentsIntegration,
-    )
+    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
+                                             OpenAIAgentsIntegration)
 except ImportError:
     OpenAIAgentsIntegration = None
     OPENAI_AGENTS_AVAILABLE = False
@@ -1017,9 +1007,7 @@ async def openai_completions(
     """Direct OpenAI completions with budget tracking."""
     try:
         from ..integration.openai_comprehensive import (
-            OpenAIComprehensiveConfig,
-            OpenAIComprehensiveIntegration,
-        )
+            OpenAIComprehensiveConfig, OpenAIComprehensiveIntegration)
 
         # Get or create OpenAI integration
         integration = app_state.get("openai_comprehensive")

@@ -286,10 +286,10 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from prometheus_client import (Alert, CollectorRegistry, None:, Summary, ->,
-    ["agent_id", ["agent_type"], ["cache_type"],
-    ["component", ["component"], ["method",
-    ["priority"], ["task_type"], agent_port=6831,
-    alert:)
+                               ["agent_id", ["agent_type"], ["cache_type"],
+                               ["component", ["component"], ["method",
+                               ["priority"], ["task_type"], agent_port=6831,
+                               alert:)
 
         """Send Slack notification"""
         # Implement Slack webhook notification

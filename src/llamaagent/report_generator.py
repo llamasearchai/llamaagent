@@ -70,13 +70,13 @@ class ReportGenerator:
         self.report.append("- **SPRE Testing**: 5 complex planning tasks")
         self.report.append(
             "- **GDT Evaluation**: 5 debate scenarios with varying complexity"
-            )
+        )
         self.report.append("- **DTSR Assessment**: 5 novel tool requirements")
         self.report.append("- **ATES Validation**: 5 evolution cycles")
         self.report.append("\n## Metrics Collected")
         self.report.append(
             "- Execution time\n- Success rate\n- Plan quality\n- Dissent ratio\n- Tokens used"
-            )
+        )
 
     def _add_results_analysis(self, analyzer: StatisticalAnalyzer) -> None:
         """Add results analysis section to the report."""
@@ -94,18 +94,18 @@ class ReportGenerator:
         self.report.append("- GDT achieved 95% consensus in complex debates")
         self.report.append(
             "- DTSR successfully synthesized tools for 80% of novel requirements"
-            )
+        )
 
     def _add_statistical_analysis(self, analyzer: StatisticalAnalyzer) -> None:
         """Add statistical analysis section to the report."""
         self.report.append("\n# Statistical Analysis")
-        
+
         try:
             comparison = analyzer.compare_techniques("duration", "SPRE", "GDT")
             self.report.append(
                 f"- SPRE vs GDT execution time: p={comparison['p_value']:.4f}, "
                 f"d={comparison['effect_size']:.2f}"
-                )
+            )
         except Exception as e:
             self.report.append(f"- Statistical comparison failed: {e}")
 
@@ -113,7 +113,7 @@ class ReportGenerator:
             correlation = analyzer.correlation_analysis("duration", "tokens_used")
             self.report.append(
                 f"- Correlation between duration and tokens used: r={correlation['correlation']:.2f}"
-                )
+            )
         except Exception as e:
             self.report.append(f"- Correlation analysis failed: {e}")
 
@@ -123,7 +123,7 @@ class ReportGenerator:
         self.report.append("1. **SPRE** is optimal for deterministic planning tasks")
         self.report.append(
             "2. **GDT** excels in ambiguous scenarios requiring consensus"
-            )
+        )
         self.report.append("3. **DTSR** enables adaptation to novel problems")
         self.report.append("4. **ATES** provides robust team evolution capabilities")
         self.report.append("\n## Future Work")

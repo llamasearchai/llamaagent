@@ -24,6 +24,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 try:
     import requests
+
     requests_available = True
 except ImportError:
     requests_available = False
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FunctionParameter:
     """Function parameter definition."""
+
     name: str
     type: str
     description: str
@@ -45,6 +47,7 @@ class FunctionParameter:
 @dataclass
 class FunctionDefinition:
     """OpenAI-compatible function definition."""
+
     name: str
     description: str
     parameters: Dict[str, Any] = field(default_factory=dict)
@@ -53,93 +56,95 @@ class FunctionDefinition:
 
 class FunctionManager:
     """Manage and execute functions dynamically."""
-    
+
     def __init__(self):
         self.functions: Dict[str, Callable] = {}
         self.function_metadata: Dict[str, Dict[str, Any]] = {}
         self.execution_history: List[Dict[str, Any]] = []
-        
+
         # Register built-in functions
         self._register_builtin_functions()
-    
-    def register_function(self, name: str, func: Callable, metadata: Optional[Dict[str, Any]] = None) -> None:
+
+    def register_function(
+        self, name: str, func: Callable, metadata: Optional[Dict[str, Any]] = None
+    ) -> None:
         """Register a function for execution."""
         self.functions[name] = func
         self.function_metadata[name] = metadata or {}
-        
+
         # Auto-extract metadata from function
         sig = inspect.signature(func)
-        self.function_metadata[name].update({
-            "name": name,
-            "description": func.__doc__ or f"Execute {name}",
-            "parameters": self._extract_parameters(sig)
-        })
-        
+        self.function_metadata[name].update(
+            {
+                "name": name,
+                "description": func.__doc__ or f"Execute {name}",
+                "parameters": self._extract_parameters(sig),
+            }
+        )
+
         logger.info(f"Registered function: {name}")
-    
+
     def _extract_parameters(self, signature: inspect.Signature) -> Dict[str, Any]:
         """Extract parameters from function signature for OpenAI schema."""
         properties = {}
         required = []
-        
+
         for param_name, param in signature.parameters.items():
             if param_name in ['self', 'cls']:
                 continue
-            
+
             prop_def = {
                 "type": self._get_type_string(param.annotation),
-                "description": f"Parameter {param_name}"
+                "description": f"Parameter {param_name}",
             }
-            
+
             # Handle default values
             if param.default != inspect.Parameter.empty:
                 prop_def["default"] = param.default
             else:
                 required.append(param_name)
-            
+
             properties[param_name] = prop_def
-        
-        return {
-            "type": "object",
-            "properties": properties,
-            "required": required
-        }
-    
+
+        return {"type": "object", "properties": properties, "required": required}
+
     def _get_type_string(self, annotation: Any) -> str:
         """Convert Python type annotation to JSON schema type."""
         if annotation == inspect.Parameter.empty:
             return "string"
-        
+
         type_mapping = {
             str: "string",
             int: "integer",
             float: "number",
             bool: "boolean",
             list: "array",
-            dict: "object"
+            dict: "object",
         }
-        
+
         # Handle Union types (e.g., Optional[str])
         if hasattr(annotation, '__origin__'):
             if annotation.__origin__ is Union:
                 # For Optional types, use the non-None type
-                non_none_types = [arg for arg in annotation.__args__ if arg is not type(None)]
+                non_none_types = [
+                    arg for arg in annotation.__args__ if arg is not type(None)
+                ]
                 if non_none_types:
                     return self._get_type_string(non_none_types[0])
-        
+
         return type_mapping.get(annotation, "string")
-    
+
     def list_functions(self) -> List[str]:
         """List all registered functions."""
         return list(self.functions.keys())
-    
+
     def get_function_info(self, name: str) -> Dict[str, Any]:
         """Get information about a function."""
         if name not in self.functions:
             raise ValueError(f"Function '{name}' not found")
-        
+
         return self.function_metadata[name]
-    
+
     def get_function_schemas(self) -> List[Dict[str, Any]]:
         """Get OpenAI-compatible function schemas."""
         schemas = []
@@ -149,24 +154,24 @@ class FunctionManager:
                 "function": {
                     "name": func_name,
                     "description": metadata.get("description", ""),
-                    "parameters": metadata.get("parameters", {})
-                }
+                    "parameters": metadata.get("parameters", {}),
+                },
             }
             schemas.append(schema)
         return schemas
-    
+
     def execute_function(self, name: str, **kwargs) -> Any:
         """Execute a registered function."""
         if name not in self.functions:
             raise ValueError(f"Function '{name}' not found")
-        
+
         func = self.functions[name]
         start_time = datetime.now()
-        
+
         try:
             # Validate arguments
             validated_args = self._validate_arguments(name, kwargs)
-            
+
             # Execute function
             if inspect.iscoroutinefunction(func):
                 # Handle async functions
@@ -178,60 +183,66 @@ class FunctionManager:
                     result = asyncio.run(func(**validated_args))
             else:
                 result = func(**validated_args)
-            
+
             # Log execution
             execution_time = (datetime.now() - start_time).total_seconds()
-            self.execution_history.append({
-                "function": name,
-                "arguments": kwargs,
-                "result": str(result)[:100],  # Truncate for logging
-                "success": True,
-                "execution_time": execution_time,
-                "timestamp": start_time.isoformat()
-            })
-            
+            self.execution_history.append(
+                {
+                    "function": name,
+                    "arguments": kwargs,
+                    "result": str(result)[:100],  # Truncate for logging
+                    "success": True,
+                    "execution_time": execution_time,
+                    "timestamp": start_time.isoformat(),
+                }
+            )
+
             return result
-            
+
         except Exception as e:
             execution_time = (datetime.now() - start_time).total_seconds()
             error_msg = str(e)
-            
+
             # Log error
-            self.execution_history.append({
-                "function": name,
-                "arguments": kwargs,
-                "error": error_msg,
-                "success": False,
-                "execution_time": execution_time,
-                "timestamp": start_time.isoformat()
-            })
-            
+            self.execution_history.append(
+                {
+                    "function": name,
+                    "arguments": kwargs,
+                    "error": error_msg,
+                    "success": False,
+                    "execution_time": execution_time,
+                    "timestamp": start_time.isoformat(),
+                }
+            )
+
             logger.error(f"Error executing function {name}: {e}")
             raise
-    
-    def _validate_arguments(self, name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _validate_arguments(
+        self, name: str, arguments: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Validate function arguments against schema."""
         metadata = self.function_metadata[name]
         parameters = metadata.get("parameters", {})
         properties = parameters.get("properties", {})
         required = parameters.get("required", [])
-        
+
         validated = {}
-        
+
         # Check required parameters
         for req_param in required:
             if req_param not in arguments:
                 raise ValueError(f"Missing required parameter: {req_param}")
-        
+
         # Validate and convert parameters
         for param_name, value in arguments.items():
             if param_name not in properties:
                 logger.warning(f"Unknown parameter {param_name} for function {name}")
                 validated[param_name] = value
                 continue
-            
+
             param_schema = properties[param_name]
-            
+
             # Type validation (basic)
             expected_type = param_schema.get("type", "string")
             if expected_type == "integer" and not isinstance(value, int):
@@ -251,24 +262,24 @@ class FunctionManager:
                     validated[param_name] = bool(value)
             else:
                 validated[param_name] = value
-            
+
             # Enum validation
             if "enum" in param_schema:
                 if value not in param_schema["enum"]:
                     raise ValueError(
                         f"Invalid value for {param_name}. Must be one of: {param_schema['enum']}"
                     )
-        
+
         # Add default values for missing optional parameters
         for param_name, param_schema in properties.items():
             if param_name not in validated and "default" in param_schema:
                 validated[param_name] = param_schema["default"]
-        
+
         return validated
-    
+
     def _register_builtin_functions(self) -> None:
         """Register built-in utility functions."""
-        
+
         # File system functions
         self.register_function(
             name="read_file",
@@ -280,14 +291,14 @@ class FunctionManager:
                     "properties": {
                         "file_path": {
                             "type": "string",
-                            "description": "Path to the file to read"
+                            "description": "Path to the file to read",
                         }
                     },
-                    "required": ["file_path"]
-                }
-            }
+                    "required": ["file_path"],
+                },
+            },
         )
-        
+
         self.register_function(
             name="write_file",
             func=self._write_file,
@@ -298,18 +309,18 @@ class FunctionManager:
                     "properties": {
                         "file_path": {
                             "type": "string",
-                            "description": "Path to the file to write"
+                            "description": "Path to the file to write",
                         },
                         "content": {
                             "type": "string",
-                            "description": "Content to write to the file"
-                        }
+                            "description": "Content to write to the file",
+                        },
                     },
-                    "required": ["file_path", "content"]
-                }
-            }
+                    "required": ["file_path", "content"],
+                },
+            },
         )
-        
+
         self.register_function(
             name="execute_shell",
             func=self._execute_shell,
@@ -320,19 +331,19 @@ class FunctionManager:
                     "properties": {
                         "command": {
                             "type": "string",
-                            "description": "Shell command to execute"
+                            "description": "Shell command to execute",
                         },
                         "timeout": {
                             "type": "integer",
                             "description": "Timeout in seconds",
-                            "default": 30
-                        }
+                            "default": 30,
+                        },
                     },
-                    "required": ["command"]
-                }
-            }
+                    "required": ["command"],
+                },
+            },
         )
-        
+
         self.register_function(
             name="get_current_time",
             func=self._get_current_time,
@@ -344,14 +355,14 @@ class FunctionManager:
                         "format": {
                             "type": "string",
                             "description": "Time format string",
-                            "default": "%Y-%m-%d %H:%M:%S"
+                            "default": "%Y-%m-%d %H:%M:%S",
                         }
                     },
-                    "required": []
-                }
-            }
+                    "required": [],
+                },
+            },
         )
-        
+
         if requests_available:
             self.register_function(
                 name="http_request",
@@ -361,30 +372,24 @@ class FunctionManager:
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "url": {
-                                "type": "string",
-                                "description": "URL to request"
-                            },
+                            "url": {"type": "string", "description": "URL to request"},
                             "method": {
                                 "type": "string",
                                 "description": "HTTP method",
                                 "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
-                                "default": "GET"
+                                "default": "GET",
                             },
                             "headers": {
                                 "type": "object",
-                                "description": "HTTP headers"
+                                "description": "HTTP headers",
                             },
-                            "data": {
-                                "type": "object",
-                                "description": "Request data"
-                            }
+                            "data": {"type": "object", "description": "Request data"},
                         },
-                        "required": ["url"]
-                    }
-                }
+                        "required": ["url"],
+                    },
+                },
             )
-    
+
     # Built-in function implementations
     def _read_file(self, file_path: str) -> str:
         """Read the contents of a file."""
@@ -392,11 +397,11 @@ class FunctionManager:
             path = Path(file_path)
             if not path.exists():
                 raise FileNotFoundError(f"File not found: {file_path}")
-            
+
             return path.read_text(encoding='utf-8')
         except Exception as e:
             raise Exception(f"Error reading file {file_path}: {e}")
-    
+
     def _write_file(self, file_path: str, content: str) -> str:
         """Write content to a file."""
         try:
@@ -406,7 +411,7 @@ class FunctionManager:
             return f"Successfully wrote {len(content)} characters to {file_path}"
         except Exception as e:
             raise Exception(f"Error writing file {file_path}: {e}")
-    
+
     def _execute_shell(self, command: str, timeout: int = 30) -> Dict[str, Any]:
         """Execute a shell command."""
         try:
@@ -416,88 +421,91 @@ class FunctionManager:
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                check=False
+                check=False,
             )
-            
+
             return {
                 "stdout": result.stdout,
                 "stderr": result.stderr,
                 "returncode": result.returncode,
-                "command": command
+                "command": command,
             }
         except subprocess.TimeoutExpired:
             raise Exception(f"Command timed out after {timeout} seconds: {command}")
         except Exception as e:
             raise Exception(f"Error executing command: {e}")
-    
+
     def _get_current_time(self, format: str = "%Y-%m-%d %H:%M:%S") -> str:
         """Get the current date and time."""
         return datetime.now().strftime(format)
-    
-    def _http_request(self, url: str, method: str = "GET", headers: Optional[Dict] = None, 
-                     data: Optional[Dict] = None) -> Dict[str, Any]:
+
+    def _http_request(
+        self,
+        url: str,
+        method: str = "GET",
+        headers: Optional[Dict] = None,
+        data: Optional[Dict] = None,
+    ) -> Dict[str, Any]:
         """Make an HTTP request."""
         if not requests_available:
             raise Exception("requests library not available")
-        
+
         try:
             response = requests.request(
-                method=method,
-                url=url,
-                headers=headers,
-                json=data,
-                timeout=30
+                method=method, url=url, headers=headers, json=data, timeout=30
             )
-            
+
             return {
                 "status_code": response.status_code,
                 "headers": dict(response.headers),
                 "text": response.text,
-                "url": response.url
+                "url": response.url,
             }
         except Exception as e:
             raise Exception(f"HTTP request failed: {e}")
-    
+
     def get_execution_history(self) -> List[Dict[str, Any]]:
         """Get function execution history."""
         return self.execution_history
-    
+
     def clear_history(self) -> None:
         """Clear execution history."""
         self.execution_history.clear()
-    
+
     def export_functions(self, export_path: str) -> None:
         """Export function definitions to JSON file."""
         export_data = {
             "functions": self.get_function_schemas(),
             "metadata": self.function_metadata,
-            "exported_at": datetime.now().isoformat()
+            "exported_at": datetime.now().isoformat(),
         }
-        
+
         with open(export_path, 'w') as f:
             json.dump(export_data, f, indent=2)
-    
+
     def search_functions(self, query: str) -> List[str]:
         """Search functions by name or description."""
         query = query.lower()
         matches = []
-        
+
         for name, metadata in self.function_metadata.items():
-            if (query in name.lower() or 
-                query in metadata.get("description", "").lower()):
+            if (
+                query in name.lower()
+                or query in metadata.get("description", "").lower()
+            ):
                 matches.append(name)
-        
+
         return matches
 
 
 def create_function_from_schema(schema: Dict[str, Any]) -> FunctionDefinition:
     """Create a function definition from OpenAI schema."""
     func_info = schema.get("function", {})
-    
+
     return FunctionDefinition(
         name=func_info.get("name", ""),
         description=func_info.get("description", ""),
-        parameters=func_info.get("parameters", {})
+        parameters=func_info.get("parameters", {}),
     )
 
 
@@ -513,39 +521,39 @@ def get_system_info() -> Dict[str, Any]:
         "platform": sys.platform,
         "python_version": sys.version,
         "current_directory": str(Path.cwd()),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
 def main() -> None:
     """Example usage of the function manager."""
     manager = FunctionManager()
-    
+
     # Register custom functions
     manager.register_function("calculate_sum", calculate_sum)
     manager.register_function("get_system_info", get_system_info)
-    
+
     # List all functions
     print("Available functions:")
     for func_name in manager.list_functions():
         info = manager.get_function_info(func_name)
         print(f"- {func_name}: {info.get('description', 'No description')}")
-    
+
     # Test function execution
     print("\nTesting functions:")
-    
+
     # Test calculation
     result = manager.execute_function("calculate_sum", a=5, b=3)
     print(f"Sum: {result}")
-    
+
     # Test current time
     time_result = manager.execute_function("get_current_time")
     print(f"Current time: {time_result}")
-    
+
     # Test system info
     sys_info = manager.execute_function("get_system_info")
     print(f"System info: {sys_info}")
-    
+
     # Show execution history
     print("\nExecution history:")
     for entry in manager.get_execution_history():

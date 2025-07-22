@@ -67,6 +67,7 @@ class CUDAProvider(BaseLLMProvider):
             logger.warning(f"Failed to initialize CUDA: {exc}")
             if fallback_to_ollama:
                 from .ollama_provider import OllamaProvider
+
                 self._fallback_provider = OllamaProvider(model=model)
             else:
                 raise
@@ -92,10 +93,10 @@ class CUDAProvider(BaseLLMProvider):
             torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
             device_map="auto" if self.device == "cuda" else None,
         )
-        
+
         if self.device != "cuda":
             self._model = self._model.to(self.device)
-            
+
         self._model.eval()
 
     async def generate_response(
@@ -180,7 +181,7 @@ class CUDAProvider(BaseLLMProvider):
 
         # Convert messages to prompt
         prompt = "\n".join(msg.content for msg in messages)
-        
+
         # Run generation in thread pool since it's synchronous
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
@@ -191,7 +192,7 @@ class CUDAProvider(BaseLLMProvider):
             temperature,
             kwargs,
         )
-        
+
         return response
 
     def _generate_sync(
@@ -203,9 +204,9 @@ class CUDAProvider(BaseLLMProvider):
     ) -> LLMResponse:
         """Synchronous generation method for thread pool execution."""
         import torch
-        
+
         start = time.perf_counter()
-        
+
         # Tokenize input
         inputs = self._tokenizer(prompt, return_tensors="pt")
         if self.device == "cuda":
@@ -223,13 +224,13 @@ class CUDAProvider(BaseLLMProvider):
         # Generate
         with torch.no_grad():
             output_ids = self._model.generate(**inputs, **generation_args)
-        
+
         # Decode output
         output_text = self._tokenizer.decode(
-            output_ids[0][inputs["input_ids"].shape[-1]:],
+            output_ids[0][inputs["input_ids"].shape[-1] :],
             skip_special_tokens=True,
         )
-        
+
         latency_ms = (time.perf_counter() - start) * 1000
         tokens_used = output_ids.shape[-1]
 
@@ -277,7 +278,7 @@ class CUDAProvider(BaseLLMProvider):
             temperature=temperature,
             **kwargs,
         )
-        
+
         # Yield response in chunks
         words = response.content.split()
         for word in words:
@@ -301,6 +302,7 @@ class CUDAProvider(BaseLLMProvider):
         """
         # For now, return mock embeddings
         import numpy as np
+
         return [np.random.rand(384).tolist() for _ in texts]
 
     async def validate_model(self, model: str) -> bool:
@@ -314,6 +316,7 @@ class CUDAProvider(BaseLLMProvider):
         """
         try:
             from transformers import AutoConfig
+
             config = AutoConfig.from_pretrained(model)
             return config is not None
         except Exception:
@@ -327,9 +330,10 @@ class CUDAProvider(BaseLLMProvider):
         """
         if self._fallback_provider is not None:
             return await self._fallback_provider.health_check()
-        
+
         try:
             import torch
+
             if self._model is None:
                 return False
             return torch.cuda.is_available() if self.device == "cuda" else True

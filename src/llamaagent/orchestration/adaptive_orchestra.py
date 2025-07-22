@@ -102,7 +102,7 @@ class BaseAgent:
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute a task - to be overridden by specific agent implementations."""
         from src.llamaagent.agents.base import TaskOutput, TaskStatus
-        
+
         # Default implementation for base agent
         return TaskOutput(
             result=f"Task executed by {self.agent_id}",

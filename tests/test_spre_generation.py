@@ -2,11 +2,12 @@
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 import asyncio
-import llamaagent.types  # noqa: F401 – imported for coverage
 
-from llamaagent.data_generation.spre import SPREGenerator, DataType
+import llamaagent.types  # noqa: F401 – imported for coverage
+from llamaagent.data_generation.spre import DataType, SPREGenerator
 
 ASYNC_TIMEOUT = 30
+
 
 def test_sync_generation_compiles():
     """Ensure synchronous generation returns the expected number of items."""
@@ -28,4 +29,4 @@ def test_async_generation_event_loop():
         )
         assert len(dataset.get_valid_items()) == len(dataset.items)
 
-    asyncio.run(asyncio.wait_for(_run(), ASYNC_TIMEOUT)) 
+    asyncio.run(asyncio.wait_for(_run(), ASYNC_TIMEOUT))

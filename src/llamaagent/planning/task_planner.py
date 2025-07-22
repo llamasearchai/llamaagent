@@ -218,7 +218,8 @@ class DependencyResolver:
                 earliest_start[task_id] = timedelta()
             else:
                 max_finish = max(
-                    earliest_finish.get(dep.task_id, timedelta()) + dep.lag_time for dep in task.dependencies
+                    earliest_finish.get(dep.task_id, timedelta()) + dep.lag_time
+                    for dep in task.dependencies
                 )
                 earliest_start[task_id] = max_finish
             earliest_finish[task_id] = earliest_start[task_id] + task.estimated_duration
@@ -226,7 +227,9 @@ class DependencyResolver:
         # Backward pass
         latest_finish: Dict[str, timedelta] = {}
         latest_start: Dict[str, timedelta] = {}
-        project_duration = max(earliest_finish.values()) if earliest_finish else timedelta()
+        project_duration = (
+            max(earliest_finish.values()) if earliest_finish else timedelta()
+        )
 
         for task_id in reversed(sorted_tasks):
             task = tasks[task_id]
@@ -285,7 +288,7 @@ class PlanValidator:
                 if dep.task_id not in task_ids:
                     errors.append(
                         f"Task {task_id} depends on non-existent task {dep.task_id}"
-                        )
+                    )
 
             # Check resource requirements
             if task.estimated_duration <= timedelta():
@@ -335,7 +338,9 @@ class TaskDecomposer:
         # This can be expanded to include models or configurations for decomposition
         pass
 
-    def decompose(self, task: Task, context: Optional[Dict[str, Any]] = None) -> List[Task]:
+    def decompose(
+        self, task: Task, context: Optional[Dict[str, Any]] = None
+    ) -> List[Task]:
         """Decompose a task based on its type."""
         if context is None:
             context = {}
@@ -621,26 +626,28 @@ class TaskPlanner:
             raise ValueError("Cannot get execution order for an invalid plan.")
 
         DependencyResolver.topological_sort(plan.tasks)
-        
+
         completed: Set[str] = set()
         execution_levels: List[List[Task]] = []
 
         while len(completed) < len(plan.tasks):
             level_tasks: List[Task] = []
-            
+
             # Find all tasks that are ready to run
             ready_tasks = plan.get_ready_tasks(completed)
 
             if not ready_tasks and len(completed) < len(plan.tasks):
-                raise ValueError("Could not determine execution order; possible deadlock or missing dependency.")
+                raise ValueError(
+                    "Could not determine execution order; possible deadlock or missing dependency."
+                )
 
             for task in ready_tasks:
                 level_tasks.append(task)
                 completed.add(task.id)
-            
+
             if level_tasks:
                 execution_levels.append(level_tasks)
-        
+
         return execution_levels
 
     def replan(

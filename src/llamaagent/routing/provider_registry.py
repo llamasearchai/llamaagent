@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
+
+
 class ProviderType(Enum):
     """Types of AI providers."""
 
@@ -82,6 +84,8 @@ class ProviderCapabilities:
     last_updated: datetime = field(default_factory=datetime.now)
     tags: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class ProviderRegistry:
     """Registry for managing AI provider information and capabilities."""
 
@@ -101,6 +105,7 @@ class ProviderRegistry:
         # Load custom configuration if provided
         if config_path and config_path.exists():
             self.load_config(config_path)
+
     def _initialize_default_providers(self) -> None:
         """Initialize registry with default provider configurations."""
         # Claude Code
@@ -361,6 +366,7 @@ class ProviderRegistry:
         """Register a new provider or update existing one."""
         self.providers[capabilities.provider_id] = capabilities
         logger.info(f"Registered provider: {capabilities.provider_id}")
+
     def unregister_provider(self, provider_id: str) -> bool:
         """Unregister a provider."""
         if provider_id in self.providers:
@@ -372,12 +378,15 @@ class ProviderRegistry:
     def get_provider(self, provider_id: str) -> Optional[ProviderCapabilities]:
         """Get provider capabilities by ID."""
         return self.providers.get(provider_id)
+
     def get_capabilities(self, provider_id: str) -> Optional[ProviderCapabilities]:
         """Alias for get_provider."""
         return self.get_provider(provider_id)
+
     def get_all_providers(self) -> List[str]:
         """Get list of all registered provider IDs."""
         return list(self.providers.keys())
+
     def get_active_providers(self) -> List[str]:
         """Get list of active provider IDs."""
         return [
@@ -498,6 +507,7 @@ class ProviderRegistry:
         with open(save_path, "w") as f:
             json.dump(config, f, indent=2)
         logger.info(f"Saved provider configuration to {save_path}")
+
     def load_config(self, path: Path) -> None:
         """Load provider configuration from file."""
         with open(path, "r") as f:
@@ -537,6 +547,7 @@ class ProviderRegistry:
             )
             self.register_provider(caps)
         logger.info(f"Loaded provider configuration from {path}")
+
     def get_provider_summary(self, provider_id: str) -> Optional[Dict[str, Any]]:
         """Get a summary of provider capabilities."""
         provider = self.get_provider(provider_id)

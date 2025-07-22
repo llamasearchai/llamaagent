@@ -46,19 +46,15 @@ CONFIG = {
 
 class ShellCLI:
     """Enhanced shell CLI for LlamaAgent."""
-    
+
     def __init__(self):
         self.agent: Optional[BaseAgent] = None
         self.messages: List[LLMMessage] = []
         self.debug = False
-        
+
     def create_agent(self, model: str = "gpt-4o") -> BaseAgent:
         """Create an agent instance."""
-        config = AgentConfig(
-            name="ShellAssistant",
-            llm_model=model,
-            temperature=0.1
-        )
+        config = AgentConfig(name="ShellAssistant", llm_model=model, temperature=0.1)
         return ReactAgent(config)
 
 
@@ -84,16 +80,15 @@ def load_chat_messages(chat_file: Path) -> List[LLMMessage]:
     """Load chat messages from file."""
     if not chat_file.exists():
         return []
-    
+
     try:
         with open(chat_file, "r") as f:
             data = json.load(f)
             messages = []
             for msg_data in data.get("messages", []):
-                messages.append(LLMMessage(
-                    role=msg_data["role"],
-                    content=msg_data["content"]
-                ))
+                messages.append(
+                    LLMMessage(role=msg_data["role"], content=msg_data["content"])
+                )
             return messages
     except Exception as e:
         logger.error(f"Error loading chat messages: {e}")
@@ -104,10 +99,7 @@ def save_chat_messages(chat_file: Path, messages: List[LLMMessage]) -> None:
     """Save chat messages to file."""
     try:
         data = {
-            "messages": [
-                {"role": msg.role, "content": msg.content}
-                for msg in messages
-            ]
+            "messages": [{"role": msg.role, "content": msg.content} for msg in messages]
         }
         with open(chat_file, "w") as f:
             json.dump(data, f, indent=2)
@@ -127,7 +119,7 @@ Your job is to help with coding tasks, review code, and provide technical guidan
 Provide clean, well-documented code examples and follow best practices.""",
         "data_analyst": """You are a data analysis expert.
 Your job is to help with data analysis tasks, visualization, and statistical insights.
-Provide clear explanations and actionable recommendations."""
+Provide clear explanations and actionable recommendations.""",
     }
     return role_prompts.get(role, role_prompts["default"])
 
@@ -162,6 +154,7 @@ def install_shell_integration() -> None:
 def get_os_name() -> str:
     """Get the operating system name."""
     import platform
+
     return platform.system()
 
 
@@ -186,10 +179,10 @@ async def describe_shell_command(command: str, debug: bool = False) -> str:
     """Describe what a shell command does."""
     cli = ShellCLI()
     cli.debug = debug
-    
+
     try:
         agent = cli.create_agent()
-        
+
         prompt = f"""Explain this shell command in detail:
 
 Command: {command}
@@ -203,22 +196,21 @@ Please explain:
 Provide a clear, beginner-friendly explanation."""
 
         task = TaskInput(
-            id="describe_command",
-            prompt=prompt,
-            data={"command": command}
+            id="describe_command", prompt=prompt, data={"command": command}
         )
-        
+
         result = await agent.execute_task(task)
-        
+
         if result.result and result.result.success:
             return str(result.result.data)
         else:
             return f"Error describing command: {result.result.error if result.result else 'Unknown error'}"
-            
+
     except Exception as e:
         error_msg = f"Error describing command: {e}"
         if debug:
             import traceback
+
             error_msg += f"\nDebug trace:\n{traceback.format_exc()}"
         return error_msg
 
@@ -227,32 +219,29 @@ async def execute_shell_command(command: str, debug: bool = False) -> None:
     """Execute a shell command safely."""
     try:
         print_output(f"Executing: {command}", "yellow")
-        
+
         result = subprocess.run(
-            command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=30
+            command, shell=True, capture_output=True, text=True, timeout=30
         )
-        
+
         if result.stdout:
             print_output("Output:", "green")
             print_output(result.stdout)
-        
+
         if result.stderr:
             print_output("Errors:", "red")
             print_output(result.stderr)
-        
+
         if result.returncode != 0:
             print_output(f"Command failed with exit code {result.returncode}", "red")
-            
+
     except subprocess.TimeoutExpired:
         print_output("Command timed out after 30 seconds", "red")
     except Exception as e:
         print_output(f"Error executing command: {e}", "red")
         if debug:
             import traceback
+
             print_output(f"Debug trace:\n{traceback.format_exc()}", "red")
 
 
@@ -260,7 +249,7 @@ async def handle_shell_execution(command: str, debug: bool = False) -> None:
     """Handle shell command execution with user confirmation."""
     print_output(f"Command to execute: {command}", "yellow")
     print_output("Do you want to execute this command? (y/N): ", "yellow")
-    
+
     try:
         choice = input().lower()
         if choice in ("y", "yes"):
@@ -272,42 +261,40 @@ async def handle_shell_execution(command: str, debug: bool = False) -> None:
 
 
 async def handle_chat_mode(
-    chat_id: str,
-    role: str = "default",
-    debug: bool = False
+    chat_id: str, role: str = "default", debug: bool = False
 ) -> None:
     """Handle interactive chat mode."""
     cli = ShellCLI()
     cli.debug = debug
-    
+
     print_output(f"Starting chat session: {chat_id}", "bright_green")
     print_output(f"Role: {role}", "bright_green")
     print_output("Type 'quit' or 'exit' to end the session", "dim")
     print_output("Press Ctrl+C to exit", "dim")
-    
+
     # Load or create agent
     agent = cli.create_agent()
-    
+
     # Load chat history
     chat_file = get_chat_file_path(chat_id)
     messages = load_chat_messages(chat_file)
-    
+
     # Set role prompt
     role_prompt = get_role_prompt(role)
     if not messages or messages[0].role != "system":
         messages.insert(0, LLMMessage(role="system", content=role_prompt))
-    
+
     try:
         while True:
             try:
                 user_input = Prompt.ask("\n[bold blue]You[/bold blue]")
-                
+
                 if user_input.lower() in ["quit", "exit", "bye"]:
                     break
-                
+
                 if not user_input.strip():
                     continue
-                
+
                 # Handle multiline input
                 if user_input.strip() == '"""':
                     multiline_parts: List[str] = []
@@ -318,48 +305,53 @@ async def handle_chat_mode(
                             break
                         multiline_parts.append(line)
                     user_input = "\n".join(multiline_parts)
-                
+
                 # Add user message
                 messages.append(LLMMessage(role="user", content=user_input))
-                
+
                 # Create task
                 task = TaskInput(
                     id=f"chat_{chat_id}_{len(messages)}",
                     prompt=user_input,
-                    data={"chat_id": chat_id, "role": role}
+                    data={"chat_id": chat_id, "role": role},
                 )
-                
+
                 # Get response
                 print_output("Thinking...", "dim")
                 result = await agent.execute_task(task)
-                
+
                 if result.result and result.result.success:
                     response_content = str(result.result.data)
                     print_output("\n[bold green]Assistant[/bold green]:")
                     display_response(response_content)
-                    
+
                     # Add assistant message
-                    messages.append(LLMMessage(role="assistant", content=response_content))
+                    messages.append(
+                        LLMMessage(role="assistant", content=response_content)
+                    )
                 else:
-                    error_msg = result.result.error if result.result else "Unknown error"
+                    error_msg = (
+                        result.result.error if result.result else "Unknown error"
+                    )
                     print_output(f"Error: {error_msg}", "red")
-                
+
                 # Save messages
                 save_chat_messages(chat_file, messages)
-                
+
             except EOFError:
                 print_output("\nEOF received, exiting chat mode.", "yellow")
                 break
             except KeyboardInterrupt:
                 print_output("\nChat session interrupted.", "yellow")
                 break
-                
+
     except Exception as e:
         print_output(f"Error in chat mode: {e}", "red")
         if debug:
             import traceback
+
             print_output(f"Debug trace:\n{traceback.format_exc()}", "red")
-    
+
     # Save final messages
     save_chat_messages(chat_file, messages)
     print_output("Chat session ended.", "bright_green")
@@ -372,43 +364,39 @@ async def run_main_logic(
     chat: bool = False,
     chat_id: str = "default",
     role: str = "default",
-    debug: bool = False
+    debug: bool = False,
 ) -> None:
     """Run the main CLI logic."""
     try:
         if chat:
             await handle_chat_mode(chat_id, role, debug)
             return
-        
+
         if explain:
             response = await describe_shell_command(prompt, debug)
             display_response(response)
             return
-        
+
         if shell:
             await handle_shell_execution(prompt, debug)
             return
-        
+
         # Default: process as general prompt
         cli = ShellCLI()
         cli.debug = debug
         agent = cli.create_agent()
-        
-        task = TaskInput(
-            id="general_query",
-            prompt=prompt,
-            data={"role": role}
-        )
-        
+
+        task = TaskInput(id="general_query", prompt=prompt, data={"role": role})
+
         result = await agent.execute_task(task)
-        
+
         if result.result and result.result.success:
             response_content = str(result.result.data)
             display_response(response_content)
         else:
             error_msg = result.result.error if result.result else "Unknown error"
             print_output(f"Error: {error_msg}", "red")
-            
+
     except KeyboardInterrupt:
         print_output("\nOperation cancelled by user.", "yellow")
         raise typer.Exit(130)
@@ -416,6 +404,7 @@ async def run_main_logic(
         print_output(f"Error: {str(e)}", "red")
         if debug:
             import traceback
+
             print_output(f"Debug trace:\n{traceback.format_exc()}", "red")
         raise typer.Exit(1)
 
@@ -426,7 +415,9 @@ def main(
     prompt: str = typer.Argument(None, help="The prompt or command to process"),
     shell: bool = typer.Option(False, "--shell", "-s", help="Execute as shell command"),
     explain: bool = typer.Option(False, "--explain", "-e", help="Explain the command"),
-    chat: bool = typer.Option(False, "--chat", "-c", help="Start interactive chat mode"),
+    chat: bool = typer.Option(
+        False, "--chat", "-c", help="Start interactive chat mode"
+    ),
     chat_id: str = typer.Option("default", "--chat-id", help="Chat session ID"),
     role: str = typer.Option("default", "--role", "-r", help="AI role to use"),
     debug: bool = typer.Option(False, "--debug", "-d", help="Enable debug mode"),
@@ -435,33 +426,33 @@ def main(
     install: bool = typer.Option(False, "--install", help="Install shell integration"),
 ) -> None:
     """Enhanced LlamaAgent Shell CLI with advanced features."""
-    
+
     # Handle special commands
     if list_roles:
         list_available_roles()
         return
-    
+
     if show_role:
         show_role_details(show_role)
         return
-    
+
     if install:
         install_shell_integration()
         return
-    
+
     # Validate arguments
     if sum([shell, explain, chat]) > 1:
         print_output("Error: Only one mode can be specified at a time", "red")
         raise typer.Exit(1)
-    
+
     if not prompt and not chat:
         print_output("Error: Prompt is required unless in chat mode", "red")
         raise typer.Exit(1)
-    
+
     # Determine role if not specified
     if role == "default":
         role = determine_role(shell, explain, chat)
-    
+
     # Run the main logic
     try:
         asyncio.run(
@@ -472,7 +463,7 @@ def main(
                 chat=chat,
                 chat_id=chat_id,
                 role=role,
-                debug=debug
+                debug=debug,
             )
         )
     except Exception as e:

@@ -146,7 +146,7 @@ class OpenAIProvider(BaseLLMProvider):
                         usage["cost"] = cost
                     else:
                         usage = {"cost": cost}
-                    
+
                     return LLMResponse(
                         content=content,
                         model=model,
@@ -282,7 +282,7 @@ class OpenAIProvider(BaseLLMProvider):
                         usage["cost"] = cost
                     else:
                         usage = {"cost": cost}
-                    
+
                     return {
                         "embeddings": embeddings,
                         "model": model,

@@ -312,8 +312,8 @@ class TimeOptimizer:
                     if task:
                         task.metadata["parallelizable"] = True
                         task.metadata["parallel_group"] = str(
-                            hash(tuple(sorted(group))
-                        ))
+                            hash(tuple(sorted(group)))
+                        )
 
     async def _optimize_task_durations(self, plan: TaskPlan):
         """Optimize individual task durations."""

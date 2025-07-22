@@ -7,16 +7,14 @@ for development and testing purposes.
 
 import pytest
 
-from src.llamaagent.integration._openai_stub import (
-    MockAsyncOpenAIClient,
-    MockAuthenticationError,
-    MockChatCompletion,
-    MockEmbedding,
-    MockModeration,
-    MockOpenAIClient,
-    install_openai_stub,
-    uninstall_openai_stub,
-)
+from src.llamaagent.integration._openai_stub import (MockAsyncOpenAIClient,
+                                                     MockAuthenticationError,
+                                                     MockChatCompletion,
+                                                     MockEmbedding,
+                                                     MockModeration,
+                                                     MockOpenAIClient,
+                                                     install_openai_stub,
+                                                     uninstall_openai_stub)
 
 
 class TestOpenAIStub:

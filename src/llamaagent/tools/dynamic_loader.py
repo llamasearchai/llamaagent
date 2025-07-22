@@ -308,32 +308,32 @@ class DynamicToolLoader:
                 }
 
                 # Add safe imports
-                restricted_globals.update({
-                    "asyncio": asyncio,
-                    "datetime": datetime,
-                    "json": json,
-                    "uuid": uuid,
-                    "logging": logging,
-                })
-
-                # Import our tool classes
-                from .tool_registry import (
-                    Tool,
-                    ToolCategory,
-                    ToolExecutionContext,
-                    ToolParameter,
-                    ToolResult,
-                    ToolSecurityLevel,
+                restricted_globals.update(
+                    {
+                        "asyncio": asyncio,
+                        "datetime": datetime,
+                        "json": json,
+                        "uuid": uuid,
+                        "logging": logging,
+                    }
                 )
 
-                restricted_globals.update({
-                    "Tool": Tool,
-                    "ToolCategory": ToolCategory,
-                    "ToolSecurityLevel": ToolSecurityLevel,
-                    "ToolParameter": ToolParameter,
-                    "ToolResult": ToolResult,
-                    "ToolExecutionContext": ToolExecutionContext,
-                })
+                # Import our tool classes
+                from .tool_registry import (Tool, ToolCategory,
+                                            ToolExecutionContext,
+                                            ToolParameter, ToolResult,
+                                            ToolSecurityLevel)
+
+                restricted_globals.update(
+                    {
+                        "Tool": Tool,
+                        "ToolCategory": ToolCategory,
+                        "ToolSecurityLevel": ToolSecurityLevel,
+                        "ToolParameter": ToolParameter,
+                        "ToolResult": ToolResult,
+                        "ToolExecutionContext": ToolExecutionContext,
+                    }
+                )
 
                 # Execute module code
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -410,10 +410,7 @@ class DynamicToolLoader:
             tool_class = self.tool_classes[tool_name]
             metadata = self.loaded_tools[tool_name]
             # Create instance with basic required parameters
-            return tool_class(
-                name=metadata.name,
-                description=metadata.description
-            )
+            return tool_class(name=metadata.name, description=metadata.description)
         except Exception as e:
             self.logger.error(f"Failed to create instance of {tool_name}: {e}")
             return None

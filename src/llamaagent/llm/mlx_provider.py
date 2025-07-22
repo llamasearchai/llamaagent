@@ -20,13 +20,13 @@ class MlxProvider(LLMProvider):
             # Try to use MLX if available
             import mlx.core as mx
             import mlx_lm
-            
+
             # Convert messages to prompt
             prompt = self._messages_to_prompt(messages)
-            
+
             # Load model with MLX
             model, tokenizer = mlx_lm.load(self.model)
-            
+
             # Generate response
             response = mlx_lm.generate(
                 model=model,
@@ -35,33 +35,35 @@ class MlxProvider(LLMProvider):
                 max_tokens=kwargs.get("max_tokens", 1000),
                 temperature=kwargs.get("temperature", 0.7),
             )
-            
+
             # Count tokens
-            tokens_used = len(tokenizer.encode(prompt)) + len(tokenizer.encode(response))
-            
+            tokens_used = len(tokenizer.encode(prompt)) + len(
+                tokenizer.encode(response)
+            )
+
             return LLMResponse(
                 content=response,
                 model=f"mlx-{self.model}",
                 tokens_used=tokens_used,
-                **kwargs
+                **kwargs,
             )
-            
+
         except ImportError:
             # MLX not available, fallback to Ollama
             if self.fallback_to_ollama:
                 from .ollama_provider import OllamaProvider
-                
+
                 ollama = OllamaProvider(model=self.model)
                 return await ollama.complete(messages, **kwargs)
-            
+
             # No fallback available
             return LLMResponse(
                 content="MLX not available on this system. Please install mlx-lm for Apple Silicon support.",
                 model=f"mlx-{self.model}",
                 tokens_used=0,
-                **kwargs
+                **kwargs,
             )
-    
+
     def _messages_to_prompt(self, messages: List[LLMMessage]) -> str:
         """Convert messages to a single prompt string."""
         prompt_parts = []

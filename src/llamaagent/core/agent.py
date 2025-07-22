@@ -47,6 +47,7 @@ except ImportError:
 # Optional imports for distributed computing
 try:
     import redis as redis_module
+
     redis_available = True
 except ImportError:
     redis_module = None

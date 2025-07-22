@@ -307,6 +307,7 @@ __all__ = [
 # not critical for core functionality.
 try:
     from .core.orchestrator import AgentOrchestrator  # type: ignore
+
     __all__.append("AgentOrchestrator")
 except Exception:  # pylint: disable=broad-except
     # Log but swallow any error so that core package still imports.
@@ -315,7 +316,7 @@ except Exception:  # pylint: disable=broad-except
 # Make integration module available
 try:
     from . import integration
+
     __all__.append("integration")
 except ImportError:
     pass
- 

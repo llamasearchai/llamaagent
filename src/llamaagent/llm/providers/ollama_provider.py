@@ -175,7 +175,9 @@ class OllamaProvider(BaseLLMProvider):
         # Prepare request payload
         payload = {
             "model": model or self.model,
-            "messages": [{"role": msg.role, "content": msg.content} for msg in messages],
+            "messages": [
+                {"role": msg.role, "content": msg.content} for msg in messages
+            ],
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
@@ -267,7 +269,9 @@ class OllamaProvider(BaseLLMProvider):
         # Prepare request payload
         payload = {
             "model": model or self.model,
-            "messages": [{"role": msg.role, "content": msg.content} for msg in messages],
+            "messages": [
+                {"role": msg.role, "content": msg.content} for msg in messages
+            ],
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
@@ -284,11 +288,12 @@ class OllamaProvider(BaseLLMProvider):
                     json=payload,
                 ) as response:
                     response.raise_for_status()
-                    
+
                     async for line in response.aiter_lines():
                         if line:
                             try:
                                 import json
+
                                 data = json.loads(line)
                                 if "message" in data and "content" in data["message"]:
                                     content = data["message"]["content"]

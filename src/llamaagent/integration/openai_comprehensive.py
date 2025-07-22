@@ -116,6 +116,7 @@ class OpenAIUsageTracker:
         self.usage_log: List[Dict[str, Any]] = []
         self.request_count = 0
         self.start_time = datetime.now(timezone.utc)
+
     def add_usage(
         self,
         model: str,

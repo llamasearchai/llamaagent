@@ -32,21 +32,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 import uvicorn
-from fastapi import (
-    BackgroundTasks,
-    Body,
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    Request,
-    Response,
-    Security,
-    UploadFile,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
+from fastapi import (BackgroundTasks, Body, Depends, FastAPI, File,
+                     HTTPException, Request, Response, Security, UploadFile,
+                     WebSocket, WebSocketDisconnect, status)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -97,10 +85,8 @@ except ImportError:
     GAIABenchmark = None
 
 try:
-    from ..integration.openai_agents import (
-        OPENAI_AGENTS_AVAILABLE,
-        OpenAIAgentsIntegration,
-    )
+    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
+                                             OpenAIAgentsIntegration)
 except ImportError:
     OpenAIAgentsIntegration = None
     OPENAI_AGENTS_AVAILABLE = False
@@ -607,7 +593,7 @@ async def root():
 async def health_check():
     """Comprehensive health check endpoint."""
     import psutil
-    
+
     # Get memory usage
     memory_info = psutil.virtual_memory()
     
@@ -1039,8 +1025,9 @@ async def system_info(user: Dict[str, Any] = Depends(require_auth):
     """Get comprehensive system information (admin only)."""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
-    import psutil
     import sys
+
+    import psutil
     
     return {
         "system": {

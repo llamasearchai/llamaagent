@@ -24,8 +24,9 @@ from .python_repl import PythonREPLTool
 
 # Optional imports with graceful fallback
 try:
-    from .registry import ToolLoader, create_loader, get_registry
+    from .registry import ToolLoader
     from .registry import ToolMetadata as RegistryToolMetadata
+    from .registry import create_loader, get_registry
 except (ImportError, SyntaxError):
     ToolLoader = None
     RegistryToolMetadata = None
@@ -34,15 +35,9 @@ except (ImportError, SyntaxError):
 
 try:
     from .tool_registry import Tool as ToolRegistryTool
-    from .tool_registry import (
-        ToolCategory,
-        ToolExecutionContext,
-        ToolMetadata,
-        ToolParameter,
-        ToolResult,
-        ToolSecurityLevel,
-        ToolValidator,
-    )
+    from .tool_registry import (ToolCategory, ToolExecutionContext,
+                                ToolMetadata, ToolParameter, ToolResult,
+                                ToolSecurityLevel, ToolValidator)
 except (ImportError, SyntaxError):
     ToolRegistryTool = None
     ToolCategory = None
@@ -61,7 +56,8 @@ except (ImportError, SyntaxError):
     DynamicToolMetadata = None
 
 try:
-    from .plugin_framework import Plugin, PluginFramework, PluginManager, PluginState
+    from .plugin_framework import (Plugin, PluginFramework, PluginManager,
+                                   PluginState)
 except (ImportError, SyntaxError):
     Plugin = None
     PluginFramework = None

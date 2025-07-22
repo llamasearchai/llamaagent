@@ -6,20 +6,11 @@ surface small while satisfying the test-suite expectations.
 
 # Core building blocks
 # Advanced agent implementations
-from .advanced_reasoning import (
-    AdvancedReasoningAgent,
-    ReasoningStrategy,
-    ReasoningTrace,
-    ThoughtNode,
-)
+from .advanced_reasoning import (AdvancedReasoningAgent, ReasoningStrategy,
+                                 ReasoningTrace, ThoughtNode)
 from .base import AgentConfig, AgentResponse, AgentRole, BaseAgent
-from .multimodal_advanced import (
-    CrossModalContext,
-    ModalityData,
-    ModalityType,
-    MultiModalAdvancedAgent,
-)
-
+from .multimodal_advanced import (CrossModalContext, ModalityData,
+                                  ModalityType, MultiModalAdvancedAgent)
 # Concrete agent implementations
 from .react import ReactAgent
 

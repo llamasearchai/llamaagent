@@ -12,13 +12,13 @@ This module implements sophisticated reasoning capabilities, including:
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
-import uuid
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from opentelemetry import trace

@@ -137,13 +137,13 @@ class MockAgent(BaseAgent):
         # Convert to TaskInput format
         task_input = TaskInput(id=str(uuid.uuid4()), task=task, context=context or {})
         output = await self.execute_task(task_input)
-        
+
         # Convert to AgentResponse
         return AgentResponse(
             content=output.result.data.get("response", "") if output.result else "",
             metadata=output.result.metadata if output.result else {},
             agent_name=self.name,
-            timestamp=time.time()
+            timestamp=time.time(),
         )
 
     async def arun(self, task_input: TaskInput) -> TaskOutput:

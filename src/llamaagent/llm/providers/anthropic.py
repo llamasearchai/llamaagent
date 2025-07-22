@@ -53,6 +53,7 @@ class AnthropicProvider(BaseLLMProvider):
         if self._client is None:
             try:
                 import anthropic
+
                 self._client = anthropic.AsyncAnthropic(api_key=self.api_key)
             except ImportError:
                 raise ImportError(
@@ -91,10 +92,7 @@ class AnthropicProvider(BaseLLMProvider):
             if msg.role == "system":
                 system_message = msg.content
             else:
-                anthropic_messages.append({
-                    "role": msg.role,
-                    "content": msg.content
-                })
+                anthropic_messages.append({"role": msg.role, "content": msg.content})
 
         # Prepare request parameters
         request_params = {
@@ -117,7 +115,8 @@ class AnthropicProvider(BaseLLMProvider):
             usage = {
                 "prompt_tokens": response.usage.input_tokens,
                 "completion_tokens": response.usage.output_tokens,
-                "total_tokens": response.usage.input_tokens + response.usage.output_tokens,
+                "total_tokens": response.usage.input_tokens
+                + response.usage.output_tokens,
             }
 
             return LLMResponse(
@@ -180,10 +179,7 @@ class AnthropicProvider(BaseLLMProvider):
             if msg.role == "system":
                 system_message = msg.content
             else:
-                anthropic_messages.append({
-                    "role": msg.role,
-                    "content": msg.content
-                })
+                anthropic_messages.append({"role": msg.role, "content": msg.content})
 
         # Prepare request parameters
         request_params = {
@@ -228,8 +224,7 @@ class AnthropicProvider(BaseLLMProvider):
         try:
             # Try a minimal completion
             await self.complete(
-                [LLMMessage(role="user", content="test")],
-                max_tokens=10
+                [LLMMessage(role="user", content="test")], max_tokens=10
             )
             return True
         except Exception:

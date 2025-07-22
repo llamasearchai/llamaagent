@@ -9,11 +9,8 @@ from unittest.mock import AsyncMock, Mock, mock_open, patch
 import pytest
 
 from llamaagent.benchmarks.gaia_benchmark import GAIATask
-from llamaagent.benchmarks.spre_evaluator import (
-    BenchmarkResult,
-    SPREEvaluator,
-    TaskResult,
-)
+from llamaagent.benchmarks.spre_evaluator import (BenchmarkResult,
+                                                  SPREEvaluator, TaskResult)
 
 
 class TestTaskResult:

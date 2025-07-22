@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
@@ -21,6 +22,7 @@ except ImportError:
 
 try:
     from sentence_transformers import SentenceTransformer
+
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -35,7 +37,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CachedResponse:
     """Cached LLM response with metadata"""
-    
+
     response: LLMResponse
     prompt_hash: str
     prompt_text: str
@@ -53,15 +55,17 @@ class CachedResponse:
                 "model": self.response.model,
                 "tokens_used": self.response.tokens_used,
                 "cost": getattr(self.response, 'cost', None),
-                "usage": getattr(self.response, 'usage', None)
+                "usage": getattr(self.response, 'usage', None),
             },
             "prompt_hash": self.prompt_hash,
             "prompt_text": self.prompt_text,
-            "embedding": self.embedding.tolist() if self.embedding is not None else None,
+            "embedding": self.embedding.tolist()
+            if self.embedding is not None
+            else None,
             "timestamp": self.timestamp,
             "hit_count": self.hit_count,
             "cost_saved": self.cost_saved,
-            "tokens_saved": self.tokens_saved
+            "tokens_saved": self.tokens_saved,
         }
 
     @classmethod
@@ -71,9 +75,9 @@ class CachedResponse:
         response = LLMResponse(
             content=response_data["content"],
             model=response_data.get("model", "unknown"),
-            tokens_used=response_data.get("tokens_used", 0)
+            tokens_used=response_data.get("tokens_used", 0),
         )
-        
+
         # Set additional attributes
         if response_data.get("cost"):
             response.cost = response_data["cost"]
@@ -92,7 +96,7 @@ class CachedResponse:
             timestamp=data["timestamp"],
             hit_count=data.get("hit_count", 0),
             cost_saved=data.get("cost_saved", 0.0),
-            tokens_saved=data.get("tokens_saved", 0)
+            tokens_saved=data.get("tokens_saved", 0),
         )
 
 
@@ -106,12 +110,12 @@ class LLMCache:
         cache_backend: CacheBackend = CacheBackend.MEMORY,
         enable_semantic_cache: bool = True,
         similarity_threshold: float = 0.85,
-        **cache_config
+        **cache_config,
     ):
         """Initialize LLM cache."""
         # Import here to avoid circular imports
         from . import CacheManager
-        
+
         self.cache = CacheManager(backend=cache_backend, **cache_config)
         self.ttl = ttl
         self.max_entries = max_entries
@@ -131,7 +135,7 @@ class LLMCache:
             "semantic_hits": 0,
             "misses": 0,
             "total_cost_saved": 0.0,
-            "total_tokens_saved": 0
+            "total_tokens_saved": 0,
         }
 
     def _initialize_semantic_cache(self) -> None:
@@ -152,7 +156,11 @@ class LLMCache:
         """Generate cache key from messages and parameters"""
         key_data = {
             "messages": [{"role": m.role, "content": m.content} for m in messages],
-            "params": {k: v for k, v in kwargs.items() if k in ["temperature", "max_tokens", "model"]}
+            "params": {
+                k: v
+                for k, v in kwargs.items()
+                if k in ["temperature", "max_tokens", "model"]
+            },
         }
         key_string = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_string.encode()).hexdigest()
@@ -173,18 +181,24 @@ class LLMCache:
 
             # Update statistics
             self.stats["exact_hits"] += 1
-            if hasattr(cached_response.response, 'cost') and cached_response.response.cost:
+            if (
+                hasattr(cached_response.response, 'cost')
+                and cached_response.response.cost
+            ):
                 self.stats["total_cost_saved"] += cached_response.response.cost
                 cached_response.cost_saved += cached_response.response.cost
 
-            if hasattr(cached_response.response, 'usage') and cached_response.response.usage:
+            if (
+                hasattr(cached_response.response, 'usage')
+                and cached_response.response.usage
+            ):
                 tokens = cached_response.response.usage.get("total_tokens", 0)
                 self.stats["total_tokens_saved"] += tokens
                 cached_response.tokens_saved += tokens
 
             # Update cache with incremented stats
             await self.cache.set(cache_key, cached_response.to_dict(), ttl=self.ttl)
-            
+
             logger.debug("Cache hit (exact)")
             return cached_response.response
 
@@ -210,9 +224,7 @@ class LLMCache:
 
         # Create cached response
         cached_response = CachedResponse(
-            response=response,
-            prompt_hash=cache_key,
-            prompt_text=prompt_text
+            response=response, prompt_hash=cache_key, prompt_text=prompt_text
         )
 
         # Add semantic embedding if enabled
@@ -220,7 +232,7 @@ class LLMCache:
             try:
                 embedding = self.embeddings_model.encode(prompt_text)
                 cached_response.embedding = embedding
-                
+
                 # Add to semantic index
                 self.semantic_index[cache_key] = cached_response
             except Exception as e:
@@ -246,10 +258,14 @@ class LLMCache:
             for cached_response in self.semantic_index.values():
                 if cached_response.embedding is not None:
                     similarity = np.dot(query_embedding, cached_response.embedding) / (
-                        np.linalg.norm(query_embedding) * np.linalg.norm(cached_response.embedding)
+                        np.linalg.norm(query_embedding)
+                        * np.linalg.norm(cached_response.embedding)
                     )
-                    
-                    if similarity > best_similarity and similarity >= self.similarity_threshold:
+
+                    if (
+                        similarity > best_similarity
+                        and similarity >= self.similarity_threshold
+                    ):
                         best_similarity = similarity
                         best_match = cached_response
 
@@ -277,20 +293,22 @@ class LLMCache:
             ),
             "total_cost_saved": self.stats["total_cost_saved"],
             "total_tokens_saved": self.stats["total_tokens_saved"],
-            "cache_size": len(self.semantic_index)
+            "cache_size": len(self.semantic_index),
         }
 
     def cache_key_generator(self, key_prefix: str = ""):
         """Generate cache key function for decorators"""
+
         def _generate_key(func_name: str, *args, **kwargs) -> str:
             key_data = {
                 "function": func_name,
                 "args": args,
                 "kwargs": kwargs,
-                "prefix": key_prefix
+                "prefix": key_prefix,
             }
             key_string = json.dumps(key_data, sort_keys=True, default=str)
             return hashlib.md5(key_string.encode()).hexdigest()
+
         return _generate_key
 
     def cached(self, ttl: Optional[int] = None, key_prefix: str = "", condition=None):
@@ -319,7 +337,7 @@ class LLMCache:
 
             def sync_wrapper(*args, **kwargs):
                 import asyncio
-                
+
                 # Generate cache key
                 cache_key = key_generator(func.__name__, *args, **kwargs)
 
@@ -342,6 +360,7 @@ class LLMCache:
 
             # Return appropriate wrapper based on function type
             import inspect
+
             if inspect.iscoroutinefunction(func):
                 return async_wrapper
             else:
@@ -354,10 +373,7 @@ class AdvancedLLMCache(LLMCache):
     """Advanced LLM cache with enhanced semantic capabilities"""
 
     def __init__(
-        self,
-        model_name: str = "all-MiniLM-L6-v2",
-        index_type: str = "simple",
-        **kwargs
+        self, model_name: str = "all-MiniLM-L6-v2", index_type: str = "simple", **kwargs
     ):
         """Initialize advanced cache with better semantic search."""
         super().__init__(enable_semantic_cache=True, **kwargs)
@@ -404,11 +420,17 @@ class AdvancedLLMCache(LLMCache):
 
                 for cached_response in self.semantic_index.values():
                     if cached_response.embedding is not None:
-                        similarity = np.dot(query_embedding, cached_response.embedding) / (
-                            np.linalg.norm(query_embedding) * np.linalg.norm(cached_response.embedding)
+                        similarity = np.dot(
+                            query_embedding, cached_response.embedding
+                        ) / (
+                            np.linalg.norm(query_embedding)
+                            * np.linalg.norm(cached_response.embedding)
                         )
-                        
-                        if similarity > best_similarity and similarity >= self.similarity_threshold:
+
+                        if (
+                            similarity > best_similarity
+                            and similarity >= self.similarity_threshold
+                        ):
                             best_similarity = similarity
                             best_match = cached_response
 

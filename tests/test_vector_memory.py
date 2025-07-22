@@ -10,7 +10,7 @@ async def memory():
     os.environ.setdefault(
         "DATABASE_URL", "postgresql://llama:llama@localhost:5432/llamaagent"
     )
-    from src.llamaagent.storage.database import DatabaseManager, DatabaseConfig
+    from src.llamaagent.storage.database import DatabaseConfig, DatabaseManager
 
     try:
         # Create database instance
@@ -22,7 +22,8 @@ async def memory():
         if db.pool is None:
             pytest.skip("Database not available")
 
-        from src.llamaagent.storage.vector_memory import VectorMemory as PostgresVectorMemory
+        from src.llamaagent.storage.vector_memory import \
+            VectorMemory as PostgresVectorMemory
 
         mem = PostgresVectorMemory(agent_id="test")
         yield mem

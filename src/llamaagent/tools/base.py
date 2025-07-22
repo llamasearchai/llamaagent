@@ -86,7 +86,7 @@ class ToolRegistry:
     def list_tools(self) -> List[BaseTool]:
         """Return the list of registered tool instances."""
         return list(self._tools.values())
-    
+
     @property
     def tools(self) -> Dict[str, BaseTool]:
         """Property for backward compatibility - returns tools dictionary."""

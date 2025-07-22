@@ -5,28 +5,21 @@ Tests advanced reasoning, multimodal capabilities, caching, error handling,
 and performance optimization.
 """
 
-import logging
 import asyncio
+import logging
 from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from llamaagent.agents import (
-    AdvancedReasoningAgent,
-    ModalityType,
-    MultiModalAdvancedAgent,
-    ReasoningStrategy,
-)
+from llamaagent.agents import (AdvancedReasoningAgent, ModalityType,
+                               MultiModalAdvancedAgent, ReasoningStrategy)
 from llamaagent.agents.base import AgentConfig
 from llamaagent.cache import AdvancedCache, CacheStrategy
-from llamaagent.core import (
-    ErrorHandler,
-    ErrorSeverity,
-    RecoveryStrategy,
-    with_error_handling,
-)
+from llamaagent.core import (ErrorHandler, ErrorSeverity, RecoveryStrategy,
+                             with_error_handling)
 from llamaagent.llm import LLMResponse
 from llamaagent.optimization import BatchProcessor, PerformanceOptimizer
+
 logger = logging.getLogger(__name__)
 
 
@@ -659,12 +652,8 @@ async def test_ml_modules():
 @pytest.mark.asyncio
 async def test_monitoring_modules():
     """Test monitoring and observability modules."""
-    from llamaagent.monitoring import (
-        AlertManager,
-        HealthChecker,
-        MetricsCollector,
-        TracingService,
-    )
+    from llamaagent.monitoring import (AlertManager, HealthChecker,
+                                       MetricsCollector, TracingService)
 
     # Test MetricsCollector
     metrics = MetricsCollector()
@@ -728,12 +717,8 @@ async def test_monitoring_modules():
 @pytest.mark.asyncio
 async def test_knowledge_modules():
     """Test knowledge management modules."""
-    from llamaagent.knowledge import (
-        DocumentStore,
-        KnowledgeBase,
-        KnowledgeGraph,
-        SemanticSearch,
-    )
+    from llamaagent.knowledge import (DocumentStore, KnowledgeBase,
+                                      KnowledgeGraph, SemanticSearch)
 
     # Test KnowledgeBase
     kb = KnowledgeBase()
@@ -809,10 +794,8 @@ async def test_knowledge_modules():
 @pytest.mark.asyncio
 async def test_reasoning_strategy_coverage():
     """Test all reasoning strategies for coverage."""
-    from llamaagent.agents.advanced_reasoning import (
-        AdvancedReasoningAgent,
-        ReasoningStrategy,
-    )
+    from llamaagent.agents.advanced_reasoning import (AdvancedReasoningAgent,
+                                                      ReasoningStrategy)
     from llamaagent.agents.base import AgentConfig
 
     # Mock LLM provider
@@ -852,12 +835,8 @@ async def test_reasoning_strategy_coverage():
 @pytest.mark.asyncio
 async def test_security_modules():
     """Test security module functionality."""
-    from llamaagent.security import (
-        AuditLogger,
-        AuthenticationService,
-        EncryptionService,
-        SecurityManager,
-    )
+    from llamaagent.security import (AuditLogger, AuthenticationService,
+                                     EncryptionService, SecurityManager)
 
     # Test SecurityManager with a workaround for initialization issues
     try:
@@ -959,12 +938,8 @@ async def test_storage_modules():
 @pytest.mark.asyncio
 async def test_tools_modules():
     """Test tools module functionality."""
-    from llamaagent.tools import (
-        DynamicToolLoader,
-        ToolRegistry,
-        ToolValidator,
-        create_tool_from_function,
-    )
+    from llamaagent.tools import (DynamicToolLoader, ToolRegistry,
+                                  ToolValidator, create_tool_from_function)
 
     # Test ToolRegistry
     registry = ToolRegistry()

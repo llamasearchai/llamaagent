@@ -128,13 +128,15 @@ JUSTIFICATION: [brief explanation]"""
             researcher_response = await self.researcher.execute(
                 f"{self.RESEARCHER_PROMPT}\n\nContext: {context}"
             )
-            proposals.append({
+            proposals.append(
+                {
                     "content": researcher_response.content,
                     "role": AgentRole.RESEARCHER.value,
                 }
             )
         except Exception:
-            proposals.append({
+            proposals.append(
+                {
                     "content": f"Research shows that {problem} requires systematic analysis.",
                     "role": AgentRole.RESEARCHER.value,
                 }
@@ -145,10 +147,12 @@ JUSTIFICATION: [brief explanation]"""
             analyzer_response = await self.analyzer.execute(
                 f"{self.ANALYZER_PROMPT}\n\nContext: {context}"
             )
-            proposals.append({"content": analyzer_response.content, "role": AgentRole.ANALYZER.value}
+            proposals.append(
+                {"content": analyzer_response.content, "role": AgentRole.ANALYZER.value}
             )
         except Exception:
-            proposals.append({
+            proposals.append(
+                {
                     "content": f"Analysis suggests breaking down {problem} into components.",
                     "role": AgentRole.ANALYZER.value,
                 }
@@ -276,11 +280,13 @@ Proposal: {node.proposal}
 
         for node in path[1:]:  # Skip root:
             role_name = node.proposing_agent_role.value.title()
-            transcript.append({"from": "gpt", "value": f"[{role_name}] {node.proposal}"}
+            transcript.append(
+                {"from": "gpt", "value": f"[{role_name}] {node.proposal}"}
             )
 
             if node.critique:
-                transcript.append({
+                transcript.append(
+                    {
                         "from": "gpt",
                         "value": f"[Critic] {node.critique} (Score: {node.score:.2f})",
                     }

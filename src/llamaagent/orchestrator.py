@@ -122,7 +122,7 @@ class AgentOrchestrator:
             tasks_to_wait.append(self._health_check_task)
         if self._task_processor_task:
             tasks_to_wait.append(self._task_processor_task)
-        
+
         if tasks_to_wait:
             await asyncio.gather(*tasks_to_wait, return_exceptions=True)
 

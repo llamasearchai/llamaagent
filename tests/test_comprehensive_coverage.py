@@ -14,33 +14,22 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from PIL import Image
 
-from src.llamaagent.agents import (
-    AdvancedReasoningAgent,
-    MultiModalAdvancedAgent,
-    ReactAgent,
-)
-from src.llamaagent.agents.multimodal_advanced import ModalityData, ModalityType
+from src.llamaagent.agents import (AdvancedReasoningAgent,
+                                   MultiModalAdvancedAgent, ReactAgent)
+from src.llamaagent.agents.multimodal_advanced import (ModalityData,
+                                                       ModalityType)
 from src.llamaagent.llm import LLMProvider
 from src.llamaagent.memory import BaseMemory
-from src.llamaagent.planning import (
-    ExecutionEngine,
-    OptimizationObjective,
-    PlanOptimizer,
-    Task,
-    TaskPlanner,
-    TaskPriority,
-)
-from src.llamaagent.research import (
-    Citation,
-    CitationFormat,
-    CitationManager,
-    EvidenceAnalyzer,
-    KnowledgeGraph,
-)
+from src.llamaagent.planning import (ExecutionEngine, OptimizationObjective,
+                                     PlanOptimizer, Task, TaskPlanner,
+                                     TaskPriority)
+from src.llamaagent.research import (Citation, CitationFormat, CitationManager,
+                                     EvidenceAnalyzer, KnowledgeGraph)
 from src.llamaagent.routing import AIRouter, RoutingMode
 from src.llamaagent.spawning import AgentSpawner, SpawnConfig
 from src.llamaagent.types import AgentCapability
-from src.llamaagent.visualization import ResearchVisualizer, create_performance_plots
+from src.llamaagent.visualization import (ResearchVisualizer,
+                                          create_performance_plots)
 
 
 class TestAgentSpawning:

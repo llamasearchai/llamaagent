@@ -26,28 +26,21 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.llamaagent.api.openai_comprehensive_api import app
-
 # Import modules to test
 from src.llamaagent.integration.openai_comprehensive import (
-    BudgetExceededError,
-    OpenAIComprehensiveConfig,
-    OpenAIComprehensiveIntegration,
-    OpenAIModelType,
-    OpenAIUsageTracker,
-    create_comprehensive_openai_integration,
-)
-from src.llamaagent.tools.openai_tools import (
-    OPENAI_TOOLS,
-    OpenAIComprehensiveTool,
-    OpenAIEmbeddingsTool,
-    OpenAIImageGenerationTool,
-    OpenAIModerationTool,
-    OpenAIReasoningTool,
-    OpenAITextToSpeechTool,
-    OpenAITranscriptionTool,
-    create_all_openai_tools,
-    create_openai_tool,
-)
+    BudgetExceededError, OpenAIComprehensiveConfig,
+    OpenAIComprehensiveIntegration, OpenAIModelType, OpenAIUsageTracker,
+    create_comprehensive_openai_integration)
+from src.llamaagent.tools.openai_tools import (OPENAI_TOOLS,
+                                               OpenAIComprehensiveTool,
+                                               OpenAIEmbeddingsTool,
+                                               OpenAIImageGenerationTool,
+                                               OpenAIModerationTool,
+                                               OpenAIReasoningTool,
+                                               OpenAITextToSpeechTool,
+                                               OpenAITranscriptionTool,
+                                               create_all_openai_tools,
+                                               create_openai_tool)
 
 
 class TestOpenAIUsageTracker:

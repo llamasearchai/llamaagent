@@ -176,7 +176,7 @@ class LLMFactory:
             """Check if API key is valid (not placeholder or empty)."""
             if not key or key.strip() == "":
                 return False
-            
+
             # Reject common placeholder values
             placeholder_patterns = [
                 "${OPENAI_API_KEY}",
@@ -191,27 +191,37 @@ class LLMFactory:
                 "ADD_YOUR_KEY_HERE",
                 "sk-placeholder",
                 "your_api_key_here",
-                "your-api-key-here"
+                "your-api-key-here",
             ]
-            
+
             if key.lower() in [p.lower() for p in placeholder_patterns]:
                 return False
-            
+
             # Allow test keys and real keys
             if key == "test-key" or key.startswith("sk-") or key.startswith("claude-"):
                 return True
-                
+
             # For other providers, accept any non-placeholder key
             return True
-        
+
         if provider_type == "openai" and not _is_valid_api_key(api_key, "openai"):
-            raise ValueError("OpenAI API key is required and cannot be a placeholder value")
-        elif provider_type == "anthropic" and not _is_valid_api_key(api_key, "anthropic"):
-            raise ValueError("Anthropic API key is required and cannot be a placeholder value")
+            raise ValueError(
+                "OpenAI API key is required and cannot be a placeholder value"
+            )
+        elif provider_type == "anthropic" and not _is_valid_api_key(
+            api_key, "anthropic"
+        ):
+            raise ValueError(
+                "Anthropic API key is required and cannot be a placeholder value"
+            )
         elif provider_type == "cohere" and not _is_valid_api_key(api_key, "cohere"):
-            raise ValueError("Cohere API key is required and cannot be a placeholder value")
+            raise ValueError(
+                "Cohere API key is required and cannot be a placeholder value"
+            )
         elif provider_type == "together" and not _is_valid_api_key(api_key, "together"):
-            raise ValueError("Together API key is required and cannot be a placeholder value")
+            raise ValueError(
+                "Together API key is required and cannot be a placeholder value"
+            )
 
         # Use default model if not provided
         if not model_name:
@@ -229,9 +239,7 @@ class LLMFactory:
 
         # Create provider with appropriate arguments
         if provider_type == "mock":
-            provider = provider_class(
-                api_key=api_key, model_name=model_name, **kwargs
-            )
+            provider = provider_class(api_key=api_key, model_name=model_name, **kwargs)
         else:
             provider = provider_class(api_key=api_key, model=model_name, **kwargs)
 

@@ -20,7 +20,8 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Awaitable, Callable, Deque, Dict, List, Optional, Set, Type
+from typing import (Any, Awaitable, Callable, Deque, Dict, List, Optional, Set,
+                    Type)
 
 import jwt
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -112,7 +113,9 @@ class CircuitBreaker:
         self.last_failure_time = None
         self.state = CircuitState.CLOSED
 
-    async def call(self, func: Callable[..., Awaitable[Any]], *args: Any, **kwargs: Any) -> Any:
+    async def call(
+        self, func: Callable[..., Awaitable[Any]], *args: Any, **kwargs: Any
+    ) -> Any:
         """Execute function with circuit breaker"""
         if self.state == CircuitState.OPEN:
             if self._should_attempt_reset():
@@ -130,7 +133,10 @@ class CircuitBreaker:
 
     def _should_attempt_reset(self) -> bool:
         """Check if circuit should attempt reset"""
-        return self.last_failure_time is not None and time.time() - self.last_failure_time > self.config.recovery_timeout
+        return (
+            self.last_failure_time is not None
+            and time.time() - self.last_failure_time > self.config.recovery_timeout
+        )
 
     def _on_success(self):
         """Handle successful call"""
@@ -160,7 +166,9 @@ class APIGateway:
 
         # Rate limiters
         self.rate_limiters: Dict[str, TokenBucket] = {}
-        self.request_counts: Dict[str, Deque[float]] = defaultdict(lambda: deque(maxlen=1000))
+        self.request_counts: Dict[str, Deque[float]] = defaultdict(
+            lambda: deque(maxlen=1000)
+        )
 
         # Circuit breakers
         self.circuit_breakers: Dict[str, CircuitBreaker] = {}
@@ -228,7 +236,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.gateway = gateway
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         # Skip rate limiting for health checks
         if request.url.path in ["/health", "/metrics"]:
             return await call_next(request)
@@ -283,7 +293,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 class AuthenticationMiddleware(BaseHTTPMiddleware):
     """Authentication middleware"""
 
-    def __init__(self, app: ASGIApp, jwt_secret: str, public_paths: Optional[Set[str]] = None):
+    def __init__(
+        self, app: ASGIApp, jwt_secret: str, public_paths: Optional[Set[str]] = None
+    ):
         super().__init__(app)
         self.jwt_secret = jwt_secret
         self.public_paths = public_paths or {
@@ -293,7 +305,9 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
         }
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         # Skip auth for public paths
         if request.url.path in self.public_paths:
             return await call_next(request)
@@ -370,7 +384,9 @@ def create_gateway_app() -> FastAPI:
         "/{path:path}",
         methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
     )
-    async def proxy(path: str, request: Request):  # pyright: ignore[reportUnusedFunction]
+    async def proxy(
+        path: str, request: Request
+    ):  # pyright: ignore[reportUnusedFunction]
         """Proxy requests to backend services"""
         # Transform request
         request = gateway.transform_request(request)

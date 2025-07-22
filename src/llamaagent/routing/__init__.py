@@ -9,16 +9,10 @@ strategies including task type, language, complexity, performance, and cost.
 from .ai_router import AIRouter, RoutingDecision
 from .metrics import PerformanceTracker, RoutingMetrics
 from .provider_registry import ProviderCapabilities, ProviderRegistry
-from .strategies import (
-    ComplexityBasedRouting,
-    ConsensusRouting,
-    CostOptimizedRouting,
-    HybridRouting,
-    LanguageBasedRouting,
-    PerformanceBasedRouting,
-    RoutingStrategy,
-    TaskBasedRouting,
-)
+from .strategies import (ComplexityBasedRouting, ConsensusRouting,
+                         CostOptimizedRouting, HybridRouting,
+                         LanguageBasedRouting, PerformanceBasedRouting,
+                         RoutingStrategy, TaskBasedRouting)
 from .task_analyzer import TaskAnalyzer, TaskCharacteristics
 
 __all__ = [

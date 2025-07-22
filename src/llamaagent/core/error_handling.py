@@ -16,15 +16,9 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 # Optional imports
 try:
-    from tenacity import (
-        RetryError,
-        retry,
-        retry_if_exception_type,
-        stop_after_attempt,
-        stop_after_delay,
-        wait_exponential,
-        wait_random_exponential,
-    )
+    from tenacity import (RetryError, retry, retry_if_exception_type,
+                          stop_after_attempt, stop_after_delay,
+                          wait_exponential, wait_random_exponential)
 
     TENACITY_AVAILABLE = True
 except ImportError:

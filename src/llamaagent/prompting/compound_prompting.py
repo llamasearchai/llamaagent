@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 class PromptStrategy(Enum):
     """Available prompting strategies"""
+
     CHAIN_OF_THOUGHT = "chain_of_thought"
     TREE_OF_THOUGHT = "tree_of_thought"
     DECOMPOSITION = "decomposition"
@@ -40,6 +42,7 @@ class PromptStrategy(Enum):
 
 class CombinationStrategy(Enum):
     """Strategy combination methods"""
+
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     WEIGHTED = "weighted"
@@ -49,6 +52,7 @@ class CombinationStrategy(Enum):
 @dataclass
 class PromptResult:
     """Result from a single prompting strategy"""
+
     strategy: PromptStrategy
     content: str
     confidence: float
@@ -59,6 +63,7 @@ class PromptResult:
 @dataclass
 class CompoundResult:
     """Result from compound prompting"""
+
     final_answer: str
     confidence: float
     strategy_results: Dict[PromptStrategy, PromptResult] = field(default_factory=dict)
@@ -69,7 +74,10 @@ class CompoundResult:
 @dataclass
 class CompoundPromptConfig:
     """Configuration for compound prompting"""
-    strategies: List[PromptStrategy] = field(default_factory=lambda: [PromptStrategy.CHAIN_OF_THOUGHT])
+
+    strategies: List[PromptStrategy] = field(
+        default_factory=lambda: [PromptStrategy.CHAIN_OF_THOUGHT]
+    )
     combination_method: CombinationStrategy = CombinationStrategy.SEQUENTIAL
     weights: Dict[PromptStrategy, float] = field(default_factory=dict)
     max_iterations: int = 3
@@ -85,7 +93,9 @@ class BasePromptStrategy(ABC):
         self.llm_provider = llm_provider
 
     @abstractmethod
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate response using this strategy"""
         pass
 
@@ -99,7 +109,9 @@ class BasePromptStrategy(ABC):
 class ChainOfThoughtStrategy(BasePromptStrategy):
     """Chain-of-thought prompting strategy"""
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate chain-of-thought response"""
         prompt = f"""Think step by step to solve this problem.
 
@@ -114,7 +126,7 @@ Let's work through this step by step:
 Step-by-step reasoning:"""
 
         response = await self._get_llm_response(prompt, **kwargs)
-        
+
         # Extract reasoning steps
         reasoning_steps = []
         lines = response.split('\n')
@@ -127,14 +139,16 @@ Step-by-step reasoning:"""
             strategy=PromptStrategy.CHAIN_OF_THOUGHT,
             content=response,
             confidence=0.8,
-            reasoning_path=reasoning_steps
+            reasoning_path=reasoning_steps,
         )
 
 
 class DecompositionStrategy(BasePromptStrategy):
     """Problem decomposition strategy"""
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate decomposition response"""
         prompt = f"""Break down this complex problem into smaller, manageable parts.
 
@@ -149,29 +163,38 @@ Decomposition approach:
 Analysis:"""
 
         response = await self._get_llm_response(prompt, **kwargs)
-        
+
         return PromptResult(
             strategy=PromptStrategy.DECOMPOSITION,
             content=response,
             confidence=0.75,
-            reasoning_path=["Problem decomposition completed"]
+            reasoning_path=["Problem decomposition completed"],
         )
 
 
 class AnalogyStrategy(BasePromptStrategy):
     """Analogy-based prompting strategy"""
 
-    def __init__(self, llm_provider: BaseLLMProvider, domain_analogies: Optional[List[str]] = None):
+    def __init__(
+        self,
+        llm_provider: BaseLLMProvider,
+        domain_analogies: Optional[List[str]] = None,
+    ):
         super().__init__(llm_provider)
         self.domain_analogies = domain_analogies or [
-            "cooking recipe", "building construction", "solving a puzzle",
-            "scientific experiment", "sports strategy"
+            "cooking recipe",
+            "building construction",
+            "solving a puzzle",
+            "scientific experiment",
+            "sports strategy",
         ]
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate analogy-based response"""
         analogy = self.domain_analogies[0]  # Simple selection
-        
+
         prompt = f"""Think about this problem like {analogy}.
 
 Problem: {query}
@@ -184,13 +207,13 @@ Using the analogy of {analogy}, let's approach this:
 Analogy-based solution:"""
 
         response = await self._get_llm_response(prompt, **kwargs)
-        
+
         return PromptResult(
             strategy=PromptStrategy.ANALOGY,
             content=response,
             confidence=0.7,
             reasoning_path=[f"Applied {analogy} analogy"],
-            metadata={"analogy_used": analogy}
+            metadata={"analogy_used": analogy},
         )
 
 
@@ -201,7 +224,9 @@ class RoleBasedStrategy(BasePromptStrategy):
         super().__init__(llm_provider)
         self.role = role
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate role-based response"""
         prompt = f"""You are an experienced {self.role}. Please provide your expert analysis.
 
@@ -215,24 +240,26 @@ As a {self.role}, I need to consider:
 Expert analysis:"""
 
         response = await self._get_llm_response(prompt, **kwargs)
-        
+
         return PromptResult(
             strategy=PromptStrategy.ROLE_BASED,
             content=response,
             confidence=0.85,
             reasoning_path=[f"Applied {self.role} perspective"],
-            metadata={"role": self.role}
+            metadata={"role": self.role},
         )
 
 
 class IterativeRefinementStrategy(BasePromptStrategy):
     """Iterative refinement prompting strategy"""
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs) -> PromptResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> PromptResult:
         """Generate iterative refinement response"""
         max_iterations = context.get("max_iterations", 3) if context else 3
         current_answer = ""
-        
+
         for iteration in range(max_iterations):
             if iteration == 0:
                 prompt = f"""Problem: {query}
@@ -251,34 +278,46 @@ Please refine and improve your solution:
             response = await self._get_llm_response(prompt, **kwargs)
             current_answer = response
 
-        confidence = 0.6 + (0.1 * min(iteration + 1, 4))  # Increase confidence with iterations
-        
+        confidence = 0.6 + (
+            0.1 * min(iteration + 1, 4)
+        )  # Increase confidence with iterations
+
         return PromptResult(
             strategy=PromptStrategy.ITERATIVE_REFINEMENT,
             content=current_answer,
             confidence=confidence,
-            reasoning_path=[f"Iteration {i+1} completed" for i in range(max_iterations)],
-            metadata={"iterations": max_iterations}
+            reasoning_path=[
+                f"Iteration {i+1} completed" for i in range(max_iterations)
+            ],
+            metadata={"iterations": max_iterations},
         )
 
 
 class CompoundPromptEngine:
     """Main engine for compound prompting"""
 
-    def __init__(self, llm_provider: BaseLLMProvider, config: Optional[CompoundPromptConfig] = None):
+    def __init__(
+        self,
+        llm_provider: BaseLLMProvider,
+        config: Optional[CompoundPromptConfig] = None,
+    ):
         self.llm_provider = llm_provider
         self.config = config or CompoundPromptConfig()
-        
+
         # Initialize strategy instances
         self.strategy_instances = {
             PromptStrategy.CHAIN_OF_THOUGHT: ChainOfThoughtStrategy(llm_provider),
             PromptStrategy.DECOMPOSITION: DecompositionStrategy(llm_provider),
             PromptStrategy.ANALOGY: AnalogyStrategy(llm_provider),
             PromptStrategy.ROLE_BASED: RoleBasedStrategy(llm_provider),
-            PromptStrategy.ITERATIVE_REFINEMENT: IterativeRefinementStrategy(llm_provider)
+            PromptStrategy.ITERATIVE_REFINEMENT: IterativeRefinementStrategy(
+                llm_provider
+            ),
         }
 
-    async def generate(self, query: str, context: Optional[Dict[str, Any]] = None) -> CompoundResult:
+    async def generate(
+        self, query: str, context: Optional[Dict[str, Any]] = None
+    ) -> CompoundResult:
         """Generate response using compound prompting"""
         if self.config.combination_method == CombinationStrategy.SEQUENTIAL:
             return await self._sequential_combination(query, context)
@@ -292,7 +331,9 @@ class CompoundPromptEngine:
             # Default to sequential
             return await self._sequential_combination(query, context)
 
-    async def _sequential_combination(self, query: str, context: Optional[Dict[str, Any]] = None) -> CompoundResult:
+    async def _sequential_combination(
+        self, query: str, context: Optional[Dict[str, Any]] = None
+    ) -> CompoundResult:
         """Sequential application of strategies"""
         current_query = query
         current_context = context or {}
@@ -306,30 +347,34 @@ class CompoundPromptEngine:
                 )
                 strategy_results[strategy] = result
                 current_query = f"Based on the reasoning: {result.content}"
-                
+
                 if result.reasoning_path:
                     reasoning_trace.extend(result.reasoning_path)
                 else:
                     reasoning_trace.append(f"{strategy.value}: Completed")
 
         # Synthesize final answer
-        synthesis_prompt = "Given the following analyses, provide a comprehensive final answer:\n\n"
-        
+        synthesis_prompt = (
+            "Given the following analyses, provide a comprehensive final answer:\n\n"
+        )
+
         for strategy, result in strategy_results.items():
             synthesis_prompt += f"{strategy.value} approach:\n{result.content}\n\n"
 
         synthesis_prompt += "Synthesized final answer:"
-        
+
         final_response = await self._get_llm_response(synthesis_prompt)
-        
+
         return CompoundResult(
             final_answer=final_response,
             confidence=0.9,
             strategy_results=strategy_results,
-            reasoning_trace=reasoning_trace
+            reasoning_trace=reasoning_trace,
         )
 
-    async def _parallel_combination(self, query: str, context: Optional[Dict[str, Any]] = None) -> CompoundResult:
+    async def _parallel_combination(
+        self, query: str, context: Optional[Dict[str, Any]] = None
+    ) -> CompoundResult:
         """Parallel application of strategies"""
         tasks = []
         strategy_order = []
@@ -342,7 +387,7 @@ class CompoundPromptEngine:
 
         # Execute all strategies in parallel
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         strategy_results = {}
         reasoning_trace = []
         confidences = []
@@ -351,46 +396,54 @@ class CompoundPromptEngine:
             if isinstance(result, Exception):
                 logger.error(f"Strategy {strategy_order[i]} failed: {result}")
                 continue
-                
+
             strategy_results[strategy_order[i]] = result
             confidences.append(result.confidence)
-            
+
             if result.reasoning_path:
                 reasoning_trace.extend(result.reasoning_path)
             else:
                 reasoning_trace.append(f"{strategy_order[i].value}: Completed")
 
-        overall_confidence = np.mean(confidences) if confidences and NUMPY_AVAILABLE else 0.5
+        overall_confidence = (
+            np.mean(confidences) if confidences and NUMPY_AVAILABLE else 0.5
+        )
 
         # Combine results
-        combined_content = "\n\n".join([
-            f"{strategy.value}: {result.content}" 
-            for strategy, result in strategy_results.items()
-        ])
+        combined_content = "\n\n".join(
+            [
+                f"{strategy.value}: {result.content}"
+                for strategy, result in strategy_results.items()
+            ]
+        )
 
         return CompoundResult(
             final_answer=combined_content,
             confidence=overall_confidence,
             strategy_results=strategy_results,
-            reasoning_trace=reasoning_trace
+            reasoning_trace=reasoning_trace,
         )
 
-    async def _weighted_combination(self, query: str, context: Optional[Dict[str, Any]] = None) -> CompoundResult:
+    async def _weighted_combination(
+        self, query: str, context: Optional[Dict[str, Any]] = None
+    ) -> CompoundResult:
         """Weighted combination of strategies"""
         # Execute strategies in parallel
         result = await self._parallel_combination(query, context)
-        
+
         # Apply weights to results
         weighted_responses = []
         total_weight = 0
-        
+
         for strategy, strategy_result in result.strategy_results.items():
             weight = self.config.weights.get(strategy, 1.0)
-            weighted_responses.append({
-                "content": strategy_result.content,
-                "weight": weight,
-                "confidence": strategy_result.confidence * weight
-            })
+            weighted_responses.append(
+                {
+                    "content": strategy_result.content,
+                    "weight": weight,
+                    "confidence": strategy_result.confidence * weight,
+                }
+            )
             total_weight += weight
 
         # Normalize weights and create final answer
@@ -398,16 +451,22 @@ class CompoundPromptEngine:
             final_answer = ""
             for response in weighted_responses:
                 normalized_weight = response["weight"] / total_weight
-                final_answer += f"Weight {normalized_weight:.2f}: {response['content']}\n\n"
+                final_answer += (
+                    f"Weight {normalized_weight:.2f}: {response['content']}\n\n"
+                )
 
             # Update result with weighted final answer
             result.final_answer = final_answer
-            result.confidence = sum(r["confidence"] for r in weighted_responses) / len(weighted_responses)
+            result.confidence = sum(r["confidence"] for r in weighted_responses) / len(
+                weighted_responses
+            )
             result.metadata["weights_applied"] = True
 
         return result
 
-    async def _adaptive_combination(self, query: str, context: Optional[Dict[str, Any]] = None) -> CompoundResult:
+    async def _adaptive_combination(
+        self, query: str, context: Optional[Dict[str, Any]] = None
+    ) -> CompoundResult:
         """Adaptive strategy selection based on query characteristics"""
         # Analyze query to determine best strategies
         query_analysis = await self._analyze_query(query)
@@ -443,7 +502,7 @@ Determine:
 Provide analysis in JSON format."""
 
         response = await self._get_llm_response(analysis_prompt)
-        
+
         # Parse response (simplified)
         try:
             return json.loads(response)
@@ -452,20 +511,21 @@ Provide analysis in JSON format."""
                 "complexity": "medium",
                 "type": "reasoning",
                 "domain": "general",
-                "approaches": ["chain_of_thought"]
+                "approaches": ["chain_of_thought"],
             }
 
-    def _select_strategies(self, query_analysis: Dict[str, Any]) -> List[PromptStrategy]:
+    def _select_strategies(
+        self, query_analysis: Dict[str, Any]
+    ) -> List[PromptStrategy]:
         """Select strategies based on query analysis"""
         selected = []
 
         # Map analysis to strategies
         if query_analysis.get("complexity") == "high":
-            selected.extend([
-                PromptStrategy.DECOMPOSITION,
-                PromptStrategy.CHAIN_OF_THOUGHT
-            ])
-        
+            selected.extend(
+                [PromptStrategy.DECOMPOSITION, PromptStrategy.CHAIN_OF_THOUGHT]
+            )
+
         if query_analysis.get("type") in ["creative", "analytical"]:
             selected.append(PromptStrategy.ANALOGY)
 
@@ -480,7 +540,9 @@ Provide analysis in JSON format."""
         response = await self.llm_provider.complete([message], **kwargs)
         return response.content
 
-    def add_strategy(self, strategy: PromptStrategy, instance: BasePromptStrategy) -> 'CompoundPromptEngine':
+    def add_strategy(
+        self, strategy: PromptStrategy, instance: BasePromptStrategy
+    ) -> 'CompoundPromptEngine':
         """Add custom strategy instance"""
         self.strategy_instances[strategy] = instance
         if strategy not in self.config.strategies:
@@ -497,7 +559,9 @@ Provide analysis in JSON format."""
         self.config.examples.extend(examples)
         return self
 
-    def set_weights(self, weights: Dict[PromptStrategy, float]) -> 'CompoundPromptEngine':
+    def set_weights(
+        self, weights: Dict[PromptStrategy, float]
+    ) -> 'CompoundPromptEngine':
         """Set strategy weights"""
         self.config.weights.update(weights)
         return self
@@ -516,13 +580,13 @@ async def compound_prompt(
     query: str,
     strategies: Optional[List[PromptStrategy]] = None,
     combination_method: CombinationStrategy = CombinationStrategy.SEQUENTIAL,
-    **kwargs
+    **kwargs,
 ) -> CompoundResult:
     """Convenience function for compound prompting"""
     config = CompoundPromptConfig(
         strategies=strategies or [PromptStrategy.CHAIN_OF_THOUGHT],
-        combination_method=combination_method
+        combination_method=combination_method,
     )
-    
+
     engine = CompoundPromptEngine(llm_provider, config)
     return await engine.generate(query, **kwargs)

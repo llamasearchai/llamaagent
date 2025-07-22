@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # Check for vision capabilities
 try:
     import PIL.Image  # noqa: F401
+
     vision_available = True
 except ImportError:
     vision_available = False
@@ -28,6 +29,7 @@ except ImportError:
 
 class ReasoningMode(Enum):
     """Different reasoning modes for multimodal processing."""
+
     VISUAL_FIRST = "visual_first"
     TEXT_FIRST = "text_first"
     PARALLEL = "parallel"
@@ -38,6 +40,7 @@ class ReasoningMode(Enum):
 @dataclass
 class ModalityInput:
     """Input data for different modalities."""
+
     text: Optional[str] = None
     images: Optional[List[Any]] = None
     structured_data: Optional[Dict[str, Any]] = None
@@ -52,15 +55,13 @@ class AdvancedMultimodalAgent(BaseAgent):
         reasoning_mode: ReasoningMode = ReasoningMode.PARALLEL,
         enable_reflection: bool = True,
         config: Optional[AgentConfig] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ):
         if config is None:
             config = AgentConfig(
-                name=name,
-                llm_provider=self._create_default_provider(),
-                **kwargs
+                name=name, llm_provider=self._create_default_provider(), **kwargs
             )
-        
+
         super().__init__(config=config)
         self.reasoning_mode = reasoning_mode
         self.enable_reflection = enable_reflection
@@ -76,35 +77,30 @@ class AdvancedMultimodalAgent(BaseAgent):
         """Execute multimodal reasoning task."""
         try:
             logger.info(f"Executing multimodal task: {task_input.id}")
-            
+
             # Parse input into modalities
             input_data = self._parse_input(task_input)
-            
+
             # Execute reasoning based on mode
             result = await self._execute_reasoning(input_data)
-            
+
             # Apply reflection if enabled
             if self.enable_reflection:
                 result = await self._apply_reflection(result, input_data)
-            
+
             # Create task result
-            task_result = TaskResult(
-                success=True,
-                data=result.content
-            )
-            
+            task_result = TaskResult(success=True, data=result.content)
+
             return TaskOutput(
-                task_id=task_input.id,
-                status=TaskStatus.COMPLETED,
-                result=task_result
+                task_id=task_input.id, status=TaskStatus.COMPLETED, result=task_result
             )
-            
+
         except Exception as e:
             logger.error(f"Multimodal reasoning error: {e}")
             return TaskOutput(
                 task_id=task_input.id,
                 status=TaskStatus.FAILED,
-                result=TaskResult(success=False, error=str(e))
+                result=TaskResult(success=False, error=str(e)),
             )
 
     def _parse_input(self, task_input: TaskInput) -> ModalityInput:
@@ -112,20 +108,18 @@ class AdvancedMultimodalAgent(BaseAgent):
         text_input = None
         images = None
         structured_data = None
-        
+
         if hasattr(task_input, 'data') and isinstance(task_input.data, dict):
             data = cast(Dict[str, Any], task_input.data)
             text_input = data.get("text")
             images = data.get("images")
             structured_data = data.get("structured_data")
-        
+
         if text_input is None:
             text_input = task_input.prompt if hasattr(task_input, 'prompt') else None
-        
+
         return ModalityInput(
-            text=text_input,
-            images=images,
-            structured_data=structured_data
+            text=text_input, images=images, structured_data=structured_data
         )
 
     async def _execute_reasoning(self, input_data: ModalityInput) -> LLMResponse:
@@ -144,18 +138,20 @@ class AdvancedMultimodalAgent(BaseAgent):
     async def _visual_first_reasoning(self, input_data: ModalityInput) -> LLMResponse:
         """Process visual information first, then integrate with text."""
         results = []
-        
+
         # Analyze images first
         if input_data.images and vision_available:
             visual_result = await self._analyze_images(input_data.images)
             results.append(visual_result)
-        
+
         # Then analyze text with visual context
         if input_data.text:
-            text_prompt = f"Based on the visual analysis, now analyze: {input_data.text}"
+            text_prompt = (
+                f"Based on the visual analysis, now analyze: {input_data.text}"
+            )
             text_result = await self._analyze_text(text_prompt)
             results.append(text_result)
-        
+
         # Integrate results
         if len(results) > 1:
             return await self._integrate_results(results)
@@ -167,18 +163,20 @@ class AdvancedMultimodalAgent(BaseAgent):
     async def _text_first_reasoning(self, input_data: ModalityInput) -> LLMResponse:
         """Process text information first, then integrate with visuals."""
         results = []
-        
+
         # Analyze text first
         if input_data.text:
             text_result = await self._analyze_text(input_data.text)
             results.append(text_result)
-        
+
         # Then analyze images with text context
         if input_data.images and vision_available:
-            visual_prompt = f"Based on the text analysis, now analyze the provided images"
+            visual_prompt = (
+                f"Based on the text analysis, now analyze the provided images"
+            )
             visual_result = await self._analyze_images(input_data.images)
             results.append(visual_result)
-        
+
         # Integrate results
         if len(results) > 1:
             return await self._integrate_results(results)
@@ -211,9 +209,13 @@ class AdvancedMultimodalAgent(BaseAgent):
         elif successful_results:
             return successful_results[0]
         else:
-            return LLMResponse(content="Analysis failed: Unable to process the provided input")
+            return LLMResponse(
+                content="Analysis failed: Unable to process the provided input"
+            )
 
-    async def _chain_of_thought_reasoning(self, input_data: ModalityInput) -> LLMResponse:
+    async def _chain_of_thought_reasoning(
+        self, input_data: ModalityInput
+    ) -> LLMResponse:
         """Execute chain-of-thought reasoning."""
         cot_prompt = self._build_cot_prompt(input_data)
         return await self._analyze_text(cot_prompt)
@@ -222,17 +224,16 @@ class AdvancedMultimodalAgent(BaseAgent):
         """Execute reasoning with built-in reflection."""
         # First pass
         initial_result = await self._parallel_reasoning(input_data)
-        
+
         # Reflection
         reflected_result = await self._apply_reflection(initial_result, input_data)
-        
+
         return reflected_result
 
     async def _analyze_text(self, text: str) -> LLMResponse:
         """Analyze text using LLM."""
         message = LLMMessage(
-            role="user",
-            content=f"Analyze and provide insights: {text}"
+            role="user", content=f"Analyze and provide insights: {text}"
         )
         if self.config.llm_provider is not None:
             return await self.config.llm_provider.complete([message])
@@ -242,14 +243,15 @@ class AdvancedMultimodalAgent(BaseAgent):
     async def _analyze_images(self, images: List[Any]) -> LLMResponse:
         """Analyze images using vision capabilities."""
         if not images or not vision_available:
-            return LLMResponse(content="No images available for analysis or vision not supported")
-        
+            return LLMResponse(
+                content="No images available for analysis or vision not supported"
+            )
+
         # For now, simulate image analysis (would integrate with actual vision API)
         image_description = f"Processing {len(images)} image(s) for visual analysis"
-        
+
         message = LLMMessage(
-            role="user",
-            content=f"Analyze these images: {image_description}"
+            role="user", content=f"Analyze these images: {image_description}"
         )
         if self.config.llm_provider is not None:
             return await self.config.llm_provider.complete([message])
@@ -259,15 +261,16 @@ class AdvancedMultimodalAgent(BaseAgent):
     async def _analyze_structured_data(self, data: Dict[str, Any]) -> LLMResponse:
         """Analyze structured data."""
         data_summary = f"Structured data with {len(data)} fields: {list(data.keys())}"
-        
+
         message = LLMMessage(
-            role="user",
-            content=f"Analyze this structured data: {data_summary}"
+            role="user", content=f"Analyze this structured data: {data_summary}"
         )
         if self.config.llm_provider is not None:
             return await self.config.llm_provider.complete([message])
         else:
-            return LLMResponse(content="No provider available for structured data analysis")
+            return LLMResponse(
+                content="No provider available for structured data analysis"
+            )
 
     async def _integrate_results(self, results: List[LLMResponse]) -> LLMResponse:
         """Integrate multiple reasoning results."""
@@ -283,9 +286,7 @@ Provide a unified, comprehensive answer:
         return await self._analyze_text(integration_prompt)
 
     async def _apply_reflection(
-        self,
-        result: LLMResponse,
-        input_data: ModalityInput
+        self, result: LLMResponse, input_data: ModalityInput
     ) -> LLMResponse:
         """Apply reflection to improve reasoning quality."""
         reflection_prompt = f"""
@@ -315,14 +316,16 @@ Provide an improved, more comprehensive response:
         if input_data.structured_data:
             prompt_parts.append(f"Structured Data: {input_data.structured_data}")
 
-        prompt_parts.extend([
-            "",
-            "Step 1: Understanding the problem",
-            "Step 2: Analyzing each component",
-            "Step 3: Identifying relationships",
-            "Step 4: Synthesizing insights",
-            "Step 5: Drawing conclusions"
-        ])
+        prompt_parts.extend(
+            [
+                "",
+                "Step 1: Understanding the problem",
+                "Step 2: Analyzing each component",
+                "Step 3: Identifying relationships",
+                "Step 4: Synthesizing insights",
+                "Step 5: Drawing conclusions",
+            ]
+        )
 
         return "\n".join(prompt_parts)
 
@@ -332,34 +335,32 @@ def create_multimodal_agent(
     name: str = "MultimodalAgent",
     reasoning_mode: ReasoningMode = ReasoningMode.PARALLEL,
     enable_reflection: bool = True,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> AdvancedMultimodalAgent:
     """Create a multimodal reasoning agent."""
     return AdvancedMultimodalAgent(
         name=name,
         reasoning_mode=reasoning_mode,
         enable_reflection=enable_reflection,
-        **kwargs
+        **kwargs,
     )
 
 
 if __name__ == "__main__":
     # Example usage
     async def main():
-        agent = create_multimodal_agent(
-            reasoning_mode=ReasoningMode.PARALLEL
-        )
-        
+        agent = create_multimodal_agent(reasoning_mode=ReasoningMode.PARALLEL)
+
         task = TaskInput(
             id="test_multimodal",
             prompt="Analyze this multimodal input",
             data={
                 "text": "Explain the relationship between AI and machine learning",
-                "structured_data": {"topic": "AI", "complexity": "intermediate"}
-            }
+                "structured_data": {"topic": "AI", "complexity": "intermediate"},
+            },
         )
-        
+
         result = await agent.execute_task(task)
         print(f"Result: {result}")
-    
+
     asyncio.run(main())

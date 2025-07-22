@@ -105,7 +105,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
     def _initialize_llm_provider(self, llm_provider: Any | None = None) -> Any:
         """Initialize LLM provider with proper fallback logic."""
         if llm_provider is not None:
-            logger.info(f"Using provided LLM provider: {llm_provider.__class__.__name__}")
+            logger.info(
+                f"Using provided LLM provider: {llm_provider.__class__.__name__}"
+            )
             return self._wrap_provider(llm_provider)
 
         provider_type = os.getenv("LLAMAAGENT_LLM_PROVIDER", "mock").lower()
@@ -120,7 +122,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
         if provider_type == "openai":
             api_key = os.getenv("OPENAI_API_KEY", "")
             if not api_key or (api_key and api_key.startswith("your_api_")):
-                logger.warning("OpenAI API key not properly configured. Using mock provider instead.")
+                logger.warning(
+                    "OpenAI API key not properly configured. Using mock provider instead."
+                )
                 provider_type = "mock"
             else:
                 create_kwargs["api_key"] = api_key
@@ -194,7 +198,11 @@ Provide a comprehensive final answer that addresses the original task by synthes
 
         return LLMAdapter(provider)
 
-    def _initialize_memory(self, memory: SimpleMemory | None = None) -> Union[SimpleMemory, 'PostgresVectorMemory']:  # pyright: ignore[reportReturnType] for conditional import
+    def _initialize_memory(
+        self, memory: SimpleMemory | None = None
+    ) -> Union[
+        SimpleMemory, 'PostgresVectorMemory'
+    ]:  # pyright: ignore[reportReturnType] for conditional import
         """Initialize memory with proper fallback logic."""
         if memory is not None:
             return memory
@@ -215,9 +223,11 @@ Provide a comprehensive final answer that addresses the original task by synthes
         """Initialize storage components."""
         try:
             # Initialize database manager with config if available
-            if (self.config.metadata and 
-                "storage" in self.config.metadata and 
-                isinstance(self.config.metadata["storage"], dict)):
+            if (
+                self.config.metadata
+                and "storage" in self.config.metadata
+                and isinstance(self.config.metadata["storage"], dict)
+            ):
                 # Use storage config from metadata
                 self._db = DatabaseManager()
             else:
@@ -268,7 +278,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
             )
         except Exception as e:
             task_result = TaskResult(
-                success=False, error=str(e), metadata={"agent_name": self.config.agent_name}
+                success=False,
+                error=str(e),
+                metadata={"agent_name": self.config.agent_name},
             )
 
             return TaskOutput(
@@ -286,7 +298,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
             {
                 "task": task,
                 "context": context,
-                "spree_enabled": (self.config.metadata or {}).get("spree_enabled", False),
+                "spree_enabled": (self.config.metadata or {}).get(
+                    "spree_enabled", False
+                ),
             },
         )
 
@@ -440,10 +454,19 @@ Provide a comprehensive final answer that addresses the original task by synthes
                 if isinstance(step, dict):
                     steps.append(
                         PlanStep(
-                            step_id=cast(int, step.get("step_id", i + 1)),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
-                            description=cast(str, step.get("description", f"Step {i + 1}")),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
-                            required_information=cast(str, step.get("required_information", "Information needed")),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
-                            expected_outcome=cast(str, step.get("expected_outcome", "Expected result")),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                            step_id=cast(
+                                int, step.get("step_id", i + 1)
+                            ),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                            description=cast(
+                                str, step.get("description", f"Step {i + 1}")
+                            ),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                            required_information=cast(
+                                str,
+                                step.get("required_information", "Information needed"),
+                            ),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                            expected_outcome=cast(
+                                str, step.get("expected_outcome", "Expected result")
+                            ),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
                         )
                     )
                 else:
@@ -546,7 +569,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
         try:
             memory_entry = f"Step {step.step_id}: {step.description} -> {result}"
             if hasattr(self.memory, "add"):  # pyright: ignore[reportUnknownMemberType]
-                await self.memory.add(memory_entry)  # pyright: ignore[reportUnknownMemberType]
+                await self.memory.add(
+                    memory_entry
+                )  # pyright: ignore[reportUnknownMemberType]
         except Exception as e:
             self.add_trace("memory_storage_error", {"error": str(e)})
 
@@ -651,7 +676,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
             expr = self._extract_math_expression(step.description)
             if expr:
                 try:
-                    result: str = await calc_tool.execute({"expression": expr})  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
+                    result: str = await calc_tool.execute(
+                        {"expression": expr}
+                    )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
                     self.add_trace(
                         "tool_execution_success",
                         {
@@ -712,7 +739,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
         if python_tool:
             try:
                 code = self._extract_or_generate_code(step)
-                result: str = await python_tool.execute({"code": code})  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
+                result: str = await python_tool.execute(
+                    {"code": code}
+                )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
                 self.add_trace(
                     "tool_execution_success",
                     {
@@ -742,7 +771,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
             if tool:
                 try:
                     query = self._extract_search_query(step)
-                    result: str = await tool.execute({"query": query})  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
+                    result: str = await tool.execute(
+                        {"query": query}
+                    )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
                     self.add_trace(
                         "tool_execution_success",
                         {
@@ -772,7 +803,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
                 try:
                     # Determine file operation and parameters
                     operation = self._determine_file_operation(step)
-                    result: str = await tool.execute(operation)  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
+                    result: str = await tool.execute(
+                        operation
+                    )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
                     self.add_trace(
                         "tool_execution_success",
                         {
@@ -956,7 +989,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
             or "then add" in task_lower
             or "then subtract" in task_lower
         ):
-            result = await self._handle_multi_step_calculation(task)  # Await the async method
+            result = await self._handle_multi_step_calculation(
+                task
+            )  # Await the async method
             if result is not None:
                 return result
 
@@ -1082,7 +1117,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
 
                         # Use calculator tool
                         try:
-                            result: str = await calc_tool.execute({"expression": expr})  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
+                            result: str = await calc_tool.execute(
+                                {"expression": expr}
+                            )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportCallIssue,reportUnknownVariableType]
                             self.add_trace(
                                 "simple_execution_math",
                                 {"expression": expr, "result": result},
@@ -1163,7 +1200,9 @@ Provide a comprehensive final answer that addresses the original task by synthes
         if self._memory:
             try:
                 if hasattr(self._memory, "search"):
-                    results = await self._memory.search(query)  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                    results = await self._memory.search(
+                        query
+                    )  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType]
                     if results:
                         return {"retrieved_context": results}
             except Exception as e:

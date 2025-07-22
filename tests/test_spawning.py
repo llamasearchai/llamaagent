@@ -7,24 +7,12 @@ import pytest
 
 from llamaagent.agents.base import AgentConfig, AgentResponse, AgentRole
 from llamaagent.agents.react import ReactAgent
-from llamaagent.orchestrator import (
-    AgentOrchestrator,
-    OrchestrationStrategy,
-    WorkflowDefinition,
-    WorkflowStep,
-)
-from llamaagent.spawning import (
-    AgentChannel,
-    AgentPool,
-    AgentSpawner,
-    BroadcastChannel,
-    DirectChannel,
-    Message,
-    MessageBus,
-    MessageType,
-    PoolConfig,
-    SpawnConfig,
-)
+from llamaagent.orchestrator import (AgentOrchestrator, OrchestrationStrategy,
+                                     WorkflowDefinition, WorkflowStep)
+from llamaagent.spawning import (AgentChannel, AgentPool, AgentSpawner,
+                                 BroadcastChannel, DirectChannel, Message,
+                                 MessageBus, MessageType, PoolConfig,
+                                 SpawnConfig)
 
 
 class TestAgentSpawner:

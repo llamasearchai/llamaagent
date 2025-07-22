@@ -61,7 +61,7 @@ class GoalOrientedPlanning(PlanningStrategy):
                 description=subgoal["description"],
                 task_type=subgoal.get("type", "generic"),
                 priority=TaskPriority.MEDIUM,
-                estimated_duration=timedelta(minutes=subgoal.get("duration", 15))
+                estimated_duration=timedelta(minutes=subgoal.get("duration", 15)),
             )
 
             # Create dependencies

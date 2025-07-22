@@ -23,10 +23,8 @@ import tempfile
 from typing import Any, Dict, List, Optional, Union
 
 from ..integration.openai_comprehensive import (
-    OpenAIComprehensiveIntegration,
-    OpenAIModelType,
-    create_comprehensive_openai_integration,
-)
+    OpenAIComprehensiveIntegration, OpenAIModelType,
+    create_comprehensive_openai_integration)
 from .base import BaseTool
 
 logger = logging.getLogger(__name__)

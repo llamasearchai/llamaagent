@@ -387,7 +387,7 @@ Existing thoughts:
                     if related_id in self.thought_nodes:
                         new_node.metadata.setdefault("connections", []).append(
                             related_id
-                            )
+                        )
 
                 self.thought_nodes[new_node.id] = new_node
                 active_nodes.append(new_node)
@@ -590,7 +590,9 @@ Combine these solutions to answer the original problem:
     def _summarize_existing_thoughts(self) -> str:
         """Summarize existing thoughts for context"""
         summaries = []
-        for node_id, node in list(self.thought_nodes.items())[:5]:  # Limit to recent thoughts
+        for node_id, node in list(self.thought_nodes.items())[
+            :5
+        ]:  # Limit to recent thoughts
             summaries.append(f"- {node.content[:50]}...")
         return "\n".join(summaries)
 

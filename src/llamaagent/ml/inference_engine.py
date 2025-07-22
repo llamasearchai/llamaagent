@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Callable, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 # Optional imports with fallbacks
 try:
@@ -57,7 +57,7 @@ except ImportError:
     ort = None
 
 try:
-    from transformers import AutoTokenizer, AutoModel
+    from transformers import AutoModel, AutoTokenizer
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
     TRANSFORMERS_AVAILABLE = False

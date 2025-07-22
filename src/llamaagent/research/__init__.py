@@ -10,54 +10,23 @@ This module provides cutting-edge research capabilities including:
 - Academic report generation
 """
 
-from .citations import (
-    Citation,
-    CitationAnalyzer,
-    CitationFormatter,
-    CitationGraph,
-    CitationManager,
-    DOIResolver,
-)
-from .evidence import (
-    ClaimVerifier,
-    ConsensusBuilder,
-    ContradictionDetector,
-    Evidence,
-    EvidenceAnalyzer,
-    EvidenceRanker,
-    SourceCredibilityAnalyzer,
-)
-from .knowledge_graph import (
-    ConceptExtractor,
-    GraphQuerying,
-    GraphVisualizer,
-    KnowledgeGraph,
-    RelationshipMapper,
-    SemanticSimilarityAnalyzer,
-)
-from .literature_review import (
-    DataSynthesizer,
-    ExperimentDesigner,
-    HypothesisGenerator,
-    LiteratureReviewer,
-    ResearchGapAnalyzer,
-    SystematicReviewProtocol,
-)
-from .report_generator import (
-    AbstractGenerator,
-    AcademicFormatter,
-    ExecutiveSummarizer,
-    ResearchReporter,
-    VisualizationGenerator,
-)
-from .scientific_reasoning import (
-    BayesianReasoner,
-    CausalReasoner,
-    EffectSizeCalculator,
-    HypothesisTester,
-    MetaAnalyzer,
-    StatisticalAnalyzer,
-)
+from .citations import (Citation, CitationAnalyzer, CitationFormatter,
+                        CitationGraph, CitationManager, DOIResolver)
+from .evidence import (ClaimVerifier, ConsensusBuilder, ContradictionDetector,
+                       Evidence, EvidenceAnalyzer, EvidenceRanker,
+                       SourceCredibilityAnalyzer)
+from .knowledge_graph import (ConceptExtractor, GraphQuerying, GraphVisualizer,
+                              KnowledgeGraph, RelationshipMapper,
+                              SemanticSimilarityAnalyzer)
+from .literature_review import (DataSynthesizer, ExperimentDesigner,
+                                HypothesisGenerator, LiteratureReviewer,
+                                ResearchGapAnalyzer, SystematicReviewProtocol)
+from .report_generator import (AbstractGenerator, AcademicFormatter,
+                               ExecutiveSummarizer, ResearchReporter,
+                               VisualizationGenerator)
+from .scientific_reasoning import (BayesianReasoner, CausalReasoner,
+                                   EffectSizeCalculator, HypothesisTester,
+                                   MetaAnalyzer, StatisticalAnalyzer)
 
 __all__ = [
     # Citations

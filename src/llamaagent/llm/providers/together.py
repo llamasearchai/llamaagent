@@ -57,6 +57,7 @@ class TogetherProvider(BaseLLMProvider):
         if self._client is None:
             try:
                 from openai import AsyncOpenAI
+
                 # Together uses OpenAI-compatible API
                 self._client = AsyncOpenAI(
                     api_key=self.api_key,
@@ -93,8 +94,7 @@ class TogetherProvider(BaseLLMProvider):
 
         # Convert messages to OpenAI format
         openai_messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in messages
+            {"role": msg.role, "content": msg.content} for msg in messages
         ]
 
         try:
@@ -103,7 +103,7 @@ class TogetherProvider(BaseLLMProvider):
                 messages=openai_messages,
                 max_tokens=max_tokens,
                 temperature=temperature,
-                **kwargs
+                **kwargs,
             )
 
             # Extract usage information
@@ -166,8 +166,7 @@ class TogetherProvider(BaseLLMProvider):
 
         # Convert messages to OpenAI format
         openai_messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in messages
+            {"role": msg.role, "content": msg.content} for msg in messages
         ]
 
         try:
@@ -177,7 +176,7 @@ class TogetherProvider(BaseLLMProvider):
                 max_tokens=max_tokens,
                 temperature=temperature,
                 stream=True,
-                **kwargs
+                **kwargs,
             )
 
             async for chunk in stream:
@@ -191,7 +190,7 @@ class TogetherProvider(BaseLLMProvider):
         """Calculate cost for Together usage."""
         # Get pricing for the model or use default
         pricing = self.PRICING.get(self.model_name, self.PRICING["default"])
-        
+
         input_cost = (prompt_tokens / 1000) * pricing["input"]
         output_cost = (completion_tokens / 1000) * pricing["output"]
 
@@ -207,8 +206,7 @@ class TogetherProvider(BaseLLMProvider):
         try:
             # Try a minimal completion
             await self.complete(
-                [LLMMessage(role="user", content="test")],
-                max_tokens=10
+                [LLMMessage(role="user", content="test")], max_tokens=10
             )
             return True
         except Exception:

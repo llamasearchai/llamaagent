@@ -115,9 +115,8 @@ class TestLangGraphIntegration:
         self, mock_langgraph: Iterator[None]
     ) -> None:
         """Validate custom parameter propagation in `_build_agent`."""
-        from src.llamaagent.integration.langgraph import (
-            _build_agent,
-        )  # pyright: ignore[reportPrivateUsage]
+        from src.llamaagent.integration.langgraph import \
+            _build_agent  # pyright: ignore[reportPrivateUsage]
 
         with patch("llamaagent.integration.langgraph.ToolRegistry") as mock_registry:
             with patch(
@@ -210,10 +209,8 @@ class TestLangGraphIntegration:
     ) -> None:
         """Test agent node function execution."""
         from llamaagent.agents.base import AgentResponse
-        from src.llamaagent.integration.langgraph import (
-            AgentState,
-            LangGraphIntegration,
-        )
+        from src.llamaagent.integration.langgraph import (AgentState,
+                                                          LangGraphIntegration)
 
         integration = LangGraphIntegration()
 

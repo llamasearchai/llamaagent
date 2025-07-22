@@ -17,6 +17,8 @@ from ..agents import AgentConfig, AgentResponse, ReactAgent
 from ..tools import ToolRegistry
 
 logger = logging.getLogger(__name__)
+
+
 @dataclass
 class GAIATask:
     """Individual GAIA task."""
@@ -29,12 +31,15 @@ class GAIATask:
     domain: str
     file_name: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
     def __post_init__(self) -> None:
         """Validate task parameters."""
         if self.difficulty not in ["easy", "medium", "hard"]:
             raise ValueError(f"Invalid difficulty: {self.difficulty}")
         if self.steps_required < 1:
             raise ValueError(f"Invalid steps_required: {self.steps_required}")
+
+
 @dataclass
 class GAIAResult:
     """Result from GAIA evaluation."""
@@ -99,6 +104,7 @@ class GAIABenchmark:
                 metadata=task_data.get("metadata", {}),
             )
             self.tasks.append(task)
+
     def _save_tasks(self) -> None:
         """Save tasks to JSON file."""
         self.data_file.parent.mkdir(parents=True, exist_ok=True)
@@ -122,6 +128,7 @@ class GAIABenchmark:
 
         with open(self.data_file, "w") as f:
             json.dump(data, f, indent=2)
+
     def _create_synthetic_tasks(self) -> List[GAIATask]:
         """Create synthetic GAIA-style tasks."""
         tasks: List[GAIATask] = []
@@ -247,7 +254,8 @@ class GAIABenchmark:
         )
 
         # Mathematical analysis
-        tasks.append(GAIATask(
+        tasks.append(
+            GAIATask(
                 task_id="math_easy_002",
                 question="Find the derivative of f(x) = 3x³ - 2x² + 5x - 1, then evaluate it at x = 2.",
                 expected_answer="37",
@@ -527,6 +535,8 @@ class GAIABenchmark:
         with open(output_path, "w") as f:
             json.dump(output_data, f, indent=2)
         logger.info(f"Results saved to {output_path}")
+
+
 # ─────────────────────────────── convenience functions ──────────────────────
 
 
@@ -553,6 +563,8 @@ async def run_gaia_evaluation(
         await benchmark.save_results(results, output_path)
     # Return summary report
     return benchmark.generate_report(results)
+
+
 # Legacy compatibility
 async def generate_tasks(
     categories: Optional[List[str]] = None,

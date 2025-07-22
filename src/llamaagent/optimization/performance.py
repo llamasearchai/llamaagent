@@ -102,7 +102,7 @@ class ResourceMonitor:
         """Collect resource metrics."""
         try:
             import psutil
-            
+
             # CPU usage
             cpu_percent = psutil.cpu_percent(interval=None)
             self.cpu_usage_history.append(cpu_percent)
