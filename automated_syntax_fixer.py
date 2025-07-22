@@ -179,7 +179,7 @@ def main():
         if file_path.exists():
             print(f"Fixing {file_path}...")
             if fixer.fix_file(file_path):
-                print(f"  ✓ Fixed")
+                print(f"   Fixed")
             else:
                 print(f"  - No automatic fixes applied")
     

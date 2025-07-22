@@ -280,7 +280,7 @@ class ShellCommandExecutor:
         # Safety check
         is_safe, safety_msg = self.is_safe_command(command)
         if not is_safe:
-            print(f"⚠️  WARNING: {safety_msg}")
+            print(f"WARNING:  WARNING: {safety_msg}")
             print("This command will not be executed for safety reasons.")
             return False
 

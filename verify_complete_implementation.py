@@ -347,7 +347,7 @@ def generate_verification_report(total_passed: int, total_failed: int) -> None:
         logger.info("\nSUCCESS ALL VERIFICATIONS PASSED!")
         logger.info("LlamaAgent Complete Implementation is ready!")
     else:
-        logger.info(f"\n⚠️  {total_failed} verifications failed")
+        logger.info(f"\nWARNING:  {total_failed} verifications failed")
         logger.info("Please check the failed components above")
     
     logger.info("=" * 60)

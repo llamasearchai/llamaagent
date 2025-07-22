@@ -385,7 +385,7 @@ class BatchProcessor:
     async def _process_model_batch(self, model_id: str, requests: List[InferenceRequest]):
         """Process batch for specific model"""
         results = []
-        
+
         for request in requests:
             try:
                 # Mock processing - in practice this would use the actual model
@@ -457,7 +457,7 @@ class InferenceEngine:
     async def register_model(self, config: ModelConfig):
         """Register a new model"""
         model_key = f"{config.model_id}):{config.version})"
-        
+
         if model_key in self.models:
             raise ValueError(f"Model {model_key}) already registered")
 
@@ -487,7 +487,7 @@ class InferenceEngine:
                 raise ValueError(f"No version specified for model {request.model_id})")
 
             model_key = f"{request.model_id}):{version})"
-            
+
             # Check cache first
             if self.enable_caching:
                 cached_result = await self._get_cached_result(request)
@@ -511,7 +511,7 @@ class InferenceEngine:
             raise ValueError(f"Model {model_key}) not found")
 
         start_time = time.time()
-        
+
         try:
             predictions = await wrapper.predict(request.inputs, request.parameters)
             processing_time = time.time() - start_time
@@ -549,7 +549,7 @@ class InferenceEngine:
                 return InferenceResult(**data)
         except Exception as e:
             self.logger.warning(f"Cache retrieval failed: {e})")
-        
+
         return None
 
     async def _cache_result(self, request: InferenceRequest, result: InferenceResult):
@@ -568,7 +568,7 @@ class InferenceEngine:
                 "processing_time": result.processing_time,
                 "metadata": result.metadata
             })
-            
+
             # Cache for 1 hour
             self.redis_client.setex(cache_key, 3600, json.dumps(cache_data)
         except Exception as e:
@@ -614,7 +614,7 @@ class InferenceEngine:
     async def list_models(self) -> List[Dict[str, Any]]:
         """List all registered models"""
         ready_models = [m for m in self.models.values() if m.status == ModelStatus.READY]
-        
+
         return [
             {
                 "model_id": model.config.model_id,
@@ -631,7 +631,7 @@ class InferenceEngine:
         """Get overall engine statistics"""
         total_requests = sum(model.usage_count for model in self.models.values()
         active_models = len([m for m in self.models.values() if m.status == ModelStatus.READY])
-        
+
         return {
             "total_models": len(self.models),
             "active_models": active_models,
@@ -647,7 +647,7 @@ class InferenceEngine:
         # Close Redis connection
         if self.redis_client:
             self.redis_client.close()
-        
+
         # Shutdown thread pool
         self.thread_pool.shutdown(wait=True)
         self.logger.info("Inference engine shutdown complete")

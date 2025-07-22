@@ -86,9 +86,9 @@ def main():
                         if 'SyntaxError:' in line:
                             print(f"   Compile Error: {line.strip()}")
             else:
-                print(f"✓ {file_path}")
+                print(f" {file_path}")
         else:
-            print(f"✓ {file_path}")
+            print(f" {file_path}")
     
     print(f"\n\nSummary:")
     print(f"Total files: {len(python_files)}")

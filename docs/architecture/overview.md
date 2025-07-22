@@ -14,33 +14,33 @@ This document provides a comprehensive overview of LlamaAgent's architecture, de
 ## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                          LlamaAgent API                          │
-├─────────────────────────────────────────────────────────────────┤
-│                        Orchestration Layer                       │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │   Agents    │  │   Workflow   │  │  Execution Engine    │  │
-│  │             │  │   Manager    │  │                      │  │
-│  └─────────────┘  └──────────────┘  └──────────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                         Core Services                            │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │     LLM     │  │   Memory     │  │      Tools           │  │
-│  │  Providers  │  │   Systems    │  │    Registry          │  │
-│  └─────────────┘  └──────────────┘  └──────────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                      Infrastructure Layer                        │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │   Caching   │  │  Monitoring  │  │     Security         │  │
-│  │             │  │              │  │                      │  │
-│  └─────────────┘  └──────────────┘  └──────────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                         Storage Layer                            │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │ PostgreSQL  │  │    Redis     │  │   Vector Store       │  │
-│  │             │  │              │  │    (Qdrant)          │  │
-│  └─────────────┘  └──────────────┘  └──────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+
+                          LlamaAgent API                          
+
+                        Orchestration Layer                       
+        
+     Agents         Workflow       Execution Engine      
+                    Manager                              
+        
+
+                         Core Services                            
+        
+       LLM          Memory             Tools             
+    Providers       Systems          Registry            
+        
+
+                      Infrastructure Layer                        
+        
+     Caching       Monitoring         Security           
+                                                         
+        
+
+                         Storage Layer                            
+        
+   PostgreSQL        Redis          Vector Store         
+                                     (Qdrant)            
+        
+
 ```
 
 ## Core Components
@@ -264,19 +264,19 @@ Input Validation
     ↓
 Rate Limiting
     ↓
-Cache Check ←─────┐
-    ↓             │
-Agent Selection   │
-    ↓             │
-Prompt Building   │
-    ↓             │
-LLM Call          │
-    ↓             │
-Tool Execution    │
-    ↓             │
-Response Building │
-    ↓             │
-Cache Update ─────┘
+Cache Check ←
+    ↓             
+Agent Selection   
+    ↓             
+Prompt Building   
+    ↓             
+LLM Call          
+    ↓             
+Tool Execution    
+    ↓             
+Response Building 
+    ↓             
+Cache Update 
     ↓
 Response
 ```
@@ -301,9 +301,9 @@ Retrieval via Similarity
 
 ```
 Task
- ├─→ Agent A ──┐
- ├─→ Agent B ──┼─→ Aggregator ─→ Result
- └─→ Agent C ──┘
+ → Agent A 
+ → Agent B → Aggregator → Result
+ → Agent C 
 ```
 
 ## Extension Points

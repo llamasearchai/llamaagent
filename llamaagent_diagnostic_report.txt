@@ -22,14 +22,14 @@ Project Root: /Users/nemesis/llamaagent
 
 RECOMMENDATIONS
 --------------------------------------------------
-1. 🚨 URGENT: Fix 22 critical issues immediately - system may not function
-2. ⚠️  HIGH PRIORITY: Address 340 high-priority issues to prevent major problems
-3. 🔧 Fix syntax errors first - they prevent code execution
-4. 📦 Resolve import errors by installing missing dependencies
-5. 🔒 Address security vulnerabilities to protect against attacks
-6. 📚 Add documentation to improve maintainability
-7. 🎯 Focus on high-priority issues first for maximum impact
-8. ⏱️  Estimated total fix time: 124 hours 53 minutes
+1. ALERT: URGENT: Fix 22 critical issues immediately - system may not function
+2. WARNING:  HIGH PRIORITY: Address 340 high-priority issues to prevent major problems
+3. TOOL: Fix syntax errors first - they prevent code execution
+4.  Resolve import errors by installing missing dependencies
+5.  Address security vulnerabilities to protect against attacks
+6.  Add documentation to improve maintainability
+7. TARGET: Focus on high-priority issues first for maximum impact
+8. TIME:  Estimated total fix time: 124 hours 53 minutes
 
 DETAILED PROBLEM ANALYSIS
 ================================================================================

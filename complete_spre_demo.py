@@ -97,7 +97,7 @@ class SPREDemoSystem:
             )
             
             if "llama3.2:1b" not in result.stdout:
-                logger.info("📥 Pulling Llama 3.2B model (this may take a while)...")
+                logger.info(" Pulling Llama 3.2B model (this may take a while)...")
                 subprocess.run(
                     ["ollama", "pull", "llama3.2:1b"], 
                     check=True,
@@ -169,7 +169,7 @@ class SPREDemoSystem:
         # Log results
         logger.info(f"PASS Task completed in {execution_time:.2f}s")
         logger.info(f"DATA Success: {response.success}")
-        logger.info(f"🔢 Tokens used: {response.tokens_used}")
+        logger.info(f" Tokens used: {response.tokens_used}")
         
         # Analyze trace
         planning_events = len([e for e in response.trace if e.get("type") == "plan_generated"])
@@ -217,7 +217,7 @@ class SPREDemoSystem:
         llm_provider = self._create_llm_provider()
         
         for baseline_type in BaselineAgentFactory.get_all_baseline_types():
-            logger.info(f"🔄 Testing {baseline_type}")
+            logger.info(f" Testing {baseline_type}")
             
             agent = BaselineAgentFactory.create_agent(baseline_type, llm_provider)
             
@@ -346,8 +346,8 @@ class SPREDemoSystem:
             response = client.get("/health")
             health_data = response.json()
             
-            logger.info(f"🏥 Health check: {health_data['status']}")
-            logger.info(f"📡 Available providers: {len(health_data['providers_available'])}")
+            logger.info(f" Health check: {health_data['status']}")
+            logger.info(f" Available providers: {len(health_data['providers_available'])}")
             
             # Test agent execution endpoint
             execution_response = client.post("/agent/execute", json={
@@ -527,7 +527,7 @@ class SPREDemoSystem:
             # Save report to file
             report_path = Path("SPRE_DEMONSTRATION_REPORT.md")
             report_path.write_text(report)
-            logger.info(f"📄 Comprehensive report saved to: {report_path}")
+            logger.info(f" Comprehensive report saved to: {report_path}")
             
             # Save results as JSON
             results_path = Path("spre_demo_results.json")
@@ -539,7 +539,7 @@ class SPREDemoSystem:
             print("\n" + "="*60)
             print("  SPRE DEMONSTRATION COMPLETE")
             print("="*60)
-            print(f"📄 Report: {report_path}")
+            print(f" Report: {report_path}")
             print(f"DATA Data: {results_path}")
             print("PASS All components tested and verified")
             print("LAUNCH SPRE system ready for production use")

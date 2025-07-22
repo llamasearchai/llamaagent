@@ -40,7 +40,7 @@ jobs:
     name: Code Quality & Security
     runs-on: ubuntu-latest
     if: ${{ !github.event.inputs.skip_tests }}
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
             python-version: '3.9'
           - os: windows-latest
             python-version: '3.9'
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -151,7 +151,7 @@ jobs:
     name: Build Package
     runs-on: ubuntu-latest
     needs: [code-quality]
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -185,7 +185,7 @@ jobs:
   docs:
     name: Documentation
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -223,7 +223,7 @@ jobs:
     name: Docker Build & Scan
     runs-on: ubuntu-latest
     needs: [code-quality]
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -270,7 +270,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, build, docs]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -316,7 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, build, docs, docker-build]
     if: always()
-    
+
     steps:
     - name: Clean up artifacts
       run: |
@@ -325,4 +325,4 @@ jobs:
         echo "✅ Tests across multiple Python versions"
         echo "✅ Package build and validation"
         echo "✅ Documentation generation"
-        echo "✅ Docker image build" 
+        echo "✅ Docker image build"

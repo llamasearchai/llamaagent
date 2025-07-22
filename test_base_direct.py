@@ -130,7 +130,7 @@ async def main():
         max_iterations=5,
         temperature=0.5
     )
-    print(f"✓ Created AgentConfig: {config.name} ({config.role.value})")
+    print(f" Created AgentConfig: {config.name} ({config.role.value})")
     
     # Test PlanStep
     step = PlanStep(
@@ -139,14 +139,14 @@ async def main():
         required_information="Nothing",
         expected_outcome="Success"
     )
-    print(f"✓ Created PlanStep: {step.description}")
+    print(f" Created PlanStep: {step.description}")
     
     # Test ExecutionPlan
     plan = ExecutionPlan(
         original_task="Test task",
         steps=[step]
     )
-    print(f"✓ Created ExecutionPlan with {len(plan.steps)} steps")
+    print(f" Created ExecutionPlan with {len(plan.steps)} steps")
     
     # Test AgentMessage
     message = AgentMessage(
@@ -154,7 +154,7 @@ async def main():
         recipient="User",
         content="Hello!"
     )
-    print(f"✓ Created AgentMessage: {message.content}")
+    print(f" Created AgentMessage: {message.content}")
     
     # Test Step
     test_step = Step(
@@ -162,7 +162,7 @@ async def main():
         description="Test step"
     )
     test_step.complete("Done")
-    print(f"✓ Created and completed Step (duration: {test_step.duration:.3f}s)")
+    print(f" Created and completed Step (duration: {test_step.duration:.3f}s)")
     
     # Test AgentTrace
     trace = AgentTrace(
@@ -171,26 +171,26 @@ async def main():
         start_time=0.0
     )
     trace.add_step("init", "Initializing")
-    print(f"✓ Created AgentTrace with {len(trace.steps)} steps")
+    print(f" Created AgentTrace with {len(trace.steps)} steps")
     
     # Test TestAgent
     agent = TestAgent(config)
-    print(f"✓ Created TestAgent: {agent}")
+    print(f" Created TestAgent: {agent}")
     
     # Test execution
     response = await agent.execute("Calculate 2 + 2")
-    print(f"✓ Execute response: {response.content}")
+    print(f" Execute response: {response.content}")
     print(f"  Success: {response.success}")
     print(f"  Execution time: {response.execution_time:.3f}s")
     
     # Test __repr__ and __str__
-    print(f"✓ String representation: {str(agent)}")
-    print(f"✓ Repr: {repr(agent)}")
+    print(f" String representation: {str(agent)}")
+    print(f" Repr: {repr(agent)}")
     
     # Test default values
     default_config = AgentConfig()
-    print(f"✓ Default config name: {default_config.name}")
-    print(f"✓ Default SPRE enabled: {default_config.spree_enabled}")
+    print(f" Default config name: {default_config.name}")
+    print(f" Default SPRE enabled: {default_config.spree_enabled}")
     
     print("\nPASS All tests passed! BaseAgent implementation is working correctly.")
     print("\nKey features verified:")

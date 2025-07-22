@@ -128,10 +128,10 @@ def fix_file(file_path: str) -> bool:
             # Verify fix
             _, new_error = find_syntax_error(file_path)
             if not new_error:
-                print(f"  ✓ Fixed successfully!")
+                print(f"   Fixed successfully!")
                 return True
             else:
-                print(f"  ✗ Still has errors")
+                print(f"   Still has errors")
                 return False
     
     except Exception as e:
@@ -160,7 +160,7 @@ def main():
         if fix_file(file_path):
             fixed_count += 1
     
-    print(f"\n✓ Fixed {fixed_count}/{len(error_files)} files")
+    print(f"\n Fixed {fixed_count}/{len(error_files)} files")
     
     # Final scan
     remaining = []
@@ -170,11 +170,11 @@ def main():
             remaining.append(str(py_file))
     
     if remaining:
-        print(f"\n✗ {len(remaining)} files still have errors:")
+        print(f"\n {len(remaining)} files still have errors:")
         for f in remaining[:10]:
             print(f"  - {f}")
     else:
-        print("\n✓ All syntax errors have been fixed!")
+        print("\n All syntax errors have been fixed!")
 
 if __name__ == "__main__":
     main()

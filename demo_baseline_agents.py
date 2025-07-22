@@ -38,9 +38,9 @@ async def demo_baseline_agents():
                 name_suffix="-Demo"
             )
             agents[baseline_type] = agent
-            print(f"  ✓ Created {baseline_type} agent: {agent.config.name}")
+            print(f"   Created {baseline_type} agent: {agent.config.name}")
         except Exception as e:
-            print(f"  ✗ Failed to create {baseline_type} agent: {e}")
+            print(f"   Failed to create {baseline_type} agent: {e}")
     
     # Show agent configurations
     print("\nAgent configurations:")

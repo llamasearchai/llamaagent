@@ -17,7 +17,7 @@ The LlamaAgent Enhanced CLI provides a beautiful, interactive command-line inter
 - Step-by-step progress updates
 - Beautiful initialization sequence
 
-### 3. Rich Command Interface 💻
+### 3. Rich Command Interface CODE:
 Commands available:
 - `/help` - Show all available commands
 - `/status` - Display system health and component status
@@ -92,10 +92,10 @@ $ python llamaagent_cli.py
 
 [Animated initialization sequence with progress bars]
 
-╔═══════════════════════════════════════╗
-║      LlamaAgent LlamaAgent Ready! LlamaAgent          ║
-║   Your AI assistant is ready.         ║
-╚═══════════════════════════════════════╝
+
+      LlamaAgent LlamaAgent Ready! LlamaAgent          
+   Your AI assistant is ready.         
+
 
 You: What is the meaning of life?
 
@@ -106,15 +106,15 @@ Agent: The meaning of life is a profound philosophical question...
 You: /stats
 
 Results Usage Statistics
-├─ Uptime: 0h 2m 15s
-├─ Total Messages: 1
-├─ Success Rate: 100% [██████████]
-└─ Total Tokens: 127
+ Uptime: 0h 2m 15s
+ Total Messages: 1
+ Success Rate: 100% []
+ Total Tokens: 127
 
 You: /exit
 
 [Goodbye llama animation]
-👋 Thanks for using LlamaAgent!
+GOODBYE: Thanks for using LlamaAgent!
 ```
 
 ## Technical Implementation

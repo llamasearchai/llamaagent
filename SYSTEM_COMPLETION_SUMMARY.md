@@ -64,7 +64,7 @@ Successfully implemented a complete, production-ready integration between the Ll
   - API reference
   - Production deployment guides
 
-## 🚀 Key Features Implemented
+## LAUNCH: Key Features Implemented
 
 ### Budget Management System
 ```python
@@ -112,21 +112,21 @@ curl -X POST "http://localhost:8000/agents" \
 
 ### Integration Layer
 ```
-┌─────────────────────────────────────────┐
-│           OpenAI Agents SDK             │
-├─────────────────────────────────────────┤
-│     LlamaAgent Integration Layer        │
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │ Budget      │  │ Agent Registry  │   │
-│  │ Tracker     │  │                 │   │
-│  └─────────────┘  └─────────────────┘   │
-├─────────────────────────────────────────┤
-│          Core LlamaAgent System         │
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │ Agents      │  │ LLM Providers   │   │
-│  │             │  │                 │   │
-│  └─────────────┘  └─────────────────┘   │
-└─────────────────────────────────────────┘
+
+           OpenAI Agents SDK             
+
+     LlamaAgent Integration Layer        
+       
+   Budget         Agent Registry     
+   Tracker                           
+       
+
+          Core LlamaAgent System         
+       
+   Agents         LLM Providers      
+                                     
+       
+
 ```
 
 ### Supported Models
@@ -175,7 +175,7 @@ curl -X POST "http://localhost:8000/agents" \
 - PASS Budget tracking demonstration
 - PASS Error handling examples
 
-## 🐳 Deployment Ready
+##  Deployment Ready
 
 ### Docker Support
 ```dockerfile
@@ -198,7 +198,7 @@ CMD ["python", "-m", "llamaagent.api.openai_fastapi"]
 - Rate limiting and throttling
 - Comprehensive logging
 
-## 💰 Budget Utilization
+##  Budget Utilization
 
 ### Development Costs (Estimated)
 - **Planning and Architecture:** $5
@@ -241,7 +241,7 @@ CMD ["python", "-m", "llamaagent.api.openai_fastapi"]
 - [x] Scalable architecture
 - [x] Resource optimization
 
-## 🚀 Ready for Production
+## LAUNCH: Ready for Production
 
 ### Immediate Use Cases
 1. **Development Teams:** CLI for rapid prototyping
@@ -293,7 +293,7 @@ PASS **Comprehensive Testing:** Unit tests, integration tests, and demos
 - **Scalability:** Architecture supports production deployment
 - **Flexibility:** Multiple execution modes for different use cases
 
-## 📞 Support and Maintenance
+##  Support and Maintenance
 
 ### Contact Information
 - **Author:** Nik Jois

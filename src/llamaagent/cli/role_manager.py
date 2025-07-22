@@ -480,8 +480,8 @@ def create_custom_role_interactive() -> None:
         )
         
         print(f"\nPASS Created custom role: {custom_role.name}")
-        print(f"📁 Category: {custom_role.category}")
-        print(f"🏷️  Tags: {', '.join(custom_role.tags) if custom_role.tags else 'None'}")
+        print(f" Category: {custom_role.category}")
+        print(f"TAG:  Tags: {', '.join(custom_role.tags) if custom_role.tags else 'None'}")
         print(f"Parameters Parameters: {json.dumps(custom_role.parameters, indent=2)}")
         
     except ValueError as e:

@@ -28,26 +28,26 @@ PASS **Security & Safety Measures**
 The system follows a modular, microservices-inspired architecture with clear separation of concerns:
 
 ```
-├── Core Engine
-│   ├── LLM Factory (Multi-provider support)
-│   ├── Shell Command Generator
-│   ├── Code Generator  
-│   ├── Function Manager
-│   └── Chat Manager
-├── Interface Layer
-│   ├── CLI Interface
-│   ├── FastAPI REST API
-│   └── OpenAI Agents SDK
-├── Infrastructure
-│   ├── Docker Containers
-│   ├── Kubernetes Manifests
-│   ├── CI/CD Pipelines
-│   └── Monitoring Stack
-└── Security & Safety
-    ├── Command Validation
-    ├── Input Sanitization
-    ├── Rate Limiting
-    └── Authentication
+ Core Engine
+    LLM Factory (Multi-provider support)
+    Shell Command Generator
+    Code Generator  
+    Function Manager
+    Chat Manager
+ Interface Layer
+    CLI Interface
+    FastAPI REST API
+    OpenAI Agents SDK
+ Infrastructure
+    Docker Containers
+    Kubernetes Manifests
+    CI/CD Pipelines
+    Monitoring Stack
+ Security & Safety
+     Command Validation
+     Input Sanitization
+     Rate Limiting
+     Authentication
 ```
 
 ## Detailed Implementation Report

@@ -10,7 +10,7 @@ LlamaAgent system with full automation, testing, and deployment capabilities.
 
 FEATURES:
 - PASS 100% Working System (All 8 Tests Passing)
-- 🔄 Full Automation & Orchestration
+-  Full Automation & Orchestration
 - RESULTS Real-time Monitoring & Analytics
 - Analyzing Comprehensive Testing Suite
 - Starting Production Deployment Ready
@@ -376,7 +376,7 @@ class MasterLlamaAgentSystem:
             async with httpx.AsyncClient() as client:
                 # Test health endpoint
                 response = await client.get("http://localhost:8000/health")
-                self.console.print(f"🏥 Health: {response.status_code} - {response.json()['status']}")
+                self.console.print(f" Health: {response.status_code} - {response.json()['status']}")
                 
                 # Test agents endpoint
                 response = await client.get("http://localhost:8000/agents")
@@ -469,7 +469,7 @@ class MasterLlamaAgentSystem:
             import uvicorn
             
             self.console.print("Starting LlamaAgent API Server...")
-            self.console.print(f"📡 URL: http://localhost:{self.deployment_config.api_port}")
+            self.console.print(f" URL: http://localhost:{self.deployment_config.api_port}")
             self.console.print(f"Available Docs: http://localhost:{self.deployment_config.api_port}/docs")
             self.console.print()
             
@@ -485,7 +485,7 @@ class MasterLlamaAgentSystem:
             await server.serve()
             
         except KeyboardInterrupt:
-            self.console.print("\n🛑 Server shutdown requested")
+            self.console.print("\n Server shutdown requested")
         except Exception as e:
             self.console.print(f"FAIL Server error: {e}")
     
@@ -526,7 +526,7 @@ class MasterLlamaAgentSystem:
                     self.console.print("FAIL [red]FAILED[/red]")
                     self.console.print(f"  Error: {stderr.decode()[:200]}...")
             else:
-                self.console.print("⚠️  [yellow]Not implemented yet[/yellow]")
+                self.console.print("WARNING:  [yellow]Not implemented yet[/yellow]")
     
     async def _run_system_monitoring(self) -> None:
         """RESULTS Run system monitoring mode."""
@@ -577,15 +577,15 @@ class MasterLlamaAgentSystem:
         table.add_column("Status", style="yellow")
         
         # CPU
-        cpu_status = "🟢 Normal" if self.system_metrics.cpu_percent < 80 else "🔴 High"
+        cpu_status = "🟢 Normal" if self.system_metrics.cpu_percent < 80 else " High"
         table.add_row("CPU Usage", f"{self.system_metrics.cpu_percent:.1f}%", cpu_status)
         
         # Memory
-        mem_status = "🟢 Normal" if self.system_metrics.memory_percent < 80 else "🔴 High"
+        mem_status = "🟢 Normal" if self.system_metrics.memory_percent < 80 else " High"
         table.add_row("Memory Usage", f"{self.system_metrics.memory_percent:.1f}%", mem_status)
         
         # Disk
-        disk_status = "🟢 Normal" if self.system_metrics.disk_usage < 90 else "🔴 High"
+        disk_status = "🟢 Normal" if self.system_metrics.disk_usage < 90 else " High"
         table.add_row("Disk Usage", f"{self.system_metrics.disk_usage:.1f}%", disk_status)
         
         # Uptime
@@ -619,9 +619,9 @@ class MasterLlamaAgentSystem:
         
         deployment_steps = [
             ("Scanning Pre-deployment Validation", self._deploy_validate),
-            ("🐳 Building Docker Image", self._deploy_docker_build),
+            (" Building Docker Image", self._deploy_docker_build),
             ("Starting Production Services", self._deploy_start_services),
-            ("🏥 Health Check Validation", self._deploy_health_checks),
+            (" Health Check Validation", self._deploy_health_checks),
             ("RESULTS Performance Monitoring", self._deploy_monitoring),
             ("PASS Deployment Complete", self._deploy_complete)
         ]
@@ -651,14 +651,14 @@ class MasterLlamaAgentSystem:
         if process.returncode != 0:
             raise Exception("Test suite failed")
         
-        self.console.print("  ✓ All tests passing")
-        self.console.print("  ✓ System validation complete")
+        self.console.print("   All tests passing")
+        self.console.print("   System validation complete")
     
     async def _deploy_docker_build(self) -> None:
         """Build Docker image."""
-        self.console.print("  🐳 Building production Docker image...")
+        self.console.print("   Building production Docker image...")
         await asyncio.sleep(2)  # Simulate build time
-        self.console.print("  ✓ Docker image built successfully")
+        self.console.print("   Docker image built successfully")
     
     async def _deploy_start_services(self) -> None:
         """Start production services."""
@@ -666,7 +666,7 @@ class MasterLlamaAgentSystem:
         self.console.print("  Starting monitoring services...")
         self.console.print("  Starting health checks...")
         await asyncio.sleep(1)
-        self.console.print("  ✓ All services started")
+        self.console.print("   All services started")
     
     async def _deploy_health_checks(self) -> None:
         """Run health checks."""
@@ -674,7 +674,7 @@ class MasterLlamaAgentSystem:
         
         for check in checks:
             await asyncio.sleep(0.3)
-            self.console.print(f"  ✓ {check}: Healthy")
+            self.console.print(f"   {check}: Healthy")
     
     async def _deploy_monitoring(self) -> None:
         """Setup monitoring."""
@@ -682,12 +682,12 @@ class MasterLlamaAgentSystem:
         self.console.print("  RESULTS Configuring alerts...")
         self.console.print("  RESULTS Starting dashboards...")
         await asyncio.sleep(1)
-        self.console.print("  ✓ Monitoring active")
+        self.console.print("   Monitoring active")
     
     async def _deploy_complete(self) -> None:
         """Complete deployment."""
         self.console.print("  SUCCESS Production deployment successful!")
-        self.console.print("  📡 API available at: http://localhost:8000")
+        self.console.print("   API available at: http://localhost:8000")
         self.console.print("  Available Documentation: http://localhost:8000/docs")
         self.console.print("  RESULTS Monitoring: http://localhost:3000")
         
@@ -717,12 +717,12 @@ async def main() -> None:
         await system.run_production_system()
         
     except KeyboardInterrupt:
-        console.print("\n🛑 [yellow]Shutdown requested by user[/yellow]")
+        console.print("\n [yellow]Shutdown requested by user[/yellow]")
     except Exception as e:
         console.print(f"\nFAIL [red]System error: {e}[/red]")
         raise
     finally:
-        console.print("\n👋 [dim]Goodbye![/dim]")
+        console.print("\nGOODBYE: [dim]Goodbye![/dim]")
 
 if __name__ == "__main__":
     console.print("Starting [bold green]Starting Master LlamaAgent Production System...[/bold green]")
@@ -737,7 +737,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        console.print("\n🛑 [yellow]System shutdown[/yellow]")
+        console.print("\n [yellow]System shutdown[/yellow]")
     except Exception as e:
-        console.print(f"\n💥 [red]Fatal error: {e}[/red]")
+        console.print(f"\n [red]Fatal error: {e}[/red]")
         sys.exit(1) 

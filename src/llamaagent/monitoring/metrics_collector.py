@@ -56,13 +56,13 @@ class MetricsCollector:
     """
     Comprehensive metrics collector for LlamaAgent system.
     """
-    
+
     def __init__(self, registry: Optional[Any] = None, enable_default_metrics: bool = True):
         self.registry = registry
         self.enable_default_metrics = enable_default_metrics
         self.metrics: Dict[str, Any] = {}
         self.custom_metrics: Dict[str, Any] = {}
-        
+
         # Initialize Prometheus if available
         if PROMETHEUS_AVAILABLE:
             if self.registry is None:
@@ -70,7 +70,7 @@ class MetricsCollector:
             self._initialize_prometheus_metrics()
         else:
                         self._initialize_mock_metrics()
-    
+
     def _initialize_prometheus_metrics(self):
         """Initialize core Prometheus metrics."""
         # HTTP request metrics
@@ -130,7 +130,7 @@ class MetricsCollector:
             ['agent_id', 'agent_type'],
             registry=self.registry
         )
-        
+
         self.agent_tasks_processed_total = Counter(
             'llamaagent_agent_tasks_processed_total',
             'Total tasks processed by agent',
@@ -206,7 +206,7 @@ class MetricsCollector:
             ['provider'],
             registry=self.registry
         )
-        
+
         # Database metrics
         self.db_connections_active = Gauge(
             'llamaagent_db_connections_active',
@@ -327,25 +327,25 @@ class MetricsCollector:
             'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown',
             'platform': os.uname().sysname if hasattr(os, 'uname') else 'unknown',
         })
-    
+
     def _initialize_mock_metrics(self):
         """Initialize mock metrics when Prometheus is not available."""
         class MockMetric:
             def inc(self, *args, **kwargs):
                 pass
-            
+
             def set(self, *args, **kwargs):
                 pass
-            
+
             def observe(self, *args, **kwargs):
                 pass
-            
+
             def labels(self, *args, **kwargs):
                 return self
-            
+
             def info(self, *args, **kwargs):
                 pass
-        
+
         # Create mock metrics with the same names
         metric_names = [
             'http_requests_total', 'http_request_duration_seconds',
@@ -363,7 +363,7 @@ class MetricsCollector:
             'system_info', 'process_cpu_usage', 'process_memory_usage',
             'user_sessions_active', 'api_rate_limit_exceeded_total',
         ]
-        
+
         for name in metric_names:
             setattr(self, name, MockMetric()
             self.metrics[name] = getattr(self, name)
@@ -374,7 +374,7 @@ class MetricsCollector:
             endpoint=endpoint,
             status_code=status_code
         ).inc()
-        
+
         self.http_request_duration_seconds.labels(
             method=method,
             endpoint=endpoint
@@ -382,14 +382,14 @@ class MetricsCollector:
     def record_task_submission(self, task_type: str):
         """Record task submission."""
         self.tasks_total.labels(task_type=task_type).inc()
-    
+
     def record_task_completion(self, task_type: str, status: str, duration: float, agent_type: str = "unknown"):
         """Record task completion."""
         self.tasks_completed_total.labels(
             task_type=task_type,
             status=status
         ).inc()
-        
+
         self.task_duration_seconds.labels(
             task_type=task_type,
             agent_type=agent_type
@@ -400,7 +400,7 @@ class MetricsCollector:
             task_type=task_type,
             error_type=error_type
         ).inc()
-    
+
     def update_task_queue_length(self, length: int):
         """Update task queue length."""
         self.task_queue_length.set(length)
@@ -419,7 +419,7 @@ class MetricsCollector:
             agent_id=agent_id,
             agent_type=agent_type
         ).inc()
-    
+
     def record_agent_response_time(self, agent_id: str, agent_type: str, duration: float):
         """Record agent response time."""
         self.agent_response_duration_seconds.labels(
@@ -442,14 +442,14 @@ class MetricsCollector:
             agent_id=agent_id,
             error_type=error_type
         ).inc()
-    
+
     def record_llm_request(self, provider: str, model: str, duration: float, tokens_used: int, token_type: str = "total"):
         """Record LLM request metrics."""
         self.llm_requests_total.labels(
             provider=provider,
             model=model
         ).inc()
-        
+
         self.llm_request_duration_seconds.labels(
             provider=provider,
             model=model
@@ -465,7 +465,7 @@ class MetricsCollector:
             provider=provider,
             error_type=error_type
         ).inc()
-    
+
     def update_llm_provider_health(self, provider: str, is_healthy: bool):
         """Update LLM provider health."""
         self.llm_provider_health.labels(provider=provider).set(1 if is_healthy else 0)
@@ -483,15 +483,15 @@ class MetricsCollector:
             operation=operation,
             error_type=error_type
         ).inc()
-    
+
     def record_cache_hit(self, cache_type: str):
         """Record cache hit."""
         self.cache_hits_total.labels(cache_type=cache_type).inc()
-    
+
     def record_cache_miss(self, cache_type: str):
         """Record cache miss."""
         self.cache_misses_total.labels(cache_type=cache_type).inc()
-    
+
     def update_cache_hit_rate(self, cache_type: str, rate: float):
         """Update cache hit rate."""
         self.cache_hit_rate.labels(cache_type=cache_type).set(rate)
@@ -499,7 +499,7 @@ class MetricsCollector:
         """Update system resource metrics."""
         try:
             process = psutil.Process()
-            
+
             # CPU usage
             cpu_percent = process.cpu_percent()
             self.process_cpu_usage.set(cpu_percent)
@@ -517,7 +517,7 @@ class MetricsCollector:
             endpoint=endpoint,
             user_id=user_id
         ).inc()
-    
+
     @asynccontextmanager
     async def time_operation(self, metric_name: str, **labels):
         """Context manager to time operations."""
@@ -536,7 +536,7 @@ class MetricsCollector:
         """Create a custom metric."""
         if definition.name in self.custom_metrics:
             return
-        
+
         if definition.metric_type == MetricType.COUNTER:
             metric = Counter(
                 definition.name,
@@ -578,7 +578,7 @@ class MetricsCollector:
         else:
             raise ValueError(f"Unsupported metric type: {definition.metric_type}")
         self.custom_metrics[definition.name] = metric
-    
+
     def _create_mock_metric(self):
         """Create a mock metric for testing."""
         class MockMetric:
@@ -593,7 +593,7 @@ class MetricsCollector:
             def info(self, *args, **kwargs):
                 pass
         return MockMetric()
-    
+
     def get_custom_metric(self, name: str):
         """Get a custom metric by name."""
         return self.custom_metrics.get(name)
@@ -603,11 +603,11 @@ class MetricsCollector:
             return generate_latest(self.registry).decode('utf-8')
         else:
             return "# Prometheus not available\n"
-    
+
     def get_content_type(self) -> str:
         """Get the content type for metrics export."""
         return CONTENT_TYPE_LATEST if PROMETHEUS_AVAILABLE else "text/plain"
-    
+
     async def start_background_collection(self):
         """Start background metrics collection."""
         asyncio.create_task(self._background_metrics_loop()
@@ -626,4 +626,4 @@ metrics_collector = MetricsCollector()
 
 def get_metrics_collector() -> MetricsCollector:
     """Get the global metrics collector instance."""
-    return metrics_collector 
+    return metrics_collector

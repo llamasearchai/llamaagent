@@ -26,7 +26,7 @@ This comprehensive integration provides seamless access to the entire OpenAI eco
 | **Legacy Models** | gpt-4, gpt-4-turbo, gpt-3.5-turbo | Backward compatibility |
 | **Base Models** | babbage-002, davinci-002 | Fine-tuning foundations |
 
-## 🚀 Quick Start
+## LAUNCH: Quick Start
 
 ### Installation
 
@@ -73,7 +73,7 @@ export OPENAI_ORGANIZATION="your-org-id"  # Optional
 export LLAMAAGENT_BUDGET_LIMIT="100.0"    # Optional, default 100.0
 ```
 
-## 📋 API Reference
+## LIST: API Reference
 
 ### Integration Classes
 
@@ -249,7 +249,7 @@ curl -X POST "http://localhost:8000/moderations" \
   }'
 ```
 
-## 💰 Budget Management
+##  Budget Management
 
 ### Automatic Budget Tracking
 
@@ -284,7 +284,7 @@ print(f"Cost per request: ${usage['cost_per_request']:.4f}")
 | text-embedding-3-large | $0.00013 | - | $0.0001-0.001 |
 | text-moderation-latest | Free | Free | $0.00 |
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 ### Quick Start with Docker Compose
 
@@ -597,18 +597,18 @@ mypy src/
 5. Update documentation
 6. Submit pull request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 📞 Support
+##  Support
 
 - **Email**: nikjois@llamasearch.ai
 - **Documentation**: [API Docs](http://localhost:8000/docs)
 - **Issues**: GitHub Issues
 - **Discussions**: GitHub Discussions
 
-## 🗺️ Roadmap
+##  Roadmap
 
 ### Planned Features
 
@@ -630,4 +630,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Built with ❤️ by the LlamaAgent team** 
+**Built with LOVE: by the LlamaAgent team** 

@@ -136,7 +136,7 @@ class ComprehensiveFixEngine:
     
     def setup_development_environment(self) -> bool:
         """Set up the development environment with proper packaging."""
-        logger.info("🏗️  Setting up development environment...")
+        logger.info("  Setting up development environment...")
         
         # Install package in development mode using hatch
         if self.tools['hatch']:
@@ -153,7 +153,7 @@ class ComprehensiveFixEngine:
                 logger.info("PASS Development environment set up successfully")
                 return True
             except subprocess.CalledProcessError as e:
-                logger.warning(f"⚠️  Hatch setup failed: {e}")
+                logger.warning(f"WARNING:  Hatch setup failed: {e}")
         
         # Fallback to pip/uv
         if self.tools['uv']:
@@ -166,7 +166,7 @@ class ComprehensiveFixEngine:
                 logger.info("PASS Development environment set up successfully")
                 return True
             except subprocess.CalledProcessError as e:
-                logger.warning(f"⚠️  uv setup failed: {e}")
+                logger.warning(f"WARNING:  uv setup failed: {e}")
         
         # Final fallback to pip
         try:
@@ -404,7 +404,7 @@ class ComprehensiveFixEngine:
                 
                 logger.info("PASS Ruff fixes applied")
             except subprocess.CalledProcessError as e:
-                logger.warning(f"⚠️  Ruff failed: {e}")
+                logger.warning(f"WARNING:  Ruff failed: {e}")
         
         # 2. Run black for formatting
         if self.tools['black']:
@@ -416,7 +416,7 @@ class ComprehensiveFixEngine:
                 
                 logger.info("PASS Black formatting applied")
             except subprocess.CalledProcessError as e:
-                logger.warning(f"⚠️  Black failed: {e}")
+                logger.warning(f"WARNING:  Black failed: {e}")
         
         # 3. Run autoflake to remove unused imports
         try:
@@ -432,7 +432,7 @@ class ComprehensiveFixEngine:
             
             logger.info("PASS Autoflake fixes applied")
         except subprocess.CalledProcessError as e:
-            logger.warning(f"⚠️  Autoflake failed: {e}")
+            logger.warning(f"WARNING:  Autoflake failed: {e}")
         
         return True
     
@@ -441,7 +441,7 @@ class ComprehensiveFixEngine:
         logger.info("Analyzing Running comprehensive tests...")
         
         if not self.tools['tox']:
-            logger.warning("⚠️  Tox not available, skipping comprehensive tests")
+            logger.warning("WARNING:  Tox not available, skipping comprehensive tests")
             return False
         
         # Run syntax check first
@@ -477,7 +477,7 @@ class ComprehensiveFixEngine:
             
             logger.info("PASS Linting passed")
         except subprocess.CalledProcessError as e:
-            logger.warning(f"⚠️  Linting failed: {e}")
+            logger.warning(f"WARNING:  Linting failed: {e}")
         
         return True
     
@@ -583,7 +583,7 @@ class ComprehensiveFixEngine:
             logger.info("SUCCESS All fixes completed successfully!")
             logger.info(f"RESULTS Success rate: {report['success_rate']:.1f}%")
         else:
-            logger.warning("⚠️  Some fixes failed, but the system should be significantly improved")
+            logger.warning("WARNING:  Some fixes failed, but the system should be significantly improved")
         
         return success
 
@@ -610,7 +610,7 @@ def main():
         logger.info("   3. Commit your changes with 'git commit'")
         logger.info("   4. Pre-commit hooks will prevent future issues")
     else:
-        logger.warning("⚠️  PARTIAL SUCCESS: Most issues have been fixed")
+        logger.warning("WARNING:  PARTIAL SUCCESS: Most issues have been fixed")
         logger.info("INSIGHT Check the fix_report.json file for details")
     
     return 0 if success else 1

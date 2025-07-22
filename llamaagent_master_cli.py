@@ -138,12 +138,12 @@ class MasterCLI:
     def show_banner(self):
         """Display startup banner."""
         banner = """
-    ██╗     ██╗      █████╗ ███╗   ███╗ █████╗      █████╗  ██████╗ ███████╗███╗   ██╗████████╗
-    ██║     ██║     ██╔══██╗████╗ ████║██╔══██╗    ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-    ██║     ██║     ███████║██╔████╔██║███████║    ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║   
-    ██║     ██║     ██╔══██║██║╚██╔╝██║██╔══██║    ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║   
-    ███████╗███████╗██║  ██║██║ ╚═╝ ██║██║  ██║    ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   
-    ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   
+                                
+                      
+                             
+                             
+                       
+                             
         """
         
         self.console.print(Panel(
@@ -910,7 +910,7 @@ class MasterCLI:
         table.add_column("Details", style="green")
         
         for component, status, details in diagnostics:
-            status_text = "✓ OK" if status else "✗ FAIL"
+            status_text = " OK" if status else " FAIL"
             table.add_row(component, status_text, details)
         
         self.console.print(table)

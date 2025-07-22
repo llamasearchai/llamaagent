@@ -778,13 +778,13 @@ Execute this task efficiently and report progress."""
                 return
             
             # Format node info
-            status = "🟢" if node.is_active else "🔴"
+            status = "🟢" if node.is_active else ""
             role = node.agent.config.role.value if hasattr(node.agent, 'config') else "unknown"
             
             node_text = f"{status} {node.agent_id[:8]} [{role}]"
             if node_id in self.agent_assignments.values():
                 task_id = next(tid for tid, aid in self.agent_assignments.items() if aid == node_id)
-                node_text += f" 📋 {task_id[:8]}"
+                node_text += f" LIST: {task_id[:8]}"
             
             # Add to tree
             subtree = parent_tree.add(node_text)

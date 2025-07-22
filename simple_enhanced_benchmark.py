@@ -492,8 +492,8 @@ class SimpleEnhancedBenchmarkSystem:
         print(f"\nAgent Agent: {summary['agent_name']}")
         print(f"Performance Overall Score: {summary['overall_score']:.2%}")
         print(f"PASS Success Rate: {summary['success_rate']:.2%}")
-        print(f"⏱️  Total Execution Time: {summary['execution_time']:.2f}s")
-        print(f"📋 Total Tasks: {summary['total_tasks']}")
+        print(f"TIME:  Total Execution Time: {summary['execution_time']:.2f}s")
+        print(f"LIST: Total Tasks: {summary['total_tasks']}")
         
         # Performance breakdown
         print(f"\nRESULTS Performance Breakdown:")
@@ -503,14 +503,14 @@ class SimpleEnhancedBenchmarkSystem:
         print(f"  Average Score: {overall['average_score']:.2%}")
         
         # Time analysis
-        print(f"\n⏱️  Time Analysis:")
+        print(f"\nTIME:  Time Analysis:")
         time_analysis = analysis["time_analysis"]
         print(f"  Average Time per Task: {time_analysis['average_time']:.3f}s")
         print(f"  Fastest Task: {time_analysis['min_time']:.3f}s")
         print(f"  Slowest Task: {time_analysis['max_time']:.3f}s")
         
         # Task type breakdown
-        print(f"\n📋 Task Type Performance:")
+        print(f"\nLIST: Task Type Performance:")
         for task_type, stats in analysis["task_breakdown"].items():
             print(f"  {task_type.title()}:")
             print(f"    Success Rate: {stats['success_rate']:.2%}")
@@ -522,16 +522,16 @@ class SimpleEnhancedBenchmarkSystem:
         if summary['success_rate'] > 0.8:
             print("  SUCCESS Excellent performance with >80% success rate")
         elif summary['success_rate'] > 0.6:
-            print("  👍 Good performance with >60% success rate")
+            print("   Good performance with >60% success rate")
         else:
-            print("  ⚠️  Performance needs improvement")
+            print("  WARNING:  Performance needs improvement")
         
         if time_analysis['average_time'] < 0.2:
             print("  Analyzing Very fast response times")
         elif time_analysis['average_time'] < 0.5:
             print("  Starting Good response times")
         else:
-            print("  🐌 Consider optimizing response times")
+            print("   Consider optimizing response times")
         
         print("\n" + "=" * 60)
 
@@ -582,7 +582,7 @@ async def main():
             }
             json.dump(serializable_result, f, indent=2)
         
-        print(f"💾 Results saved to {result_file}")
+        print(f" Results saved to {result_file}")
     
     print("\nSUCCESS Enhanced benchmark demonstration completed!")
 

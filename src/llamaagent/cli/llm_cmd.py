@@ -79,7 +79,7 @@ class LLMDatabase:
         cursor = self.conn.cursor()
         cursor.execute(
             """
-            INSERT INTO conversations 
+            INSERT INTO conversations
             (timestamp, provider, model, prompt, response, tokens_used, cost, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
@@ -103,7 +103,7 @@ class LLMDatabase:
         # Total stats
         cursor.execute(
             """
-            SELECT 
+            SELECT
                 COUNT(*) as total_requests,
                 SUM(tokens_used) as total_tokens,
                 SUM(cost) as total_cost
@@ -115,7 +115,7 @@ class LLMDatabase:
         # Per provider stats
         cursor.execute(
             """
-            SELECT 
+            SELECT
                 provider,
                 COUNT(*) as requests,
                 SUM(tokens_used) as tokens,

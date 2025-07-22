@@ -1,11 +1,11 @@
 """
 CUDA Provider implementation
 
-CUDA-accelerated provider using Hugging Face Transformers. This provider is 
-intended for workstations or servers equipped with NVIDIA GPUs and a functional 
-CUDA installation. It tries to load the requested model via transformers into 
-GPU memory. If CUDA is unavailable (e.g. running on a CPU-only machine) the 
-provider gracefully falls back to the OllamaProvider so that the remainder 
+CUDA-accelerated provider using Hugging Face Transformers. This provider is
+intended for workstations or servers equipped with NVIDIA GPUs and a functional
+CUDA installation. It tries to load the requested model via transformers into
+GPU memory. If CUDA is unavailable (e.g. running on a CPU-only machine) the
+provider gracefully falls back to the OllamaProvider so that the remainder
 of the pipeline keeps working.
 
 Author: Nik Jois <nikjois@llamasearch.ai>

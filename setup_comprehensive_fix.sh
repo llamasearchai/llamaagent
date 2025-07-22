@@ -33,11 +33,11 @@ if [ ! -f "pyproject.toml" ]; then
     exit 1
 fi
 
-log "🚀 Starting comprehensive fix process for LlamaAgent"
+log "LAUNCH: Starting comprehensive fix process for LlamaAgent"
 log "=============================================================="
 
 # Step 1: Install uv (ultra-fast Python package manager)
-log "📦 Installing uv..."
+log " Installing uv..."
 if ! command -v uv &> /dev/null; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
     export PATH="$HOME/.cargo/bin:$PATH"
@@ -45,54 +45,54 @@ if ! command -v uv &> /dev/null; then
     if [ -f "$HOME/.cargo/env" ]; then
         source "$HOME/.cargo/env"
     fi
-    log "✅ uv installed successfully"
+    log "PASS uv installed successfully"
 else
-    log "✅ uv already installed"
+    log "PASS uv already installed"
 fi
 
 # Step 2: Create virtual environment and install dependencies
-log "🏗️  Setting up development environment..."
+log "  Setting up development environment..."
 if [ ! -d ".venv" ]; then
     uv venv
-    log "✅ Virtual environment created"
+    log "PASS Virtual environment created"
 else
-    log "✅ Virtual environment already exists"
+    log "PASS Virtual environment already exists"
 fi
 
 # Activate virtual environment
 source .venv/bin/activate
-log "✅ Virtual environment activated"
+log "PASS Virtual environment activated"
 
 # Step 3: Install hatch in virtual environment
-log "📦 Installing hatch..."
+log " Installing hatch..."
 if ! command -v hatch &> /dev/null; then
     pip install hatch
-    log "✅ hatch installed successfully"
+    log "PASS hatch installed successfully"
 else
-    log "✅ hatch already installed"
+    log "PASS hatch already installed"
 fi
 
 # Step 4: Install tox in virtual environment
-log "📦 Installing tox..."
+log " Installing tox..."
 if ! command -v tox &> /dev/null; then
     pip install tox
-    log "✅ tox installed successfully"
+    log "PASS tox installed successfully"
 else
-    log "✅ tox already installed"
+    log "PASS tox already installed"
 fi
 
 # Step 5: Install development dependencies
-log "📦 Installing development dependencies..."
+log " Installing development dependencies..."
 uv pip install -e ".[dev,all]"
-log "✅ Development dependencies installed"
+log "PASS Development dependencies installed"
 
 # Step 6: Install code quality tools
-log "🔧 Installing code quality tools..."
+log "TOOL: Installing code quality tools..."
 uv pip install ruff black mypy isort autoflake pre-commit bandit safety
-log "✅ Code quality tools installed"
+log "PASS Code quality tools installed"
 
 # Step 7: Fix import structure systematically
-log "🔧 Fixing import structure..."
+log "TOOL: Fixing import structure..."
 
 # Fix src.llamaagent imports to llamaagent
 log "Fixing src.llamaagent imports..."
@@ -100,15 +100,15 @@ find src -name "*.py" -exec sed -i.bak 's/from src\.llamaagent/from llamaagent/g
 find src -name "*.py" -exec sed -i.bak 's/import src\.llamaagent/import llamaagent/g' {} \;
 # Clean up backup files
 find src -name "*.bak" -delete
-log "✅ Fixed src.llamaagent imports"
+log "PASS Fixed src.llamaagent imports"
 
 # Fix missing __init__.py files
 log "Checking for missing __init__.py files..."
 find src -type d -exec bash -c 'if [ -n "$(find "$1" -maxdepth 1 -name "*.py" -type f)" ] && [ ! -f "$1/__init__.py" ]; then echo "\"\"\"Package initialization.\"\"\"" > "$1/__init__.py"; echo "Created $1/__init__.py"; fi' _ {} \;
-log "✅ Fixed missing __init__.py files"
+log "PASS Fixed missing __init__.py files"
 
 # Step 8: Run code quality fixes
-log "🔧 Running code quality fixes..."
+log "TOOL: Running code quality fixes..."
 
 # Remove unused imports
 log "Removing unused imports..."
@@ -127,10 +127,10 @@ ruff format src tests || warn "ruff format had issues"
 log "Sorting imports with isort..."
 isort src tests || warn "isort had issues"
 
-log "✅ Code quality fixes applied"
+log "PASS Code quality fixes applied"
 
 # Step 9: Run syntax checks
-log "🔍 Running syntax checks..."
+log "SEARCH: Running syntax checks..."
 python -c "
 import ast
 import sys
@@ -142,22 +142,22 @@ for py_file in Path('src').rglob('*.py'):
         with open(py_file, 'r') as f:
             content = f.read()
         ast.parse(content)
-        print(f'✅ {py_file}')
+        print(f'PASS {py_file}')
     except SyntaxError as e:
-        print(f'❌ {py_file}: {e}')
+        print(f'FAIL {py_file}: {e}')
         errors.append(str(py_file))
 
 if errors:
-    print(f'\\n❌ {len(errors)} files have syntax errors')
+    print(f'\\nFAIL {len(errors)} files have syntax errors')
     # Don't exit on syntax errors, just warn
     print('Warning: Some files have syntax errors, but continuing...')
 else:
-    print(f'\\n✅ All Python files have valid syntax')
+    print(f'\\nPASS All Python files have valid syntax')
 "
-log "✅ Syntax checks completed"
+log "PASS Syntax checks completed"
 
 # Step 10: Test imports
-log "🔍 Testing critical imports..."
+log "SEARCH: Testing critical imports..."
 python -c "
 import sys
 sys.path.insert(0, 'src')
@@ -165,36 +165,36 @@ sys.path.insert(0, 'src')
 # Test critical imports
 try:
     import llamaagent
-    print('✅ Main package imports successfully')
+    print('PASS Main package imports successfully')
 except Exception as e:
-    print(f'❌ Main package import failed: {e}')
+    print(f'FAIL Main package import failed: {e}')
     # Continue, this is not critical for setup
 
 try:
     from llamaagent.tools import CalculatorTool
-    print('✅ CalculatorTool imports successfully')
+    print('PASS CalculatorTool imports successfully')
 except Exception as e:
-    print(f'❌ CalculatorTool import failed: {e}')
+    print(f'FAIL CalculatorTool import failed: {e}')
     # Continue, this is not critical
 
 try:
     from llamaagent.agents import ReactAgent
-    print('✅ ReactAgent imports successfully')
+    print('PASS ReactAgent imports successfully')
 except Exception as e:
-    print(f'❌ ReactAgent import failed: {e}')
+    print(f'FAIL ReactAgent import failed: {e}')
     # Continue, this is not critical
 
-print('\\n✅ Import tests completed')
+print('\\nPASS Import tests completed')
 "
-log "✅ Import tests completed"
+log "PASS Import tests completed"
 
 # Step 11: Install pre-commit hooks
 log "🪝 Setting up pre-commit hooks..."
 pre-commit install || warn "pre-commit install had issues"
-log "✅ Pre-commit hooks setup attempted"
+log "PASS Pre-commit hooks setup attempted"
 
 # Step 12: Generate development commands
-log "📝 Generating development commands..."
+log "NOTE: Generating development commands..."
 cat > dev_commands.sh << 'EOF'
 #!/bin/bash
 # Development commands for LlamaAgent
@@ -225,10 +225,10 @@ echo "  tox -e security    - Run security checks"
 
 EOF
 chmod +x dev_commands.sh
-log "✅ Development commands generated (run ./dev_commands.sh)"
+log "PASS Development commands generated (run ./dev_commands.sh)"
 
 # Step 13: Create Makefile for easy development
-log "📝 Creating Makefile..."
+log "NOTE: Creating Makefile..."
 cat > Makefile << 'EOF'
 .PHONY: help install test lint format check clean docs security
 .DEFAULT_GOAL := help
@@ -286,19 +286,19 @@ install-hooks: ## Install pre-commit hooks
 	pre-commit install
 
 validate: ## Validate package installation
-	python -c "import sys; sys.path.insert(0, 'src'); import llamaagent; print('✅ Package imports successfully')"
+	python -c "import sys; sys.path.insert(0, 'src'); import llamaagent; print('PASS Package imports successfully')"
 
 EOF
-log "✅ Makefile created"
+log "PASS Makefile created"
 
 # Step 14: Generate summary report
-log "📊 Generating summary report..."
+log "STATS: Generating summary report..."
 cat > fix_summary.md << EOF
 # LlamaAgent Comprehensive Fix Summary
 
-## ✅ Completed Successfully
+## PASS Completed Successfully
 
-### 🛠️ Tools Installed
+### BUILD: Tools Installed
 - **uv**: Ultra-fast Python package manager
 - **hatch**: Modern Python project management
 - **tox**: Testing in multiple environments
@@ -307,22 +307,22 @@ cat > fix_summary.md << EOF
 - **mypy**: Type checker
 - **pre-commit**: Git hooks for quality control
 
-### 🔧 Fixes Applied
-- ✅ Fixed import structure (src.llamaagent → llamaagent)
-- ✅ Added missing __init__.py files
-- ✅ Removed unused imports
-- ✅ Fixed code formatting
-- ✅ Fixed linting issues
-- ✅ Sorted imports properly
-- ✅ Installed pre-commit hooks
-- ✅ Set up development environment
+### TOOL: Fixes Applied
+- PASS Fixed import structure (src.llamaagent → llamaagent)
+- PASS Added missing __init__.py files
+- PASS Removed unused imports
+- PASS Fixed code formatting
+- PASS Fixed linting issues
+- PASS Sorted imports properly
+- PASS Installed pre-commit hooks
+- PASS Set up development environment
 
-### 📝 Files Created
+### NOTE: Files Created
 - **Makefile**: Easy development commands
 - **dev_commands.sh**: Development helper script
 - **fix_summary.md**: This summary report
 
-## 🚀 Next Steps
+## LAUNCH: Next Steps
 
 1. **Run tests**: \`make test\`
 2. **Check code quality**: \`make check\`
@@ -330,7 +330,7 @@ cat > fix_summary.md << EOF
 4. **Run security checks**: \`make security\`
 5. **Test in multiple environments**: \`make tox-all\`
 
-## 💡 Development Workflow
+## IDEA: Development Workflow
 
 1. **Make changes** to your code
 2. **Run checks** with \`make check\`
@@ -338,7 +338,7 @@ cat > fix_summary.md << EOF
 4. **Run tests** with \`make test\`
 5. **Build and deploy** when ready
 
-## 🔒 Quality Assurance
+##  Quality Assurance
 
 - Pre-commit hooks prevent bad commits
 - Automated testing with pytest
@@ -347,25 +347,25 @@ cat > fix_summary.md << EOF
 - Security scanning with bandit
 - Dependency vulnerability scanning with safety
 
-## 📈 Success Metrics
+## METRICS: Success Metrics
 
-- **Import Structure**: ✅ Fixed
-- **Syntax Errors**: ✅ Resolved
-- **Code Quality**: ✅ Enforced
-- **Testing**: ✅ Automated
-- **Development Environment**: ✅ Standardized
-- **CI/CD Ready**: ✅ Configured
+- **Import Structure**: PASS Fixed
+- **Syntax Errors**: PASS Resolved
+- **Code Quality**: PASS Enforced
+- **Testing**: PASS Automated
+- **Development Environment**: PASS Standardized
+- **CI/CD Ready**: PASS Configured
 
 EOF
 
-log "✅ Summary report generated: fix_summary.md"
+log "PASS Summary report generated: fix_summary.md"
 
 # Final success message
 log "=============================================================="
-log "🎉 COMPREHENSIVE FIX COMPLETED SUCCESSFULLY!"
+log "SUCCESS: COMPREHENSIVE FIX COMPLETED SUCCESSFULLY!"
 log "=============================================================="
 log ""
-log "💡 Key improvements made:"
+log "IDEA: Key improvements made:"
 log "   • Modern Python tooling (uv, hatch, tox) installed"
 log "   • Import structure completely fixed"
 log "   • Code quality tools configured and applied"
@@ -373,13 +373,13 @@ log "   • Pre-commit hooks prevent future issues"
 log "   • Development environment standardized"
 log "   • Comprehensive testing setup"
 log ""
-log "🚀 To start developing:"
+log "LAUNCH: To start developing:"
 log "   1. Run: source .venv/bin/activate"
 log "   2. Run: make check"
 log "   3. Run: make test"
 log "   4. Read: fix_summary.md"
 log ""
-log "🔒 Quality assurance is now automated!"
+log " Quality assurance is now automated!"
 log "=============================================================="
 
-echo "✅ Setup complete! Check fix_summary.md for details." 
+echo "PASS Setup complete! Check fix_summary.md for details." 

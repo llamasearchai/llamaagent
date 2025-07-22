@@ -167,7 +167,7 @@ Author: Nik Jois <nikjois@llamasearch.ai>
                     raise Exception("Server failed to start within 30 seconds")
             
             console.print(f"[bold green]PASS Server started successfully at {self.api_url}[/bold green]")
-            console.print(f"📖 API Documentation: {self.api_url}/docs")
+            console.print(f" API Documentation: {self.api_url}/docs")
             
         except Exception as e:
             console.print(f"[bold red]FAIL Failed to start server: {e}[/bold red]")

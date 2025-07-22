@@ -25,7 +25,7 @@ The LlamaAgent Master Program is a production-ready, enterprise-grade AI agent o
 - Hierarchical team structures
 - Agent lifecycle management
 
-### 🔗 OpenAI Integration
+###  OpenAI Integration
 - Native OpenAI Agents SDK support
 - Budget tracking and cost management
 - Tool execution framework

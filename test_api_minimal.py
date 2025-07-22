@@ -41,11 +41,11 @@ def extract_classes_from_file(file_path):
 api_file = Path(__file__).parent / "src" / "llamaagent" / "api" / "openai_comprehensive_api.py"
 
 if api_file.exists():
-    print("✓ API file found at:", api_file)
+    print(" API file found at:", api_file)
     
     # Extract endpoints
     endpoints = extract_endpoints_from_file(api_file)
-    print(f"\n✓ Found {len(endpoints)} endpoints:")
+    print(f"\n Found {len(endpoints)} endpoints:")
     
     # Group by category
     endpoint_groups = {
@@ -99,7 +99,7 @@ if api_file.exists():
     
     # Extract request/response models
     classes = extract_classes_from_file(api_file)
-    print(f"\n✓ Found {len(classes)} Pydantic models:")
+    print(f"\n Found {len(classes)} Pydantic models:")
     
     request_models = [c for c in classes if "Request" in c]
     response_models = [c for c in classes if "Response" in c]
@@ -120,7 +120,7 @@ if api_file.exists():
         for model in sorted(other_models):
             print(f"    - {model}")
     
-    print("\n✓ API structure analysis complete!")
+    print("\n API structure analysis complete!")
     
     # Verify all required endpoints
     required_endpoints = [
@@ -144,11 +144,11 @@ if api_file.exists():
             missing.append(f"{method} {path}")
     
     if missing:
-        print("\n⚠ Missing required endpoints:")
+        print("\n Missing required endpoints:")
         for endpoint in missing:
             print(f"    - {endpoint}")
     else:
-        print("\n✓ All required endpoints are implemented!")
+        print("\n All required endpoints are implemented!")
         
 else:
-    print("✗ API file not found at:", api_file)
+    print(" API file not found at:", api_file)

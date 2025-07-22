@@ -79,10 +79,10 @@ def find_and_fix_syntax_errors():
                         )
                         
                         if not verify_result.stderr:
-                            print(f"  ✓ Fixed successfully!")
+                            print(f"   Fixed successfully!")
                             fixed_count += 1
                         else:
-                            print(f"  ✗ Still has errors")
+                            print(f"   Still has errors")
                     
                 except Exception as e:
                     print(f"  Error processing: {e}")

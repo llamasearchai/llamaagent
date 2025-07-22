@@ -49,7 +49,7 @@ feature_row:
 
 {% include feature_row %}
 
-## 🚀 Quick Start
+## LAUNCH: Quick Start
 
 ### Installation
 
@@ -86,7 +86,7 @@ print(response.content)  # "The result is 110"
 - **Multimodal Support**: Text, vision, and audio processing
 - **Memory Systems**: Advanced short-term and long-term memory
 
-### 🛠️ Production-Ready Features
+### BUILD: Production-Ready Features
 - **FastAPI Integration**: Complete REST API with OpenAPI docs
 - **Enterprise Security**: Authentication, authorization, rate limiting
 - **Monitoring**: Prometheus metrics, distributed tracing, health checks
@@ -110,7 +110,7 @@ print(response.content)  # "The result is 110"
 | **Response Time** | <100ms average |
 | **Throughput** | 1000+ requests/second |
 
-## 🏗️ Architecture
+##  Architecture
 
 ```mermaid
 graph TB
@@ -180,7 +180,7 @@ code_agent = ReactAgent(
 )
 ```
 
-## 🔐 Security
+##  Security
 
 - **Authentication**: JWT tokens with refresh mechanism
 - **Authorization**: Role-based access control (RBAC)
@@ -189,7 +189,7 @@ code_agent = ReactAgent(
 - **Audit Logging**: Complete audit trail
 - **Encryption**: End-to-end encryption for sensitive data
 
-## 🐳 Deployment
+##  Deployment
 
 ### Docker
 ```bash
@@ -235,11 +235,11 @@ git commit -m "Add your feature"
 git push origin feature/your-feature
 ```
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/yourusername/llamaagent/blob/main/LICENSE) file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - OpenAI for foundational AI models
 - Anthropic for Claude integration
@@ -248,6 +248,6 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 
 ---
 
-**Made with ❤️ by [Nik Jois](https://github.com/nikjois) and the LlamaAgent community**
+**Made with LOVE: by [Nik Jois](https://github.com/nikjois) and the LlamaAgent community**
 
 For questions, support, or contributions, please contact [nikjois@llamasearch.ai](mailto:nikjois@llamasearch.ai)

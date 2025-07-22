@@ -106,11 +106,11 @@ async def test_mock_provider_intelligence():
     elif success_rate >= 60:
         print("\nPASS GOOD: MockProvider shows strong problem-solving capabilities!")
     elif success_rate >= 40:
-        print("\n⚠️  MODERATE: MockProvider has some intelligence but needs improvement")
+        print("\nWARNING:  MODERATE: MockProvider has some intelligence but needs improvement")
     else:
         print("\nFAIL POOR: MockProvider needs significant improvement")
     
-    print(f"\n🔄 Improvement over generic MockProvider:")
+    print(f"\n Improvement over generic MockProvider:")
     print(f"  Previous: 0% success rate (generic responses)")
     print(f"  Enhanced: {success_rate:.1f}% success rate")
     print(f"  Improvement: +{success_rate:.1f} percentage points")
@@ -173,7 +173,7 @@ async def main():
             print("PASS The system can now solve mathematical problems intelligently")
             print("PASS This will dramatically improve benchmark success rates")
         else:
-            print("⚠️  WARNING: MockProvider needs further improvements")
+            print("WARNING:  WARNING: MockProvider needs further improvements")
         
         print("=" * 60)
         

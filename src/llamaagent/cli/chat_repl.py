@@ -329,7 +329,7 @@ class REPLInterface:
             self.running = False
             if self.current_session:
                 self.chat_engine.session_manager.save_session(self.current_session)
-                print(f"\n💾 Session saved: {self.current_session.session_id}")
+                print(f"\n Session saved: {self.current_session.session_id}")
 
     async def _handle_command(self, input_text: str) -> bool:
         """Handle special REPL commands."""
@@ -405,7 +405,7 @@ Available commands:
             print("No conversation history yet.")
             return
 
-        print("\n📜 Conversation History:")
+        print("\n Conversation History:")
         print("-" * 50)
 
         for msg in self.current_session.messages[-10:]:  # Show last 10 messages
@@ -498,7 +498,7 @@ def show_session_messages(session_id: str) -> None:
         print(f"Session '{session_id}' not found.")
         return
 
-    print(f"📜 Messages from session: {session.name}")
+    print(f" Messages from session: {session.name}")
     print("-" * 50)
 
     for msg in session.messages:

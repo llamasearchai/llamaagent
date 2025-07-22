@@ -166,7 +166,7 @@ async def main():
         print("SUCCESS Core LlamaAgent functionality is working!")
         print("SUCCESS System is ready for use!")
     else:
-        print(f"\n⚠️  {passed}/{total} tests passed")
+        print(f"\nWARNING:  {passed}/{total} tests passed")
         print("Some components need attention.")
 
 if __name__ == "__main__":

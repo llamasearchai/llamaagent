@@ -14,16 +14,16 @@ try:
     import base
     
     # Test BaseTool (abstract class)
-    print(f"✓ BaseTool class available: {hasattr(base, 'BaseTool')}")
-    print(f"✓ Tool alias available: {hasattr(base, 'Tool')}")
-    print(f"✓ ToolRegistry class available: {hasattr(base, 'ToolRegistry')}")
+    print(f" BaseTool class available: {hasattr(base, 'BaseTool')}")
+    print(f" Tool alias available: {hasattr(base, 'Tool')}")
+    print(f" ToolRegistry class available: {hasattr(base, 'ToolRegistry')}")
     
     # Test ToolRegistry
     registry = base.ToolRegistry()
-    print("✓ ToolRegistry instantiated successfully")
+    print(" ToolRegistry instantiated successfully")
     
 except Exception as e:
-    print(f"✗ Failed base.py test: {e}")
+    print(f" Failed base.py test: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
@@ -36,18 +36,18 @@ try:
     
     # Test CalculatorTool
     calc = calculator.CalculatorTool()
-    print(f"✓ CalculatorTool instantiated: name='{calc.name}', description='{calc.description}'")
+    print(f" CalculatorTool instantiated: name='{calc.name}', description='{calc.description}'")
     
     # Test execution
     result = calc.execute(expression="10 + 5 * 2")
-    print(f"✓ Calculator execution: 10 + 5 * 2 = {result}")
+    print(f" Calculator execution: 10 + 5 * 2 = {result}")
     
     # Test error handling
     error_result = calc.execute(expression="invalid")
-    print(f"✓ Calculator error handling: {error_result}")
+    print(f" Calculator error handling: {error_result}")
     
 except Exception as e:
-    print(f"✗ Failed calculator.py test: {e}")
+    print(f" Failed calculator.py test: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
@@ -59,18 +59,18 @@ try:
     
     # Test PythonREPLTool
     repl = python_repl.PythonREPLTool()
-    print(f"✓ PythonREPLTool instantiated: name='{repl.name}', description='{repl.description}'")
+    print(f" PythonREPLTool instantiated: name='{repl.name}', description='{repl.description}'")
     
     # Test execution
     result = repl.execute(code="print('Test output'); x = 42; x")
-    print(f"✓ Python REPL execution output: {repr(result)}")
+    print(f" Python REPL execution output: {repr(result)}")
     
     # Test error handling
     error_result = repl.execute(code="1/0")
-    print(f"✓ Python REPL error handling works: {'ZeroDivisionError' in error_result}")
+    print(f" Python REPL error handling works: {'ZeroDivisionError' in error_result}")
     
 except Exception as e:
-    print(f"✗ Failed python_repl.py test: {e}")
+    print(f" Failed python_repl.py test: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)

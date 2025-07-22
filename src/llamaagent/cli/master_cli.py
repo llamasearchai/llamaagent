@@ -466,7 +466,7 @@ class LlamaAgentCLI:
         1. Select 'Quick Chat' for simple conversations
         2. Use 'Advanced Reasoning' for complex problem-solving
         3. Try 'Multi-Modal Analysis' for image/audio understanding
-        
+
         [bold]Features:[/bold]
         - Multiple LLM providers (OpenAI, Anthropic, etc.)
         - Advanced reasoning strategies
@@ -474,12 +474,12 @@ class LlamaAgentCLI:
         - Tool integration
         - Performance optimization
         - Error recovery
-        
+
         [bold]Configuration:[/bold]
         - Edit ~/.llamaagent/config.json
         - Set environment variables for API keys
         - Use 'Configuration' menu for settings
-        
+
         [bold]Tips:[/bold]
         - Enable caching for faster responses
         - Use error recovery for reliability
@@ -579,7 +579,7 @@ from llamaagent.tools import ToolRegistry, get_all_tools
 
 class {config['name']}:
     """Custom agent with selected capabilities."""
-    
+
     def __init__(self) -> None:
         self.config = AgentConfig(name="{config['name']}")
         self.llm_provider = create_provider("{config['provider']}")
@@ -667,14 +667,14 @@ from llamaagent.tools import Tool
 
 class {name}(Tool):
     """Custom tool implementation."""
-    
+
     name = "{name}"
     description = "{description}"
     parameters = {{
         "input": {{"type": "string", "required": True}}
     }}
     returns = "string"
-    
+
     async def execute(self, input: str) -> str:
         """Execute tool logic."""
         # Add your implementation here

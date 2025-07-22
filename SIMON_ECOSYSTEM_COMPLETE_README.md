@@ -100,7 +100,7 @@ await ecosystem.chat("Hello", model="gemini-pro", provider=LLMProvider.GEMINI)
 await ecosystem.chat("Hello", model="llama3.2", provider=LLMProvider.OLLAMA)
 ```
 
-### 🛠️ Powerful Tool Integration
+### BUILD: Powerful Tool Integration
 
 #### SQLite Operations
 ```python
@@ -217,7 +217,7 @@ curl -X POST http://localhost:8000/execute/javascript \
   -d '{"code": "console.log(\"Hello World\")"}'
 ```
 
-### 📓 Jupyter Notebooks
+###  Jupyter Notebooks
 
 Complete cookbook with examples:
 
@@ -236,7 +236,7 @@ The cookbook covers:
 - Analytics and visualization
 - Production deployment
 
-### 🐳 Docker Deployment
+###  Docker Deployment
 
 #### Development Deployment
 ```bash
@@ -290,19 +290,19 @@ curl http://localhost:8000/metrics
 ### Core Components
 
 ```
-┌─────────────────────┐
-│   FastAPI Web API   │  ← REST endpoints
-├─────────────────────┤
-│  Simon Tool Registry│  ← Tool management
-├─────────────────────┤
-│ Simon LLM Ecosystem │  ← Core integration
-├─────────────────────┤
-│   Provider Layer    │  ← LLM providers
-├─────────────────────┤
-│    Tool Layer       │  ← SQLite, Docker, etc.
-├─────────────────────┤
-│   Storage Layer     │  ← SQLite, PostgreSQL
-└─────────────────────┘
+
+   FastAPI Web API     ← REST endpoints
+
+  Simon Tool Registry  ← Tool management
+
+ Simon LLM Ecosystem   ← Core integration
+
+   Provider Layer      ← LLM providers
+
+    Tool Layer         ← SQLite, Docker, etc.
+
+   Storage Layer       ← SQLite, PostgreSQL
+
 ```
 
 ### Data Flow

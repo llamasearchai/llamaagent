@@ -18,13 +18,13 @@ try:
     
     # Import just the tools module components we fixed
     import llamaagent.tools.base
-    print("✓ llamaagent.tools.base imported")
+    print(" llamaagent.tools.base imported")
     
     import llamaagent.tools.calculator  
-    print("✓ llamaagent.tools.calculator imported")
+    print(" llamaagent.tools.calculator imported")
     
     import llamaagent.tools.python_repl
-    print("✓ llamaagent.tools.python_repl imported")
+    print(" llamaagent.tools.python_repl imported")
     
     # Now test the actual classes
     print("\nTesting core classes...")
@@ -32,37 +32,37 @@ try:
     # Test BaseTool and ToolRegistry
     BaseTool = llamaagent.tools.base.BaseTool
     ToolRegistry = llamaagent.tools.base.ToolRegistry
-    print("✓ BaseTool and ToolRegistry classes available")
+    print(" BaseTool and ToolRegistry classes available")
     
     # Test built-in tools
     CalculatorTool = llamaagent.tools.calculator.CalculatorTool
     PythonREPLTool = llamaagent.tools.python_repl.PythonREPLTool
-    print("✓ CalculatorTool and PythonREPLTool classes available")
+    print(" CalculatorTool and PythonREPLTool classes available")
     
     # Test instantiation
     print("\nTesting instantiation...")
     calc = CalculatorTool()
     repl = PythonREPLTool()
     registry = ToolRegistry()
-    print(f"✓ CalculatorTool: {calc.name} - {calc.description}")
-    print(f"✓ PythonREPLTool: {repl.name} - {repl.description}")
+    print(f" CalculatorTool: {calc.name} - {calc.description}")
+    print(f" PythonREPLTool: {repl.name} - {repl.description}")
     
     # Test execution
     print("\nTesting execution...")
     calc_result = calc.execute(expression="42 + 8")
-    print(f"✓ Calculator: 42 + 8 = {calc_result}")
+    print(f" Calculator: 42 + 8 = {calc_result}")
     
     repl_result = repl.execute(code="x = 10; y = 20; print(f'Sum: {x + y}')")
-    print(f"✓ Python REPL output: {repl_result}")
+    print(f" Python REPL output: {repl_result}")
     
     # Test registry
     print("\nTesting ToolRegistry...")
     registry.register(calc)
     registry.register(repl)
-    print(f"✓ Registered tools: {registry.list_names()}")
+    print(f" Registered tools: {registry.list_names()}")
     
     retrieved = registry.get("calculator")
-    print(f"✓ Retrieved tool: {retrieved.name if retrieved else 'None'}")
+    print(f" Retrieved tool: {retrieved.name if retrieved else 'None'}")
     
     # Now test the __init__.py imports
     print("\nTesting __init__.py imports...")
@@ -77,11 +77,11 @@ try:
             create_tool_from_function,
             get_all_tools,
         )
-        print("✓ All exports from __init__.py imported successfully")
+        print(" All exports from __init__.py imported successfully")
         
         # Test that they're the same classes
-        print(f"✓ BaseTool is same: {BaseTool is BaseTool2}")
-        print(f"✓ Tool is BaseTool alias: {Tool is BaseTool}")
+        print(f" BaseTool is same: {BaseTool is BaseTool2}")
+        print(f" Tool is BaseTool alias: {Tool is BaseTool}")
         
         # Test utility functions
         print("\nTesting utility functions...")
@@ -92,26 +92,26 @@ try:
             return x * y
         
         custom_tool = create_tool_from_function(multiply, name="multiplier")
-        print(f"✓ Custom tool created: {custom_tool.name} - {custom_tool.description}")
+        print(f" Custom tool created: {custom_tool.name} - {custom_tool.description}")
         
         result = custom_tool.execute(x=6, y=7)
-        print(f"✓ Custom tool result: 6 × 7 = {result}")
+        print(f" Custom tool result: 6 × 7 = {result}")
         
         # Test get_all_tools
         all_tools = get_all_tools()
-        print(f"✓ get_all_tools() returns {len(all_tools)} tools")
+        print(f" get_all_tools() returns {len(all_tools)} tools")
         for tool in all_tools:
             print(f"  - {tool.name}: {tool.description}")
             
     except ImportError as e:
-        print(f"✗ Failed to import from __init__.py: {e}")
+        print(f" Failed to import from __init__.py: {e}")
         import traceback
         traceback.print_exc()
     
     print("\nPASS Tools module is working correctly!")
     
 except Exception as e:
-    print(f"\n✗ Test failed: {e}")
+    print(f"\n Test failed: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)

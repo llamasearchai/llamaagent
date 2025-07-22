@@ -91,7 +91,7 @@ class ComprehensiveEvaluationReport:
                 }
             )
 
-            print(f"  {i + 1}/{num_tasks}: {category} - {'✓' if is_correct else '✗'}")
+            print(f"  {i + 1}/{num_tasks}: {category} - {'' if is_correct else ''}")
 
         return {
             "config_name": config_name,
@@ -162,7 +162,7 @@ class ComprehensiveEvaluationReport:
                 }
             )
 
-            print(f"  {i + 1}/{num_tasks}: {category} - {'✓' if is_correct else '✗'}")
+            print(f"  {i + 1}/{num_tasks}: {category} - {'' if is_correct else ''}")
 
         return {
             "config_name": config_name,
@@ -232,7 +232,7 @@ class ComprehensiveEvaluationReport:
                 }
             )
 
-            print(f"  {i + 1}/{num_tasks}: {category} - {'✓' if is_correct else '✗'}")
+            print(f"  {i + 1}/{num_tasks}: {category} - {'' if is_correct else ''}")
 
         return {
             "config_name": config_name,

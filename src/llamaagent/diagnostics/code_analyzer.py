@@ -258,11 +258,11 @@ class CodeAnalyzer:
         complexity = 1  # Base complexity
 
         for node in ast.walk(tree):
-            if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor):
+            if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor)):
                 complexity += 1
             elif isinstance(node, ast.Try):
                 complexity += len(node.handlers)
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef):
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 metrics["function_count"] += 1
                 func_complexity = self._calculate_function_complexity(node)
                 metrics["complexity_by_function"][node.name] = func_complexity

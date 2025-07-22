@@ -122,14 +122,14 @@ async def test_task_planning():
         print(f"PASS Plan valid: {plan.is_valid}")
         
         if plan.validation_errors:
-            print(f"⚠️  Validation errors: {plan.validation_errors}")
+            print(f"WARNING:  Validation errors: {plan.validation_errors}")
         
         # Get execution order
         try:
             execution_order = planner.get_execution_order(plan)
             print(f"PASS Execution order has {len(execution_order)} levels")
         except Exception as e:
-            print(f"⚠️  Could not determine execution order: {e}")
+            print(f"WARNING:  Could not determine execution order: {e}")
         
         return True
         
@@ -183,7 +183,7 @@ def main():
     if passed == total:
         print("\nSUCCESS All tests passed! The system is working correctly.")
     else:
-        print("\n⚠️  Some tests failed. Please check the errors above.")
+        print("\nWARNING:  Some tests failed. Please check the errors above.")
     
     loop.close()
 

@@ -120,7 +120,7 @@ class SimpleAgent(BaseAgent):
 
 async def run_simple_demo():
     """Run the simple demonstration."""
-    print("\n📋 Starting Simple Demo")
+    print("\nLIST: Starting Simple Demo")
     print("-" * 25)
     
     # Create LLM provider
@@ -143,7 +143,7 @@ async def run_simple_demo():
     )
     
     print("PASS Integration created successfully")
-    print("💰 Budget limit: $10.00")
+    print(" Budget limit: $10.00")
     
     # Register agent
     adapter = integration.register_agent(agent)
@@ -160,7 +160,7 @@ async def run_simple_demo():
     results = []
     
     for i, task_text in enumerate(test_tasks, 1):
-        print(f"\n🔄 Task {i}/{len(test_tasks)}: {task_text}")
+        print(f"\n Task {i}/{len(test_tasks)}: {task_text}")
         
         task_input = TaskInput(
             id=f"demo_task_{i}",
@@ -183,8 +183,8 @@ async def run_simple_demo():
             
             # Show budget status
             budget_status = integration.get_budget_status()
-            print(f"💰 Cost so far: ${budget_status['current_cost']:.4f}")
-            print(f"💵 Remaining: ${budget_status['remaining_budget']:.4f}")
+            print(f" Cost so far: ${budget_status['current_cost']:.4f}")
+            print(f" Remaining: ${budget_status['remaining_budget']:.4f}")
             
         except Exception as e:
             print(f"FAIL Task error: {e}")
@@ -201,9 +201,9 @@ async def run_simple_demo():
     print(f"FAIL Failed tasks: {total - successful}/{total}")
     
     budget_status = integration.get_budget_status()
-    print(f"💰 Total cost: ${budget_status['current_cost']:.4f}")
-    print(f"💵 Budget remaining: ${budget_status['remaining_budget']:.4f}")
-    print(f"📞 Total API calls: {budget_status['total_calls']}")
+    print(f" Total cost: ${budget_status['current_cost']:.4f}")
+    print(f" Budget remaining: ${budget_status['remaining_budget']:.4f}")
+    print(f" Total API calls: {budget_status['total_calls']}")
     
     # Save results
     report = {
@@ -222,13 +222,13 @@ async def run_simple_demo():
     with open(report_file, 'w') as f:
         json.dump(report, f, indent=2, default=str)
     
-    print(f"📄 Report saved to: {report_file}")
+    print(f" Report saved to: {report_file}")
     
     if successful == total:
         print("\nAll tasks completed successfully!")
         print("PASS OpenAI Agents integration is working correctly!")
     else:
-        print(f"\n⚠️  {total - successful} tasks failed. Check the logs for details.")
+        print(f"\nWARNING:  {total - successful} tasks failed. Check the logs for details.")
     
     return successful == total
 
@@ -243,7 +243,7 @@ async def main():
             print("TARGET Simple OpenAI Integration Demo: SUCCESS")
             print("Starting The system is ready for production use!")
         else:
-            print("⚠️  Simple OpenAI Integration Demo: PARTIAL SUCCESS")
+            print("WARNING:  Simple OpenAI Integration Demo: PARTIAL SUCCESS")
             print("FIXING Some components may need configuration.")
         
         print("\nINSIGHT Next Steps:")
@@ -253,7 +253,7 @@ async def main():
         print("   4. Explore the comprehensive demos and examples")
         
     except KeyboardInterrupt:
-        print("\n⏹️  Demo interrupted by user")
+        print("\nSTOP:  Demo interrupted by user")
     except Exception as e:
         print(f"\nFAIL Demo failed: {e}")
         import traceback

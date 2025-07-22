@@ -118,7 +118,7 @@ llamaagent server --port 8000
 llamaagent benchmark --dataset gaia
 ```
 
-## 📖 Documentation
+##  Documentation
 
 ### Core Concepts
 
@@ -166,16 +166,16 @@ agent = ReactAgent(config=config, memory=memory)
 ### Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    LlamaAgent Framework                     │
-├─────────────────┬───────────────┬───────────────┬──────────┤
-│   Agent Layer   │   Tool Layer  │  Memory Layer │ LLM Layer│
-├─────────────────┼───────────────┼───────────────┼──────────┤
-│  • ReactAgent   │  • Calculator │  • Vector DB  │ • OpenAI │
-│  • Planning     │  • WebSearch  │  • Redis      │ • Claude │
-│  • Multimodal   │  • CodeExec   │  • SQLite     │ • Cohere │
-│  • Distributed  │  • Custom     │  • Memory     │ • Ollama │
-└─────────────────┴───────────────┴───────────────┴──────────┘
+
+                    LlamaAgent Framework                     
+
+   Agent Layer      Tool Layer    Memory Layer  LLM Layer
+
+  • ReactAgent     • Calculator   • Vector DB   • OpenAI 
+  • Planning       • WebSearch    • Redis       • Claude 
+  • Multimodal     • CodeExec     • SQLite      • Cohere 
+  • Distributed    • Custom       • Memory      • Ollama 
+
 ```
 
 ## Configuration Advanced Features
@@ -250,7 +250,7 @@ llamaagent benchmark --dataset gaia --model gpt-4
 llamaagent benchmark --config custom_benchmark.yaml
 ```
 
-## 🐳 Deployment
+##  Deployment
 
 ### Docker
 ```bash
@@ -375,7 +375,7 @@ pytest
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - OpenAI for the foundational AI models
 - Anthropic for Claude integration

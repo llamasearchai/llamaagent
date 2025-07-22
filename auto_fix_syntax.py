@@ -226,7 +226,7 @@ class SyntaxFixer:
                     self.fixed_files.append((filepath, message))
                     print(f"PASS {message}")
                 else:
-                    print(f"✓ {message}")
+                    print(f" {message}")
             else:
                 self.failed_files.append((filepath, message))
                 print(f"FAIL {message}")

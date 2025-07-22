@@ -17,7 +17,7 @@ This implementation provides a comprehensive working command-line interface for 
 - **Priority-based Scheduling**: Tasks executed based on priority and dependencies
 - **Plan Optimization**: Critical path analysis and resource optimization
 
-### 🚀 Real-time Execution Monitoring
+### LAUNCH: Real-time Execution Monitoring
 - **Progress Tracking**: Visual progress bars for individual tasks and overall execution
 - **Live Status Updates**: Real-time updates on task execution status
 - **Performance Metrics**: Execution time, success rates, and resource usage
@@ -95,13 +95,13 @@ python -m llamaagent.cli.master_cli_enhanced
 
 ### Main Menu Options
 
-1. **📋 Dynamic Task Planning**
+1. **LIST: Dynamic Task Planning**
    - Create new task plans
    - View existing plan details
    - Modify and optimize plans
    - Import/export plans
 
-2. **🚀 Execute Tasks**
+2. **LAUNCH: Execute Tasks**
    - Select plan for execution
    - Real-time monitoring
    - Progress tracking

@@ -201,12 +201,12 @@ async def main():
     
     if passed_tests == total_tests:
         print("\nPASS All tests passed! The framework is working correctly.")
-        print("\n📌 Next steps:")
+        print("\n Next steps:")
         print("  1. Run the CLI: python -m src.llamaagent.cli.main --help")
         print("  2. Start interactive mode: python -m src.llamaagent.cli.interactive")
         print("  3. Run the test suite: pytest tests/")
     else:
-        print("\n⚠️  Some tests failed. Please check the errors above.")
+        print("\nWARNING:  Some tests failed. Please check the errors above.")
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ from typing import List
 
 def run_command(command: List[str], check: bool = True) -> bool:
     """Run a command with error handling."""
-    print(f"▶ Running: {' '.join(command)}")
+    print(f" Running: {' '.join(command)}")
     try:
         result = subprocess.run(command, check=check, capture_output=True, text=True)
         if result.stdout:
@@ -66,7 +66,7 @@ def run_tests():
 
 def build_docker():
     """Build Docker image."""
-    print("🐳 Building Docker image...")
+    print(" Building Docker image...")
     
     # Check if Docker is available
     if not run_command(["docker", "--version"], check=False):
@@ -113,7 +113,7 @@ def start_api_server():
             "--reload"
         ])
     except KeyboardInterrupt:
-        print("\n👋 Server stopped")
+        print("\nGOODBYE: Server stopped")
 
 
 def main():
@@ -142,7 +142,7 @@ def main():
         print("WARNING Some tests failed, but continuing...")
     
     # Build
-    print("\n🐳 Building production artifacts...")
+    print("\n Building production artifacts...")
     if build_docker():
         print("PASS Docker build successful!")
     else:

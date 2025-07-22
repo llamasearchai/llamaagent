@@ -59,7 +59,7 @@ def main():
     for file_path in PRIORITY_FILES:
         path = Path(file_path)
         if not path.exists():
-            print(f"⚠️  {file_path} - File not found")
+            print(f"WARNING:  {file_path} - File not found")
             continue
             
         is_valid, error = check_file_syntax(path)

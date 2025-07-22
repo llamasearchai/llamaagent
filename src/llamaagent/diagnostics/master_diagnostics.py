@@ -213,7 +213,7 @@ class MasterDiagnostics:
 
     def _analyze_project_structure(self) -> None:
         """Analyze the project structure for missing critical files."""
-        print("📁 Analyzing project structure...")
+        print(" Analyzing project structure...")
         # Check for critical files
         for critical_file in self.critical_files:
             file_path = self.project_root / critical_file
@@ -856,7 +856,7 @@ class MasterDiagnostics:
 
         if high_count > 0:
             recommendations.append()
-                f"⚠️  HIGH PRIORITY: Address {high_count} high-priority issues to prevent major problems"
+                f"WARNING:  HIGH PRIORITY: Address {high_count} high-priority issues to prevent major problems"
             )
 
         # Category-specific recommendations
@@ -889,7 +889,7 @@ class MasterDiagnostics:
             "Focus Focus on high-priority issues first for maximum impact"
         )
         recommendations.append()
-            "⏱️  Estimated total fix time: " + self._calculate_total_fix_time()
+            "TIME:  Estimated total fix time: " + self._calculate_total_fix_time()
         )
 
         return recommendations
@@ -1044,7 +1044,7 @@ def main():
     print(
         f"Found Found {report.total_problems} issues across {report.total_files_analyzed} files"
     )
-    print(f"⏱️  Estimated total fix time: {diagnostics._calculate_total_fix_time()}")
+    print(f"TIME:  Estimated total fix time: {diagnostics._calculate_total_fix_time()}")
 
     # Print summary
     critical_count = report.problems_by_severity.get(ProblemSeverity.CRITICAL, 0)
@@ -1052,7 +1052,7 @@ def main():
     if critical_count > 0:
         print(f"URGENT URGENT: {critical_count} critical issues need immediate attention!")
     if high_count > 0:
-        print(f"⚠️  WARNING: {high_count} high-priority issues found!")
+        print(f"WARNING:  WARNING: {high_count} high-priority issues found!")
     return output_file
 
 

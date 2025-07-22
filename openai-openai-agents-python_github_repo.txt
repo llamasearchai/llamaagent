@@ -41,443 +41,443 @@
 ## Repository Structure
 
 ```
-└── .github/
-    └── ISSUE_TEMPLATE/
-        └── bug_report.md
-        └── feature_request.md
-        └── model_provider.md
-        └── question.md
-    └── PULL_REQUEST_TEMPLATE/
-        └── pull_request_template.md
-    └── workflows/
-        └── docs.yml
-        └── issues.yml
-        └── publish.yml
-        └── tests.yml
-└── .vscode/
-    └── settings.json
-└── docs/
-    └── assets/
-        └── images/
-            └── favicon-platform.svg
-            └── graph.png
-            └── mcp-tracing.jpg
-            └── orchestration.png
-        └── logo.svg
-    └── ja/
-        └── models/
-            └── index.md
-            └── litellm.md
-        └── voice/
-            └── pipeline.md
-            └── quickstart.md
-            └── tracing.md
-        └── agents.md
-        └── config.md
-        └── context.md
-        └── examples.md
-        └── guardrails.md
-        └── handoffs.md
-        └── index.md
-        └── mcp.md
-        └── multi_agent.md
-        └── quickstart.md
-        └── repl.md
-        └── results.md
-        └── running_agents.md
-        └── streaming.md
-        └── tools.md
-        └── tracing.md
-        └── visualization.md
-    └── models/
-        └── index.md
-        └── litellm.md
-    └── ref/
-        └── extensions/
-            └── handoff_filters.md
-            └── handoff_prompt.md
-            └── litellm.md
-        └── mcp/
-            └── server.md
-            └── util.md
-        └── models/
-            └── interface.md
-            └── openai_chatcompletions.md
-            └── openai_responses.md
-        └── tracing/
-            └── create.md
-            └── index.md
-            └── processor_interface.md
-            └── processors.md
-            └── scope.md
-            └── setup.md
-            └── span_data.md
-            └── spans.md
-            └── traces.md
-            └── util.md
-        └── voice/
-            └── models/
-                └── openai_provider.md
-                └── openai_stt.md
-                └── openai_tts.md
-            └── events.md
-            └── exceptions.md
-            └── input.md
-            └── model.md
-            └── pipeline.md
-            └── pipeline_config.md
-            └── result.md
-            └── utils.md
-            └── workflow.md
-        └── agent.md
-        └── agent_output.md
-        └── exceptions.md
-        └── function_schema.md
-        └── guardrail.md
-        └── handoffs.md
-        └── index.md
-        └── items.md
-        └── lifecycle.md
-        └── model_settings.md
-        └── repl.md
-        └── result.md
-        └── run.md
-        └── run_context.md
-        └── stream_events.md
-        └── tool.md
-        └── usage.md
-    └── scripts/
-        └── translate_docs.py
-    └── stylesheets/
-        └── extra.css
-    └── voice/
-        └── pipeline.md
-        └── quickstart.md
-        └── tracing.md
-    └── agents.md
-    └── config.md
-    └── context.md
-    └── examples.md
-    └── guardrails.md
-    └── handoffs.md
-    └── index.md
-    └── mcp.md
-    └── multi_agent.md
-    └── quickstart.md
-    └── release.md
-    └── repl.md
-    └── results.md
-    └── running_agents.md
-    └── streaming.md
-    └── tools.md
-    └── tracing.md
-    └── visualization.md
-└── examples/
-    └── agent_patterns/
-        └── README.md
-        └── agents_as_tools.py
-        └── deterministic.py
-        └── forcing_tool_use.py
-        └── input_guardrails.py
-        └── llm_as_a_judge.py
-        └── output_guardrails.py
-        └── parallelization.py
-        └── routing.py
-        └── streaming_guardrails.py
-    └── basic/
-        └── media/
-            └── image_bison.jpg
-        └── agent_lifecycle_example.py
-        └── dynamic_system_prompt.py
-        └── hello_world.py
-        └── hello_world_jupyter.ipynb
-        └── lifecycle_example.py
-        └── local_image.py
-        └── non_strict_output_type.py
-        └── previous_response_id.py
-        └── prompt_template.py
-        └── remote_image.py
-        └── stream_items.py
-        └── stream_text.py
-        └── tools.py
-    └── customer_service/
-        └── main.py
-    └── financial_research_agent/
-        └── agents/
-            └── __init__.py
-            └── financials_agent.py
-            └── planner_agent.py
-            └── risk_agent.py
-            └── search_agent.py
-            └── verifier_agent.py
-            └── writer_agent.py
-        └── README.md
-        └── __init__.py
-        └── main.py
-        └── manager.py
-        └── printer.py
-    └── handoffs/
-        └── message_filter.py
-        └── message_filter_streaming.py
-    └── hosted_mcp/
-        └── __init__.py
-        └── approvals.py
-        └── simple.py
-    └── mcp/
-        └── filesystem_example/
-            └── sample_files/
-                └── favorite_books.txt
-                └── favorite_cities.txt
-                └── favorite_songs.txt
-            └── README.md
-            └── main.py
-        └── git_example/
-            └── README.md
-            └── main.py
-        └── sse_example/
-            └── README.md
-            └── main.py
-            └── server.py
-        └── streamablehttp_example/
-            └── README.md
-            └── main.py
-            └── server.py
-    └── model_providers/
-        └── README.md
-        └── custom_example_agent.py
-        └── custom_example_global.py
-        └── custom_example_provider.py
-        └── litellm_auto.py
-        └── litellm_provider.py
-    └── reasoning_content/
-        └── __init__.py
-        └── main.py
-        └── runner_example.py
-    └── research_bot/
-        └── agents/
-            └── __init__.py
-            └── planner_agent.py
-            └── search_agent.py
-            └── writer_agent.py
-        └── sample_outputs/
-            └── product_recs.md
-            └── product_recs.txt
-            └── vacation.md
-            └── vacation.txt
-        └── README.md
-        └── __init__.py
-        └── main.py
-        └── manager.py
-        └── printer.py
-    └── tools/
-        └── code_interpreter.py
-        └── computer_use.py
-        └── file_search.py
-        └── image_generator.py
-        └── web_search.py
-    └── voice/
-        └── static/
-            └── README.md
-            └── __init__.py
-            └── main.py
-            └── util.py
-        └── streamed/
-            └── README.md
-            └── __init__.py
-            └── main.py
-            └── my_workflow.py
-        └── __init__.py
-    └── __init__.py
-└── src/
-    └── agents/
-        └── extensions/
-            └── models/
-                └── __init__.py
-                └── litellm_model.py
-                └── litellm_provider.py
-            └── __init__.py
-            └── handoff_filters.py
-            └── handoff_prompt.py
-            └── visualization.py
-        └── mcp/
-            └── __init__.py
-            └── server.py
-            └── util.py
-        └── models/
-            └── __init__.py
-            └── _openai_shared.py
-            └── chatcmpl_converter.py
-            └── chatcmpl_helpers.py
-            └── chatcmpl_stream_handler.py
-            └── fake_id.py
-            └── interface.py
-            └── multi_provider.py
-            └── openai_chatcompletions.py
-            └── openai_provider.py
-            └── openai_responses.py
-        └── tracing/
-            └── __init__.py
-            └── create.py
-            └── logger.py
-            └── processor_interface.py
-            └── processors.py
-            └── provider.py
-            └── scope.py
-            └── setup.py
-            └── span_data.py
-            └── spans.py
-            └── traces.py
-            └── util.py
-        └── util/
-            └── __init__.py
-            └── _coro.py
-            └── _error_tracing.py
-            └── _json.py
-            └── _pretty_print.py
-            └── _transforms.py
-            └── _types.py
-        └── voice/
-            └── models/
-                └── __init__.py
-                └── openai_model_provider.py
-                └── openai_stt.py
-                └── openai_tts.py
-            └── __init__.py
-            └── events.py
-            └── exceptions.py
-            └── imports.py
-            └── input.py
-            └── model.py
-            └── pipeline.py
-            └── pipeline_config.py
-            └── result.py
-            └── utils.py
-            └── workflow.py
-        └── __init__.py
-        └── _config.py
-        └── _debug.py
-        └── _run_impl.py
-        └── agent.py
-        └── agent_output.py
-        └── computer.py
-        └── exceptions.py
-        └── function_schema.py
-        └── guardrail.py
-        └── handoffs.py
-        └── items.py
-        └── lifecycle.py
-        └── logger.py
-        └── model_settings.py
-        └── prompts.py
-        └── py.typed
-        └── repl.py
-        └── result.py
-        └── run.py
-        └── run_context.py
-        └── stream_events.py
-        └── strict_schema.py
-        └── tool.py
-        └── tool_context.py
-        └── usage.py
-        └── version.py
-└── tests/
-    └── fastapi/
-        └── __init__.py
-        └── streaming_app.py
-        └── test_streaming_context.py
-    └── mcp/
-        └── __init__.py
-        └── conftest.py
-        └── helpers.py
-        └── test_caching.py
-        └── test_connect_disconnect.py
-        └── test_mcp_tracing.py
-        └── test_mcp_util.py
-        └── test_runner_calls_mcp.py
-        └── test_server_errors.py
-        └── test_tool_filtering.py
-    └── model_settings/
-        └── test_serialization.py
-    └── models/
-        └── __init__.py
-        └── conftest.py
-        └── test_kwargs_functionality.py
-        └── test_litellm_chatcompletions_stream.py
-        └── test_litellm_extra_body.py
-        └── test_map.py
-    └── tracing/
-        └── test_processor_api_key.py
-    └── voice/
-        └── __init__.py
-        └── conftest.py
-        └── fake_models.py
-        └── helpers.py
-        └── test_input.py
-        └── test_openai_stt.py
-        └── test_openai_tts.py
-        └── test_pipeline.py
-        └── test_workflow.py
-    └── README.md
-    └── __init__.py
-    └── conftest.py
-    └── fake_model.py
-    └── test_agent_config.py
-    └── test_agent_hooks.py
-    └── test_agent_prompt.py
-    └── test_agent_runner.py
-    └── test_agent_runner_streamed.py
-    └── test_agent_tracing.py
-    └── test_cancel_streaming.py
-    └── test_computer_action.py
-    └── test_config.py
-    └── test_doc_parsing.py
-    └── test_extension_filters.py
-    └── test_extra_headers.py
-    └── test_function_schema.py
-    └── test_function_tool.py
-    └── test_function_tool_decorator.py
-    └── test_global_hooks.py
-    └── test_guardrails.py
-    └── test_handoff_tool.py
-    └── test_items_helpers.py
-    └── test_max_turns.py
-    └── test_openai_chatcompletions.py
-    └── test_openai_chatcompletions_converter.py
-    └── test_openai_chatcompletions_stream.py
-    └── test_openai_responses_converter.py
-    └── test_output_tool.py
-    └── test_pretty_print.py
-    └── test_reasoning_content.py
-    └── test_repl.py
-    └── test_responses.py
-    └── test_responses_tracing.py
-    └── test_result_cast.py
-    └── test_run.py
-    └── test_run_config.py
-    └── test_run_error_details.py
-    └── test_run_step_execution.py
-    └── test_run_step_processing.py
-    └── test_strict_schema.py
-    └── test_tool_choice_reset.py
-    └── test_tool_converter.py
-    └── test_tool_use_behavior.py
-    └── test_trace_processor.py
-    └── test_tracing.py
-    └── test_tracing_errors.py
-    └── test_tracing_errors_streamed.py
-    └── test_usage.py
-    └── test_visualization.py
-    └── testing_processor.py
-└── .gitignore
-└── .prettierrc
-└── AGENTS.md
-└── CLAUDE.md
-└── LICENSE
-└── Makefile
-└── README.md
-└── mkdocs.yml
-└── pyproject.toml
-└── uv.lock
+ .github/
+     ISSUE_TEMPLATE/
+         bug_report.md
+         feature_request.md
+         model_provider.md
+         question.md
+     PULL_REQUEST_TEMPLATE/
+         pull_request_template.md
+     workflows/
+         docs.yml
+         issues.yml
+         publish.yml
+         tests.yml
+ .vscode/
+     settings.json
+ docs/
+     assets/
+         images/
+             favicon-platform.svg
+             graph.png
+             mcp-tracing.jpg
+             orchestration.png
+         logo.svg
+     ja/
+         models/
+             index.md
+             litellm.md
+         voice/
+             pipeline.md
+             quickstart.md
+             tracing.md
+         agents.md
+         config.md
+         context.md
+         examples.md
+         guardrails.md
+         handoffs.md
+         index.md
+         mcp.md
+         multi_agent.md
+         quickstart.md
+         repl.md
+         results.md
+         running_agents.md
+         streaming.md
+         tools.md
+         tracing.md
+         visualization.md
+     models/
+         index.md
+         litellm.md
+     ref/
+         extensions/
+             handoff_filters.md
+             handoff_prompt.md
+             litellm.md
+         mcp/
+             server.md
+             util.md
+         models/
+             interface.md
+             openai_chatcompletions.md
+             openai_responses.md
+         tracing/
+             create.md
+             index.md
+             processor_interface.md
+             processors.md
+             scope.md
+             setup.md
+             span_data.md
+             spans.md
+             traces.md
+             util.md
+         voice/
+             models/
+                 openai_provider.md
+                 openai_stt.md
+                 openai_tts.md
+             events.md
+             exceptions.md
+             input.md
+             model.md
+             pipeline.md
+             pipeline_config.md
+             result.md
+             utils.md
+             workflow.md
+         agent.md
+         agent_output.md
+         exceptions.md
+         function_schema.md
+         guardrail.md
+         handoffs.md
+         index.md
+         items.md
+         lifecycle.md
+         model_settings.md
+         repl.md
+         result.md
+         run.md
+         run_context.md
+         stream_events.md
+         tool.md
+         usage.md
+     scripts/
+         translate_docs.py
+     stylesheets/
+         extra.css
+     voice/
+         pipeline.md
+         quickstart.md
+         tracing.md
+     agents.md
+     config.md
+     context.md
+     examples.md
+     guardrails.md
+     handoffs.md
+     index.md
+     mcp.md
+     multi_agent.md
+     quickstart.md
+     release.md
+     repl.md
+     results.md
+     running_agents.md
+     streaming.md
+     tools.md
+     tracing.md
+     visualization.md
+ examples/
+     agent_patterns/
+         README.md
+         agents_as_tools.py
+         deterministic.py
+         forcing_tool_use.py
+         input_guardrails.py
+         llm_as_a_judge.py
+         output_guardrails.py
+         parallelization.py
+         routing.py
+         streaming_guardrails.py
+     basic/
+         media/
+             image_bison.jpg
+         agent_lifecycle_example.py
+         dynamic_system_prompt.py
+         hello_world.py
+         hello_world_jupyter.ipynb
+         lifecycle_example.py
+         local_image.py
+         non_strict_output_type.py
+         previous_response_id.py
+         prompt_template.py
+         remote_image.py
+         stream_items.py
+         stream_text.py
+         tools.py
+     customer_service/
+         main.py
+     financial_research_agent/
+         agents/
+             __init__.py
+             financials_agent.py
+             planner_agent.py
+             risk_agent.py
+             search_agent.py
+             verifier_agent.py
+             writer_agent.py
+         README.md
+         __init__.py
+         main.py
+         manager.py
+         printer.py
+     handoffs/
+         message_filter.py
+         message_filter_streaming.py
+     hosted_mcp/
+         __init__.py
+         approvals.py
+         simple.py
+     mcp/
+         filesystem_example/
+             sample_files/
+                 favorite_books.txt
+                 favorite_cities.txt
+                 favorite_songs.txt
+             README.md
+             main.py
+         git_example/
+             README.md
+             main.py
+         sse_example/
+             README.md
+             main.py
+             server.py
+         streamablehttp_example/
+             README.md
+             main.py
+             server.py
+     model_providers/
+         README.md
+         custom_example_agent.py
+         custom_example_global.py
+         custom_example_provider.py
+         litellm_auto.py
+         litellm_provider.py
+     reasoning_content/
+         __init__.py
+         main.py
+         runner_example.py
+     research_bot/
+         agents/
+             __init__.py
+             planner_agent.py
+             search_agent.py
+             writer_agent.py
+         sample_outputs/
+             product_recs.md
+             product_recs.txt
+             vacation.md
+             vacation.txt
+         README.md
+         __init__.py
+         main.py
+         manager.py
+         printer.py
+     tools/
+         code_interpreter.py
+         computer_use.py
+         file_search.py
+         image_generator.py
+         web_search.py
+     voice/
+         static/
+             README.md
+             __init__.py
+             main.py
+             util.py
+         streamed/
+             README.md
+             __init__.py
+             main.py
+             my_workflow.py
+         __init__.py
+     __init__.py
+ src/
+     agents/
+         extensions/
+             models/
+                 __init__.py
+                 litellm_model.py
+                 litellm_provider.py
+             __init__.py
+             handoff_filters.py
+             handoff_prompt.py
+             visualization.py
+         mcp/
+             __init__.py
+             server.py
+             util.py
+         models/
+             __init__.py
+             _openai_shared.py
+             chatcmpl_converter.py
+             chatcmpl_helpers.py
+             chatcmpl_stream_handler.py
+             fake_id.py
+             interface.py
+             multi_provider.py
+             openai_chatcompletions.py
+             openai_provider.py
+             openai_responses.py
+         tracing/
+             __init__.py
+             create.py
+             logger.py
+             processor_interface.py
+             processors.py
+             provider.py
+             scope.py
+             setup.py
+             span_data.py
+             spans.py
+             traces.py
+             util.py
+         util/
+             __init__.py
+             _coro.py
+             _error_tracing.py
+             _json.py
+             _pretty_print.py
+             _transforms.py
+             _types.py
+         voice/
+             models/
+                 __init__.py
+                 openai_model_provider.py
+                 openai_stt.py
+                 openai_tts.py
+             __init__.py
+             events.py
+             exceptions.py
+             imports.py
+             input.py
+             model.py
+             pipeline.py
+             pipeline_config.py
+             result.py
+             utils.py
+             workflow.py
+         __init__.py
+         _config.py
+         _debug.py
+         _run_impl.py
+         agent.py
+         agent_output.py
+         computer.py
+         exceptions.py
+         function_schema.py
+         guardrail.py
+         handoffs.py
+         items.py
+         lifecycle.py
+         logger.py
+         model_settings.py
+         prompts.py
+         py.typed
+         repl.py
+         result.py
+         run.py
+         run_context.py
+         stream_events.py
+         strict_schema.py
+         tool.py
+         tool_context.py
+         usage.py
+         version.py
+ tests/
+     fastapi/
+         __init__.py
+         streaming_app.py
+         test_streaming_context.py
+     mcp/
+         __init__.py
+         conftest.py
+         helpers.py
+         test_caching.py
+         test_connect_disconnect.py
+         test_mcp_tracing.py
+         test_mcp_util.py
+         test_runner_calls_mcp.py
+         test_server_errors.py
+         test_tool_filtering.py
+     model_settings/
+         test_serialization.py
+     models/
+         __init__.py
+         conftest.py
+         test_kwargs_functionality.py
+         test_litellm_chatcompletions_stream.py
+         test_litellm_extra_body.py
+         test_map.py
+     tracing/
+         test_processor_api_key.py
+     voice/
+         __init__.py
+         conftest.py
+         fake_models.py
+         helpers.py
+         test_input.py
+         test_openai_stt.py
+         test_openai_tts.py
+         test_pipeline.py
+         test_workflow.py
+     README.md
+     __init__.py
+     conftest.py
+     fake_model.py
+     test_agent_config.py
+     test_agent_hooks.py
+     test_agent_prompt.py
+     test_agent_runner.py
+     test_agent_runner_streamed.py
+     test_agent_tracing.py
+     test_cancel_streaming.py
+     test_computer_action.py
+     test_config.py
+     test_doc_parsing.py
+     test_extension_filters.py
+     test_extra_headers.py
+     test_function_schema.py
+     test_function_tool.py
+     test_function_tool_decorator.py
+     test_global_hooks.py
+     test_guardrails.py
+     test_handoff_tool.py
+     test_items_helpers.py
+     test_max_turns.py
+     test_openai_chatcompletions.py
+     test_openai_chatcompletions_converter.py
+     test_openai_chatcompletions_stream.py
+     test_openai_responses_converter.py
+     test_output_tool.py
+     test_pretty_print.py
+     test_reasoning_content.py
+     test_repl.py
+     test_responses.py
+     test_responses_tracing.py
+     test_result_cast.py
+     test_run.py
+     test_run_config.py
+     test_run_error_details.py
+     test_run_step_execution.py
+     test_run_step_processing.py
+     test_strict_schema.py
+     test_tool_choice_reset.py
+     test_tool_converter.py
+     test_tool_use_behavior.py
+     test_trace_processor.py
+     test_tracing.py
+     test_tracing_errors.py
+     test_tracing_errors_streamed.py
+     test_usage.py
+     test_visualization.py
+     testing_processor.py
+ .gitignore
+ .prettierrc
+ AGENTS.md
+ CLAUDE.md
+ LICENSE
+ Makefile
+ README.md
+ mkdocs.yml
+ pyproject.toml
+ uv.lock
 ```
 
 ## README Content
@@ -1139,17 +1139,17 @@ export OPENAI_AGENTS_DONT_LOG_TOOL_DATA=1
 search:
   exclude: true
 ---
-# エージェント
+# 
 
-エージェントはアプリの主要な構成ブロックです。エージェントは、大規模言語モデル ( LLM ) に instructions と tools を設定したものです。
+ ( LLM )  instructions  tools 
 
-## 基本設定
+## 
 
-エージェントで最も一般的に設定するプロパティは次のとおりです。
 
--   `instructions`: 開発者メッセージまたは system prompt とも呼ばれます。
--   `model`: 使用する LLM と、temperature や top_p などのモデル調整パラメーターを指定する任意の `model_settings`。
--   `tools`: エージェントがタスクを達成するために利用できるツール。
+
+-   `instructions`:  system prompt 
+-   `model`:  LLM temperature  top_p  `model_settings`
+-   `tools`: 
 
 ```python
 from agents import Agent, ModelSettings, function_tool
@@ -1166,9 +1166,9 @@ agent = Agent(
 )
 ```
 
-## コンテキスト
+## 
 
-エージェントはその `context` 型について汎用的です。コンテキストは依存性注入の手段で、`Runner.run()` に渡すオブジェクトです。これはすべてのエージェント、ツール、ハンドオフなどに渡され、エージェント実行時の依存関係や状態をまとめて保持します。任意の Python オブジェクトをコンテキストとして渡せます。
+ `context` `Runner.run()`  Python 
 
 ```python
 @dataclass
@@ -1184,9 +1184,9 @@ agent = Agent[UserContext](
 )
 ```
 
-## 出力タイプ
+## 
 
-デフォルトでは、エージェントはプレーンテキスト ( つまり `str` ) を出力します。特定の型で出力させたい場合は `output_type` パラメーターを使用します。一般的には [Pydantic](https://docs.pydantic.dev/) オブジェクトを利用しますが、Pydantic の [TypeAdapter](https://docs.pydantic.dev/latest/api/type_adapter/) でラップ可能な型であれば何でも対応します。たとえば dataclass、list、TypedDict などです。
+ (  `str` )  `output_type`  [Pydantic](https://docs.pydantic.dev/) Pydantic  [TypeAdapter](https://docs.pydantic.dev/latest/api/type_adapter/)  dataclasslistTypedDict 
 
 ```python
 from pydantic import BaseModel
@@ -1207,11 +1207,11 @@ agent = Agent(
 
 !!! note
 
-    `output_type` を渡すと、モデルは通常のプレーンテキスト応答の代わりに [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) を使用するよう指示されます。
+    `output_type`  [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) 
 
-## ハンドオフ
+## 
 
-ハンドオフは、エージェントが委譲できるサブエージェントです。ハンドオフのリストを渡しておくと、エージェントは必要に応じてそれらに処理を委譲できます。これにより、単一のタスクに特化したモジュール式エージェントを編成できる強力なパターンが実現します。詳細は [handoffs](handoffs.md) ドキュメントをご覧ください。
+ [handoffs](handoffs.md) 
 
 ```python
 from agents import Agent
@@ -1230,9 +1230,9 @@ triage_agent = Agent(
 )
 ```
 
-## 動的 instructions
+##  instructions
 
-通常はエージェント作成時に instructions を指定しますが、関数を介して動的に instructions を提供することもできます。その関数はエージェントとコンテキストを受け取り、プロンプトを返す必要があります。同期関数と `async` 関数の両方に対応しています。
+ instructions  instructions  `async` 
 
 ```python
 def dynamic_instructions(
@@ -1247,17 +1247,17 @@ agent = Agent[UserContext](
 )
 ```
 
-## ライフサイクルイベント (hooks)
+##  (hooks)
 
-場合によっては、エージェントのライフサイクルを観察したいことがあります。たとえば、イベントをログに記録したり、特定のイベント発生時にデータを事前取得したりする場合です。`hooks` プロパティを使ってエージェントのライフサイクルにフックできます。[`AgentHooks`][agents.lifecycle.AgentHooks] クラスをサブクラス化し、関心のあるメソッドをオーバーライドしてください。
+`hooks` [`AgentHooks`][agents.lifecycle.AgentHooks] 
 
-## ガードレール
+## 
 
-ガードレールを使うと、エージェントの実行と並行してユーザー入力に対するチェックやバリデーションを実行できます。たとえば、ユーザーの入力内容が関連しているかをスクリーニングできます。詳細は [guardrails](guardrails.md) ドキュメントをご覧ください。
+ [guardrails](guardrails.md) 
 
-## エージェントの複製
+## 
 
-`clone()` メソッドを使用すると、エージェントを複製し、必要に応じて任意のプロパティを変更できます。
+`clone()` 
 
 ```python
 pirate_agent = Agent(
@@ -1272,20 +1272,20 @@ robot_agent = pirate_agent.clone(
 )
 ```
 
-## ツール使用の強制
+## 
 
-ツールの一覧を渡しても、LLM が必ずツールを使用するとは限りません。[`ModelSettings.tool_choice`][agents.model_settings.ModelSettings.tool_choice] を設定することでツール使用を強制できます。有効な値は次のとおりです。
+LLM [`ModelSettings.tool_choice`][agents.model_settings.ModelSettings.tool_choice] 
 
-1. `auto` — ツールを使用するかどうかを LLM が判断します。
-2. `required` — LLM にツール使用を必須化します ( ただし使用するツールは自動選択 )。
-3. `none` — LLM にツールを使用しないことを要求します。
-4. 特定の文字列 ( 例: `my_tool` ) — その特定のツールを LLM に使用させます。
+1. `auto` —  LLM 
+2. `required` — LLM  (  )
+3. `none` — LLM 
+4.  ( : `my_tool` ) —  LLM 
 
 !!! note
 
-    無限ループを防ぐため、フレームワークはツール呼び出し後に `tool_choice` を自動的に "auto" にリセットします。この動作は [`agent.reset_tool_choice`][agents.agent.Agent.reset_tool_choice] で設定できます。無限ループが起こる理由は、ツールの結果が LLM に送られ、`tool_choice` により再びツール呼び出しが生成される、という流れが繰り返されるからです。
+     `tool_choice`  "auto"  [`agent.reset_tool_choice`][agents.agent.Agent.reset_tool_choice]  LLM `tool_choice` 
 
-    ツール呼び出し後にエージェントを完全に停止させたい場合 ( auto モードで続行させたくない場合 ) は、[`Agent.tool_use_behavior="stop_on_first_tool"`] を設定してください。これにより、ツールの出力を LL M の追加処理なしにそのまま最終応答として返します。
+     ( auto  ) [`Agent.tool_use_behavior="stop_on_first_tool"`]  LL M 
 ```
 
 #### Directory: `openai-agents-python-main/docs/ja/models`
@@ -1297,54 +1297,54 @@ robot_agent = pirate_agent.clone(
 search:
   exclude: true
 ---
-# モデル
+# 
 
-Agents SDK は OpenAI モデルを 2 つの形態で即利用できます。
+Agents SDK  OpenAI  2 
 
-- **推奨**: [`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel] は、新しい [Responses API](https://platform.openai.com/docs/api-reference/responses) を使用して OpenAI API を呼び出します。  
-- [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel] は、[Chat Completions API](https://platform.openai.com/docs/api-reference/chat) を使用して OpenAI API を呼び出します。
+- ****: [`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel]  [Responses API](https://platform.openai.com/docs/api-reference/responses)  OpenAI API   
+- [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel] [Chat Completions API](https://platform.openai.com/docs/api-reference/chat)  OpenAI API 
 
-## 非 OpenAI モデル
+##  OpenAI 
 
-ほとんどの非 OpenAI モデルは [LiteLLM インテグレーション](./litellm.md) 経由で利用できます。まず、litellm 依存グループをインストールします:
+ OpenAI  [LiteLLM ](./litellm.md) litellm :
 
 ```bash
 pip install "openai-agents[litellm]"
 ```
 
-次に、`litellm/` 接頭辞を付けて任意の [サポート対象モデル](https://docs.litellm.ai/docs/providers) を使用します:
+`litellm/`  [](https://docs.litellm.ai/docs/providers) :
 
 ```python
 claude_agent = Agent(model="litellm/anthropic/claude-3-5-sonnet-20240620", ...)
 gemini_agent = Agent(model="litellm/gemini/gemini-2.5-flash-preview-04-17", ...)
 ```
 
-### 非 OpenAI モデルを利用するその他の方法
+###  OpenAI 
 
-他の LLM プロバイダーを統合する方法は、あと 3 つあります（[こちら](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/) に例があります）。
+ LLM  3 [](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/) 
 
 1. [`set_default_openai_client`][agents.set_default_openai_client]  
-   `AsyncOpenAI` インスタンスを LLM クライアントとしてグローバルに使用したい場合に便利です。LLM プロバイダーが OpenAI 互換の API エンドポイントを持ち、`base_url` と `api_key` を設定できる場合に使用します。設定例は [examples/model_providers/custom_example_global.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_global.py) にあります。
+   `AsyncOpenAI`  LLM LLM  OpenAI  API `base_url`  `api_key`  [examples/model_providers/custom_example_global.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_global.py) 
 2. [`ModelProvider`][agents.models.interface.ModelProvider]  
-   `Runner.run` レベルでカスタムモデルプロバイダーを指定できます。これにより「この run のすべてのエージェントでカスタムプロバイダーを使う」と宣言できます。設定例は [examples/model_providers/custom_example_provider.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_provider.py) にあります。
+   `Runner.run`  run  [examples/model_providers/custom_example_provider.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_provider.py) 
 3. [`Agent.model`][agents.agent.Agent.model]  
-   特定のエージェントインスタンスにモデルを指定できます。エージェントごとに異なるプロバイダーを組み合わせることが可能です。設定例は [examples/model_providers/custom_example_agent.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_agent.py) にあります。ほとんどのモデルを簡単に利用する方法として [LiteLLM インテグレーション](./litellm.md) を利用できます。
+    [examples/model_providers/custom_example_agent.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_agent.py)  [LiteLLM ](./litellm.md) 
 
-`platform.openai.com` の API キーを持っていない場合は、`set_tracing_disabled()` でトレーシングを無効化するか、[別のトレーシングプロセッサー](../tracing.md) を設定することをお勧めします。
+`platform.openai.com`  API `set_tracing_disabled()` [](../tracing.md) 
 
 !!! note
-    これらの例では、Responses API をまだサポートしていない LLM プロバイダーが多いため、Chat Completions API/モデルを使用しています。LLM プロバイダーが Responses API をサポートしている場合は、Responses を使用することを推奨します。
+    Responses API  LLM Chat Completions API/LLM  Responses API Responses 
 
-## モデルの組み合わせ
+## 
 
-1 つのワークフロー内でエージェントごとに異なるモデルを使用したい場合があります。たとえば、振り分けには小さく高速なモデルを、複雑なタスクには大きく高性能なモデルを使用するといったケースです。[`Agent`][agents.Agent] を設定する際、次のいずれかの方法でモデルを選択できます。
+1 [`Agent`][agents.Agent] 
 
-1. モデル名を直接指定する  
-2. 任意のモデル名と、その名前を Model インスタンスへマッピングできる [`ModelProvider`][agents.models.interface.ModelProvider] を指定する  
-3. [`Model`][agents.models.interface.Model] 実装を直接渡す  
+1.   
+2.  Model  [`ModelProvider`][agents.models.interface.ModelProvider]   
+3. [`Model`][agents.models.interface.Model]   
 
 !!!note
-    SDK は [`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel] と [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel] の両形態をサポートしていますが、各ワークフローで 1 つのモデル形態に統一することを推奨します。2 つの形態はサポートする機能とツールが異なるためです。混在させる場合は、使用する機能が双方で利用可能かを必ず確認してください。
+    SDK  [`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel]  [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel]  1 2 
 
 ```python
 from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
@@ -1377,10 +1377,10 @@ async def main():
     print(result.final_output)
 ```
 
-1. OpenAI のモデル名を直接設定  
-2. [`Model`][agents.models.interface.Model] 実装を提供  
+1. OpenAI   
+2. [`Model`][agents.models.interface.Model]   
 
-エージェントで使用するモデルをさらに構成したい場合は、`temperature` などのオプションパラメーターを指定できる [`ModelSettings`][agents.models.interface.ModelSettings] を渡せます。
+`temperature`  [`ModelSettings`][agents.models.interface.ModelSettings] 
 
 ```python
 from agents import Agent, ModelSettings
@@ -1393,7 +1393,7 @@ english_agent = Agent(
 )
 ```
 
-OpenAI の Responses API を使用する場合、`user` や `service_tier` など[その他のオプションパラメーター](https://platform.openai.com/docs/api-reference/responses/create) があります。トップレベルで指定できない場合は、`extra_args` で渡してください。
+OpenAI  Responses API `user`  `service_tier` [](https://platform.openai.com/docs/api-reference/responses/create) `extra_args` 
 
 ```python
 from agents import Agent, ModelSettings
@@ -1409,29 +1409,29 @@ english_agent = Agent(
 )
 ```
 
-## 他の LLM プロバイダー使用時の一般的な問題
+##  LLM 
 
-### Tracing クライアントの 401 エラー
+### Tracing  401 
 
-Tracing 関連のエラーが発生する場合、トレースは OpenAI サーバーへアップロードされるため、OpenAI API キーが必要です。対応方法は次の 3 つです。
+Tracing  OpenAI OpenAI API  3 
 
-1. トレーシングを完全に無効化する: [`set_tracing_disabled(True)`][agents.set_tracing_disabled]  
-2. トレース用に OpenAI キーを設定する: [`set_tracing_export_api_key(...)`][agents.set_tracing_export_api_key]  
-   この API キーはトレースのアップロードのみに使用され、[platform.openai.com](https://platform.openai.com/) で取得したものが必要です。  
-3. OpenAI 以外のトレースプロセッサーを使用する。詳細は [tracing のドキュメント](../tracing.md#custom-tracing-processors) を参照してください。
+1. : [`set_tracing_disabled(True)`][agents.set_tracing_disabled]  
+2.  OpenAI : [`set_tracing_export_api_key(...)`][agents.set_tracing_export_api_key]  
+    API [platform.openai.com](https://platform.openai.com/)   
+3. OpenAI  [tracing ](../tracing.md#custom-tracing-processors) 
 
-### Responses API のサポート
+### Responses API 
 
-SDK はデフォルトで Responses API を使用しますが、ほとんどの LLM プロバイダーはまだ非対応です。その結果、404 などのエラーが発生することがあります。対処方法は次の 2 つです。
+SDK  Responses API  LLM 404  2 
 
-1. [`set_default_openai_api("chat_completions")`][agents.set_default_openai_api] を呼び出す  
-   `OPENAI_API_KEY` と `OPENAI_BASE_URL` を環境変数で設定している場合に有効です。  
-2. [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel] を使用する  
-   例は [こちら](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/) にあります。
+1. [`set_default_openai_api("chat_completions")`][agents.set_default_openai_api]   
+   `OPENAI_API_KEY`  `OPENAI_BASE_URL`   
+2. [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel]   
+    [](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/) 
 
-### structured outputs のサポート
+### structured outputs 
 
-一部のモデルプロバイダーは [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) をサポートしていません。その場合、次のようなエラーが発生することがあります。
+ [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) 
 
 ```
 
@@ -1439,15 +1439,15 @@ BadRequestError: Error code: 400 - {'error': {'message': "'response_format.type'
 
 ```
 
-これは一部プロバイダーの制限で、JSON 出力自体はサポートしていても `json_schema` を指定できないことが原因です。修正に向けて取り組んでいますが、JSON スキーマ出力をサポートしているプロバイダーを使用することをお勧めします。そうでないと、不正な JSON が返されてアプリが頻繁に壊れる可能性があります。
+JSON  `json_schema` JSON  JSON 
 
-## プロバイダーを跨いだモデルの組み合わせ
+## 
 
-モデルプロバイダーごとの機能差に注意しないと、エラーが発生します。たとえば OpenAI は structured outputs、マルチモーダル入力、ホスト型の file search や web search をサポートしていますが、多くの他プロバイダーは非対応です。以下の制限に留意してください。
+ OpenAI  structured outputs file search  web search 
 
-- 対応していないプロバイダーには未サポートの `tools` を送らない  
-- テキストのみのモデルを呼び出す前にマルチモーダル入力を除外する  
-- structured JSON 出力をサポートしていないプロバイダーでは、不正な JSON が返ることがある点に注意する
+-  `tools`   
+-   
+- structured JSON  JSON 
 ```
 
 #### Directory: `openai-agents-python-main/docs/ja/voice`
@@ -1459,14 +1459,14 @@ BadRequestError: Error code: 400 - {'error': {'message': "'response_format.type'
 search:
   exclude: true
 ---
-# パイプラインと ワークフロー
+#  
 
-[`VoicePipeline`][agents.voice.pipeline.VoicePipeline] は、エージェント的なワークフローを音声アプリに簡単に変換できるクラスです。ワークフローを渡すと、パイプラインが入力音声の文字起こし、音声終了の検知、適切なタイミングでのワークフロー呼び出し、そしてワークフロー出力を音声へ変換する処理を担当します。
+[`VoicePipeline`][agents.voice.pipeline.VoicePipeline] 
 
 ```mermaid
 graph LR
     %% Input
-    A["🎤 Audio Input"]
+    A[" Audio Input"]
 
     %% Voice Pipeline
     subgraph Voice_Pipeline [Voice Pipeline]
@@ -1478,7 +1478,7 @@ graph LR
     end
 
     %% Output
-    E["🎧 Audio Output"]
+    E[" Audio Output"]
 
     %% Flow
     A --> Voice_Pipeline
@@ -1489,33 +1489,33 @@ graph LR
 
 ```
 
-## パイプラインの設定
+## 
 
-パイプラインを作成する際に、以下を設定できます。
 
-1. [`workflow`][agents.voice.workflow.VoiceWorkflowBase] ‐ 新しい音声が文字起こしされるたびに実行されるコード
-2. 使用する [`speech-to-text`][agents.voice.model.STTModel] および [`text-to-speech`][agents.voice.model.TTSModel] モデル
-3. [`config`][agents.voice.pipeline_config.VoicePipelineConfig] ‐ 以下のような内容を設定可能
-    - モデルプロバイダー。モデル名をモデルにマッピングします
-    - トレーシング。トレーシングの無効化、音声ファイルのアップロード可否、ワークフロー名、トレース ID など
-    - TTS と STT モデルの設定。プロンプト、言語、使用するデータ型など
 
-## パイプラインの実行
+1. [`workflow`][agents.voice.workflow.VoiceWorkflowBase] ‐ 
+2.  [`speech-to-text`][agents.voice.model.STTModel]  [`text-to-speech`][agents.voice.model.TTSModel] 
+3. [`config`][agents.voice.pipeline_config.VoicePipelineConfig] ‐ 
+    - 
+    -  ID 
+    - TTS  STT 
 
-パイプラインは [`run()`][agents.voice.pipeline.VoicePipeline.run] メソッドで実行できます。音声入力は次の 2 形式で渡せます。
+## 
+
+ [`run()`][agents.voice.pipeline.VoicePipeline.run]  2 
 
 1. [`AudioInput`][agents.voice.input.AudioInput]  
-   完全な音声トランスクリプトがある場合に使用し、その結果だけを生成したいときに便利です。話者の発話終了を検知する必要がないケース、たとえば録音済み音声やプッシュトゥートーク型アプリのようにユーザーが話し終えたタイミングが明確な場合に向いています。
+   
 2. [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput]  
-   ユーザーの発話終了検知が必要な場合に使用します。検出された音声チャンクを順次プッシュでき、音声パイプラインが「アクティビティ検知」と呼ばれるプロセスを通じて適切なタイミングでエージェント ワークフローを自動的に実行します。
+    
 
-## 結果
+## 
 
-音声パイプライン実行の結果は [`StreamedAudioResult`][agents.voice.result.StreamedAudioResult] です。これは発生したイベントをストリーミングで受け取れるオブジェクトです。いくつかの [`VoiceStreamEvent`][agents.voice.events.VoiceStreamEvent] があり、主なものは次のとおりです。
+ [`StreamedAudioResult`][agents.voice.result.StreamedAudioResult]  [`VoiceStreamEvent`][agents.voice.events.VoiceStreamEvent] 
 
-1. [`VoiceStreamEventAudio`][agents.voice.events.VoiceStreamEventAudio] ‐ 音声チャンクを含みます
-2. [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] ‐ ターンの開始や終了などのライフサイクルイベントを通知します
-3. [`VoiceStreamEventError`][agents.voice.events.VoiceStreamEventError] ‐ エラーイベントです
+1. [`VoiceStreamEventAudio`][agents.voice.events.VoiceStreamEventAudio] ‐ 
+2. [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] ‐ 
+3. [`VoiceStreamEventError`][agents.voice.events.VoiceStreamEventError] ‐ 
 
 ```python
 
@@ -1531,11 +1531,11 @@ async for event in result.stream():
     ...
 ```
 
-## ベストプラクティス
+## 
 
-### 割り込み
+### 
 
-Agents SDK は現在 [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput] に対して、組み込みの割り込み処理をサポートしていません。そのため、検出された各ターンごとにワークフローが個別に実行されます。アプリケーション内で割り込みを処理したい場合は、[`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] イベントを監視できます。`turn_started` は新しいターンが文字起こしされ、処理が開始されたことを示します。`turn_ended` は該当ターンのすべての音声が送信された後にトリガーされます。たとえば、モデルがターンを開始した際にスピーカーのマイクをミュートし、そのターンに関連する音声をすべて送信し終えた後にアンミュートするといった制御に、これらのイベントを利用できます。
+Agents SDK  [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput] [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] `turn_started` `turn_ended` 
 ```
 
 #### Directory: `openai-agents-python-main/docs/models`
@@ -1832,27 +1832,27 @@ do_not_translate = [
 
 eng_to_non_eng_mapping = {
     "ja": {
-        "agents": "エージェント",
-        "computer use": "コンピュータ操作",
-        "OAI hosted tools": "OpenAI がホストするツール",
-        "well formed data": "適切な形式のデータ",
-        "guardrail": "ガードレール",
-        "handoffs": "ハンドオフ",
-        "function tools": "関数ツール",
-        "tracing": "トレーシング",
-        "code examples": "コード例",
-        "vector store": "ベクトルストア",
-        "deep research": "ディープリサーチ",
-        "category": "カテゴリー",
-        "user": "ユーザー",
-        "parameter": "パラメーター",
-        "processor": "プロセッサー",
-        "server": "サーバー",
-        "web search": "Web 検索",
-        "file search": "ファイル検索",
-        "streaming": "ストリーミング",
-        "system prompt": "システムプロンプト",
-        "Python first": "Python ファースト",
+        "agents": "",
+        "computer use": "",
+        "OAI hosted tools": "OpenAI ",
+        "well formed data": "",
+        "guardrail": "",
+        "handoffs": "",
+        "function tools": "",
+        "tracing": "",
+        "code examples": "",
+        "vector store": "",
+        "deep research": "",
+        "category": "",
+        "user": "",
+        "parameter": "",
+        "processor": "",
+        "server": "",
+        "web search": "Web ",
+        "file search": "",
+        "streaming": "",
+        "system prompt": "",
+        "Python first": "Python ",
         # Add more Japanese mappings here
     },
     # Add more languages here
@@ -1867,7 +1867,7 @@ eng_to_non_eng_instructions = {
     "ja": [
         "* The term 'result' in the Runner guide context must be translated like 'execution results'",
         "* The term 'raw' in 'raw response events' must be kept as is",
-        "* You must consistently use polite wording such as です/ます rather than である/なのだ.",
+        "* You must consistently use polite wording such as / rather than /.",
         # Add more Japanese mappings here
     ],
     # Add more languages here
@@ -1916,7 +1916,7 @@ You must return **only** the translated markdown. Do not include any commentary,
 #########################
 *(applies only when {target_language} = Japanese)*  
 - Insert a half‑width space before and after all alphanumeric terms.  
-- Add a half‑width space just outside markdown emphasis markers: ` **太字** ` (good) vs `** 太字 **` (bad).
+- Add a half‑width space just outside markdown emphasis markers: ` **** ` (good) vs `**  **` (bad).
 
 #########################
 ##  DO NOT TRANSLATE   ##
@@ -2303,7 +2303,7 @@ if __name__ == "__main__":
 ```mermaid
 graph LR
     %% Input
-    A["🎤 Audio Input"]
+    A[" Audio Input"]
 
     %% Voice Pipeline
     subgraph Voice_Pipeline [Voice Pipeline]
@@ -2315,7 +2315,7 @@ graph LR
     end
 
     %% Output
-    E["🎧 Audio Output"]
+    E[" Audio Output"]
 
     %% Flow
     A --> Voice_Pipeline
@@ -3479,9 +3479,9 @@ class AudioStatusIndicator(Static):
     @override
     def render(self) -> str:
         status = (
-            "🔴 Recording... (Press K to stop)"
+            " Recording... (Press K to stop)"
             if self.is_recording
-            else "⚪ Press K to start recording (Q to quit)"
+            else " Press K to start recording (Q to quit)"
         )
         return status
 

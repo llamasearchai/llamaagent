@@ -537,7 +537,7 @@ class GAIABenchmark:
         logger.info(f"Results saved to {output_path}")
 
 
-# ─────────────────────────────── convenience functions ──────────────────────
+#  convenience functions 
 
 
 async def run_gaia_evaluation(

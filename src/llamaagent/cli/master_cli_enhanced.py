@@ -136,14 +136,14 @@ class EnhancedMasterCLI:
         table.add_column("Description", style="yellow")
 
         menu_items = [
-            ("1", "📋 Task Planning", "Create and manage dynamic task plans"),
+            ("1", "LIST: Task Planning", "Create and manage dynamic task plans"),
             ("2", "Execute Execute Tasks", "Run tasks with real-time monitoring"),
             ("3", "Agent Agent Chat", "Interactive chat with specialized agents"),
             ("4", "RESULTS Dashboard", "Performance metrics and analytics"),
             ("5", "Configuration Configuration", "System and agent configuration"),
             ("6", "Testing", "Debug and test system components"),
             ("7", "Help Help", "Documentation and examples"),
-            ("0", "🚪 Exit", "Exit the application"),
+            ("0", " Exit", "Exit the application"),
         ]
 
         for option, feature, description in menu_items:
@@ -198,7 +198,7 @@ class EnhancedMasterCLI:
 
     async def _task_planning_interface(self):
         """Task planning interface."""
-        self.console.print(Panel("📋 Dynamic Task Planning", style="bold blue"))
+        self.console.print(Panel("LIST: Dynamic Task Planning", style="bold blue"))
 
         if self.active_plans:
             self.console.print("\n[bold]Active Plans:[/bold]")
@@ -276,7 +276,7 @@ class EnhancedMasterCLI:
                 optimized_plan = self.task_planner.optimize_plan(plan)
                 self.active_plans[plan.id] = optimized_plan
 
-            self.console.print(f"[green]✓ Plan created: {plan.id}[/green]")
+            self.console.print(f"[green] Plan created: {plan.id}[/green]")
             self.console.print(f"Total tasks: {len(plan.tasks)}")
 
             # Show summary
@@ -389,7 +389,7 @@ class EnhancedMasterCLI:
         table.add_column("Result", style="white")
 
         for task_id, result in results.items():
-            status = "✓ Success" if result.success else "✗ Failed"
+            status = " Success" if result.success else " Failed"
             duration = (
                 f"{result.duration.total_seconds():.1f}s" if result.duration else "N/A"
             )
@@ -405,7 +405,7 @@ class EnhancedMasterCLI:
 
     async def _agent_chat_interface(self):
         """Interactive chat with agents."""
-        self.console.print(Panel("💬 Agent Chat", style="bold blue"))
+        self.console.print(Panel(" Agent Chat", style="bold blue"))
 
         # Select agent
         agent_names = list(self.agents.keys())
@@ -547,7 +547,7 @@ class EnhancedMasterCLI:
         table.add_column("Details", style="green")
 
         for component, status, details in diagnostics:
-            status_text = "✓ OK" if status else "✗ FAIL"
+            status_text = " OK" if status else " FAIL"
             table.add_row(component, status_text, details)
 
         self.console.print(table)

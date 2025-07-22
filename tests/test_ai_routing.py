@@ -75,7 +75,7 @@ class TestTaskAnalyzer:
 
         # Complex task
         complex_task = """
-        Implement a distributed caching system with Redis that handles 
+        Implement a distributed caching system with Redis that handles
         concurrent requests, implements LRU eviction, supports clustering,
         and includes monitoring with Prometheus metrics.
         """

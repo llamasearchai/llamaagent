@@ -204,17 +204,17 @@ from llamaagent.tools import CalculatorTool
 
 ```
 tests/
-├── unit/              # Unit tests
-│   ├── test_agents.py
-│   ├── test_tools.py
-│   └── test_providers.py
-├── integration/       # Integration tests
-│   ├── test_api.py
-│   └── test_workflow.py
-├── e2e/              # End-to-end tests
-│   └── test_complete_system.py
-└── performance/      # Performance tests
-    └── test_benchmarks.py
+ unit/              # Unit tests
+    test_agents.py
+    test_tools.py
+    test_providers.py
+ integration/       # Integration tests
+    test_api.py
+    test_workflow.py
+ e2e/              # End-to-end tests
+    test_complete_system.py
+ performance/      # Performance tests
+     test_benchmarks.py
 ```
 
 ### Writing Tests

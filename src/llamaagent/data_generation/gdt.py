@@ -61,11 +61,11 @@ class DebateTrace:
 class GDTOrchestrator:
     """Orchestrates generative debate tree creation."""
 
-    RESEARCHER_PROMPT = """You are a researcher in a debate. Given the current argument, 
-find a verifiable piece of external information that either supports or refutes it. 
+    RESEARCHER_PROMPT = """You are a researcher in a debate. Given the current argument,
+find a verifiable piece of external information that either supports or refutes it.
 Provide a clear, factual statement."""
 
-    ANALYZER_PROMPT = """You are an analyzer in a debate. Given the current argument, 
+    ANALYZER_PROMPT = """You are an analyzer in a debate. Given the current argument,
 propose the next logical deduction or mathematical step required to advance the problem-solving process."""
 
     CRITIC_PROMPT = """You are a logical reasoner and critic. Analyze the following proposal in the context of the overall problem.

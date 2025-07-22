@@ -75,26 +75,26 @@ def test_core_imports():
         # Test core agent imports
         from src.llamaagent.agents.base import AgentConfig, AgentRole
         from src.llamaagent.agents.react import ReactAgent
-        print("✓ Agent modules imported successfully")
+        print(" Agent modules imported successfully")
         
         # Test LLM provider imports
         from src.llamaagent.llm.providers.mock_provider import MockProvider
         from src.llamaagent.llm.factory import create_provider
-        print("✓ LLM provider modules imported successfully")
+        print(" LLM provider modules imported successfully")
         
         # Test tool imports
         from src.llamaagent.tools.calculator import CalculatorTool
         from src.llamaagent.tools.python_repl import PythonREPLTool
         from src.llamaagent.tools.base import Tool
-        print("✓ Tool modules imported successfully")
+        print(" Tool modules imported successfully")
         
         # Test memory imports
         from src.llamaagent.memory.base import SimpleMemory
-        print("✓ Memory modules imported successfully")
+        print(" Memory modules imported successfully")
         
         # Test types
         from src.llamaagent.types import TaskInput, TaskOutput, TaskStatus
-        print("✓ Type definitions imported successfully")
+        print(" Type definitions imported successfully")
         
         return True
         
@@ -110,16 +110,16 @@ def test_mock_provider():
         
         # Create mock provider
         provider = MockProvider(model_name="mock-gpt-4")
-        print(f"✓ Mock provider created: {provider.model_name}")
+        print(f" Mock provider created: {provider.model_name}")
         
         # Test basic completion
         response = provider.complete("Hello, world!")
-        print(f"✓ Mock completion response: {response[:50]}...")
+        print(f" Mock completion response: {response[:50]}...")
         
         # Test with context
         context = {"user": "test", "task": "greeting"}
         response_with_context = provider.complete("Hello", context)
-        print(f"✓ Mock completion with context: {response_with_context[:50]}...")
+        print(f" Mock completion with context: {response_with_context[:50]}...")
         
         return True
         
@@ -140,18 +140,18 @@ def test_agent_config():
             provider="mock",
             model="mock-gpt-4"
         )
-        print(f"✓ Agent config created: {config.name}")
+        print(f" Agent config created: {config.name}")
         
         # Test config serialization
         config_dict = config.model_dump()
-        print(f"✓ Config serialized: {len(config_dict)} fields")
+        print(f" Config serialized: {len(config_dict)} fields")
         
         # Test config validation
         assert config.name == "TestAgent"
         assert config.role == "assistant"
         assert config.provider == "mock"
         assert config.model == "mock-gpt-4"
-        print("✓ Config validation passed")
+        print(" Config validation passed")
         
         return True
         
@@ -168,19 +168,19 @@ def test_tool_system():
         
         # Test calculator tool
         calc_tool = CalculatorTool()
-        print(f"✓ Calculator tool created: {calc_tool.name}")
+        print(f" Calculator tool created: {calc_tool.name}")
         
         # Test calculation
         result = calc_tool.execute("2 + 2")
-        print(f"✓ Calculator result: {result}")
+        print(f" Calculator result: {result}")
         
         # Test Python REPL tool
         python_tool = PythonREPLTool()
-        print(f"✓ Python REPL tool created: {python_tool.name}")
+        print(f" Python REPL tool created: {python_tool.name}")
         
         # Test Python execution
         python_result = python_tool.execute("print('Hello from Python!')")
-        print(f"✓ Python execution result: {python_result}")
+        print(f" Python execution result: {python_result}")
         
         return True
         
@@ -196,12 +196,12 @@ def test_memory_system():
         
         # Create memory instance
         memory = SimpleMemory()
-        print("✓ Memory system created")
+        print(" Memory system created")
         
         # Test memory storage
         memory.store("user_name", "John Doe")
         memory.store("task_count", 5)
-        print("✓ Memory storage tested")
+        print(" Memory storage tested")
         
         # Test memory retrieval
         retrieved_name = memory.retrieve("user_name")
@@ -209,11 +209,11 @@ def test_memory_system():
         
         assert retrieved_name == "John Doe"
         assert retrieved_count == 5
-        print("✓ Memory retrieval tested")
+        print(" Memory retrieval tested")
         
         # Test memory listing
         all_memories = memory.list_memories()
-        print(f"✓ Memory listing: {len(all_memories)} items")
+        print(f" Memory listing: {len(all_memories)} items")
         
         return True
         
@@ -243,7 +243,7 @@ def test_agent_creation():
         tools = [CalculatorTool()]
         memory = SimpleMemory()
         
-        print("✓ Agent components created")
+        print(" Agent components created")
         
         # Create agent
         agent = ReactAgent(
@@ -253,13 +253,13 @@ def test_agent_creation():
             memory=memory
         )
         
-        print(f"✓ ReactAgent created: {agent.name}")
+        print(f" ReactAgent created: {agent.name}")
         
         # Test agent properties
         assert agent.name == "TestReactAgent"
         assert len(agent.tools) == 1
         assert agent.memory is not None
-        print("✓ Agent properties validated")
+        print(" Agent properties validated")
         
         return True
         
@@ -280,7 +280,7 @@ def test_task_execution():
             metadata={"priority": "high"}
         )
         
-        print(f"✓ Task created: {task_input.task}")
+        print(f" Task created: {task_input.task}")
         
         # Simulate task processing
         import time
@@ -300,8 +300,8 @@ def test_task_execution():
             "metadata": {"tokens_used": 25}
         }
         
-        print(f"✓ Task executed in {execution_time:.3f}s")
-        print(f"✓ Result: {mock_result['result'][:50]}...")
+        print(f" Task executed in {execution_time:.3f}s")
+        print(f" Result: {mock_result['result'][:50]}...")
         
         return True
         
@@ -315,16 +315,16 @@ def test_api_components():
     try:
         # Test if API modules can be imported
         from src.llamaagent.api.main import create_app
-        print("✓ API main module imported")
+        print(" API main module imported")
         
         # Test configuration
         from src.llamaagent.config.settings import get_settings
         settings = get_settings()
-        print(f"✓ Settings loaded: {type(settings).__name__}")
+        print(f" Settings loaded: {type(settings).__name__}")
         
         # Test if FastAPI app can be created
         app = create_app()
-        print(f"✓ FastAPI app created: {type(app).__name__}")
+        print(f" FastAPI app created: {type(app).__name__}")
         
         return True
         
@@ -338,15 +338,15 @@ def test_cli_components():
     try:
         # Test CLI imports
         from src.llamaagent.cli.main import app as cli_app
-        print("✓ CLI main module imported")
+        print(" CLI main module imported")
         
         # Test enhanced CLI
         from src.llamaagent.cli.enhanced_cli import EnhancedCLI
-        print("✓ Enhanced CLI imported")
+        print(" Enhanced CLI imported")
         
         # Test CLI can be instantiated
         cli = EnhancedCLI()
-        print(f"✓ Enhanced CLI created: {type(cli).__name__}")
+        print(f" Enhanced CLI created: {type(cli).__name__}")
         
         return True
         
@@ -361,15 +361,15 @@ def test_monitoring_components():
         # Test monitoring imports
         from src.llamaagent.monitoring.health import HealthChecker
         from src.llamaagent.monitoring.metrics_collector import MetricsCollector
-        print("✓ Monitoring modules imported")
+        print(" Monitoring modules imported")
         
         # Test health checker
         health_checker = HealthChecker()
-        print(f"✓ Health checker created: {type(health_checker).__name__}")
+        print(f" Health checker created: {type(health_checker).__name__}")
         
         # Test metrics collector
         metrics = MetricsCollector()
-        print(f"✓ Metrics collector created: {type(metrics).__name__}")
+        print(f" Metrics collector created: {type(metrics).__name__}")
         
         return True
         
@@ -384,15 +384,15 @@ def test_security_components():
         # Test security imports
         from src.llamaagent.security.authentication import AuthenticationManager
         from src.llamaagent.security.authorization import AuthorizationManager
-        print("✓ Security modules imported")
+        print(" Security modules imported")
         
         # Test authentication manager
         auth_manager = AuthenticationManager()
-        print(f"✓ Authentication manager created: {type(auth_manager).__name__}")
+        print(f" Authentication manager created: {type(auth_manager).__name__}")
         
         # Test authorization manager
         authz_manager = AuthorizationManager()
-        print(f"✓ Authorization manager created: {type(authz_manager).__name__}")
+        print(f" Authorization manager created: {type(authz_manager).__name__}")
         
         return True
         
@@ -430,7 +430,7 @@ def test_integration():
             memory=memory
         )
         
-        print("✓ Integrated system created")
+        print(" Integrated system created")
         
         # Test system interaction
         task = TaskInput(
@@ -445,7 +445,7 @@ def test_integration():
         retrieved_task = memory.retrieve("last_task")
         assert retrieved_task == task.task
         
-        print("✓ Integration test completed")
+        print(" Integration test completed")
         
         return True
         
@@ -510,9 +510,9 @@ def print_test_summary():
     print("="*80)
     
     if failed == 0:
-        print("🎉 ALL TESTS PASSED! System is working perfectly!")
+        print("SUCCESS: ALL TESTS PASSED! System is working perfectly!")
     else:
-        print(f"⚠️  {failed} test(s) failed. Please review the errors above.")
+        print(f"WARNING:  {failed} test(s) failed. Please review the errors above.")
 
 def main():
     """Main test execution function."""

@@ -41,7 +41,7 @@ class WorkingDemo:
             "[dim]Showcasing Functional AI Agent Framework Components[/dim]\n\n"
             "[green]INTELLIGENCE LLM Provider Integration[/green]\n"
             "[green]FIXING Agent Configuration[/green]\n"
-            "[green]🗄️ Database Management[/green]\n"
+            "[green] Database Management[/green]\n"
             "[green]NETWORK API Framework[/green]\n"
             "[green]Analyzing Production Features[/green]",
             title="TARGET LlamaAgent Framework"
@@ -233,7 +233,7 @@ class WorkingDemo:
             "technical_highlights": [
                 "INTELLIGENCE Multiple LLM provider support with factory pattern",
                 "Analyzing Flexible agent configuration system",
-                "🗄️ Database integration with SQLAlchemy",
+                " Database integration with SQLAlchemy",
                 "NETWORK FastAPI-based REST API framework",
                 "PACKAGE Modular package architecture",
                 "FIXING Production-ready components",
@@ -275,7 +275,7 @@ class WorkingDemo:
         console.print(summary_table)
         
         # Detailed Results
-        console.print("\n[bold]📋 Detailed Demo Results:[/bold]")
+        console.print("\n[bold]LIST: Detailed Demo Results:[/bold]")
         for demo_name, result in self.demo_results.items():
             status = "PASS" if result.get("success", False) else "FAIL"
             time_str = f" ({result.get('execution_time', 0):.2f}s)"
@@ -310,7 +310,7 @@ async def main():
             console.print("\n[bold green]SUCCESS Working demonstration completed successfully![/bold green]")
             console.print("[dim]LlamaAgent framework core components are working perfectly.[/dim]")
         else:
-            console.print("\n[bold yellow]⚠️ Working demonstration completed with some issues.[/bold yellow]")
+            console.print("\n[bold yellow]WARNING: Working demonstration completed with some issues.[/bold yellow]")
             console.print("[dim]Review the detailed results above.[/dim]")
             
     except Exception as e:

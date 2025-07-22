@@ -65,7 +65,7 @@ async def run_intelligence_demo():
         execution_time = time.time() - start_time
         
         print(f"PASS Result: {result}")
-        print(f"⏱️  Time: {execution_time:.3f}s")
+        print(f"TIME:  Time: {execution_time:.3f}s")
         print(f"FIXING API Calls: {agent.api_calls}")
         print(f"RESULTS Tokens: {agent.total_tokens}")
         print()
@@ -77,7 +77,7 @@ async def run_intelligence_demo():
 async def run_benchmark_suite():
     """Run comprehensive benchmark suite."""
     
-    print("🏁 COMPREHENSIVE BENCHMARK SUITE")
+    print(" COMPREHENSIVE BENCHMARK SUITE")
     print("=" * 60)
     
     # Extended benchmark tasks
@@ -212,7 +212,7 @@ def test_production_features():
     print()
     
     # Check Docker capabilities
-    print("🐳 DOCKER CAPABILITIES")
+    print(" DOCKER CAPABILITIES")
     print("=" * 40)
     
     try:
@@ -273,7 +273,7 @@ def test_production_features():
 def generate_deployment_report():
     """Generate comprehensive deployment report."""
     
-    print("📋 DEPLOYMENT READINESS REPORT")
+    print("LIST: DEPLOYMENT READINESS REPORT")
     print("=" * 60)
     
     report = {
@@ -376,7 +376,7 @@ def generate_deployment_report():
     with open(report_file, 'w') as f:
         json.dump(report, f, indent=2)
     
-    print(f"\n📁 Full report saved to: {report_file}")
+    print(f"\n Full report saved to: {report_file}")
     print()
 
 
@@ -452,7 +452,7 @@ async def main():
     print("  • Security: Enterprise-grade protection")
     print()
     
-    print(f"⏱️  Total demo time: {total_time:.2f} seconds")
+    print(f"TIME:  Total demo time: {total_time:.2f} seconds")
     print()
     
     if benchmark_success and production_ready:
@@ -463,7 +463,7 @@ async def main():
         print("PASS Comprehensive monitoring and security")
         print("PASS Ready for immediate deployment")
     else:
-        print("⚠️  PARTIAL SUCCESS: Some components need attention")
+        print("WARNING:  PARTIAL SUCCESS: Some components need attention")
         if not benchmark_success:
             print("FAIL Benchmark success rate below target")
         if not production_ready:
@@ -492,7 +492,7 @@ if __name__ == "__main__":
         print("\nSUCCESS LlamaAgent system demonstration completed successfully!")
         print("The system is ready for production deployment.")
     else:
-        print("\n⚠️  System demonstration completed with some issues.")
+        print("\nWARNING:  System demonstration completed with some issues.")
         print("Review the output above for areas that need attention.")
     
     exit(0 if success else 1) 

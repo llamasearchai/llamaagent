@@ -196,20 +196,20 @@ The framework is now ready for:
 
 ```
 llamaagent/
-├── src/llamaagent/         # Core framework
-│   ├── agents/             # Agent implementations
-│   ├── tools/              # Tool system
-│   ├── llm/                # LLM providers
-│   ├── orchestrator.py     # Multi-agent orchestration
-│   ├── integration/        # OpenAI SDK integration
-│   └── storage/            # Database and memory
-├── examples/               # Working examples
-├── notebooks/              # Jupyter tutorials
-├── tests/                  # Comprehensive test suite
-├── k8s/                    # Kubernetes configs
-├── API_REFERENCE.md        # Complete API docs
-├── MASTER_README.md        # Professional README
-└── docker-compose.yml      # Full stack deployment
+ src/llamaagent/         # Core framework
+    agents/             # Agent implementations
+    tools/              # Tool system
+    llm/                # LLM providers
+    orchestrator.py     # Multi-agent orchestration
+    integration/        # OpenAI SDK integration
+    storage/            # Database and memory
+ examples/               # Working examples
+ notebooks/              # Jupyter tutorials
+ tests/                  # Comprehensive test suite
+ k8s/                    # Kubernetes configs
+ API_REFERENCE.md        # Complete API docs
+ MASTER_README.md        # Professional README
+ docker-compose.yml      # Full stack deployment
 ```
 
 ## Conclusion

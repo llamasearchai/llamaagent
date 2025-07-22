@@ -245,7 +245,7 @@ def main():
         print(f"  {test}: {result}")
     
     print("\nPASS Final syntax fixes complete!")
-    print("\n📌 Next steps:")
+    print("\n Next steps:")
     print("  1. Run tests: pytest tests/")
     print("  2. Try the CLI: python -m src.llamaagent.cli.main --help")
     print("  3. Start development server: python -m src.llamaagent.api.main")

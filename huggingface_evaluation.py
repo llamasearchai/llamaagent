@@ -94,7 +94,7 @@ class HuggingFaceEvaluator:
                         }
                     )
 
-                    logger.info(f"Task {i + 1}/{len(tasks)}: {'✓' if is_correct else '✗'} ({exec_time:.1f}s)")
+                    logger.info(f"Task {i + 1}/{len(tasks)}: {'' if is_correct else ''} ({exec_time:.1f}s)")
 
                 results[config_name] = {
                     "dataset": "GSM8K",
@@ -182,7 +182,7 @@ class HuggingFaceEvaluator:
                         }
                     )
 
-                    logger.info(f"Task {i + 1}/{len(tasks)}: {'✓' if is_correct else '✗'} ({exec_time:.1f}s)")
+                    logger.info(f"Task {i + 1}/{len(tasks)}: {'' if is_correct else ''} ({exec_time:.1f}s)")
 
                 results[config_name] = {
                     "dataset": "HumanEval",
@@ -270,7 +270,7 @@ class HuggingFaceEvaluator:
                         }
                     )
 
-                    logger.info(f"Task {i + 1}/{len(tasks)}: {'✓' if is_correct else '✗'} ({exec_time:.1f}s)")
+                    logger.info(f"Task {i + 1}/{len(tasks)}: {'' if is_correct else ''} ({exec_time:.1f}s)")
 
                 results[config_name] = {
                     "dataset": "CommonsenseQA",
@@ -353,7 +353,7 @@ class HuggingFaceEvaluator:
                         }
                     )
 
-                    logger.info(f"Task {i + 1}/{len(tasks)}: {'✓' if is_correct else '✗'} ({exec_time:.1f}s)")
+                    logger.info(f"Task {i + 1}/{len(tasks)}: {'' if is_correct else ''} ({exec_time:.1f}s)")
 
                 results[config_name] = {
                     "dataset": "HellaSwag",

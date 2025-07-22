@@ -134,165 +134,165 @@ class KnowledgeGenerator:
         return {
             KnowledgeType.TUTORIAL: """
                 # {title}
-                
+
                 ## Overview
                 This tutorial covers {topic} for {target_audience}.
-                
+
                 ## Prerequisites
                 - Basic understanding of relevant concepts
                 - Required tools and setup
-                
+
                 ## Step-by-Step Guide
                 1. **Getting Started**
                    - Initial setup and configuration
-                   
+
                 2. **Core Concepts**
                    - Key principles and terminology
-                   
+
                 3. **Implementation**
                    - Practical examples and code samples
-                   
+
                 4. **Best Practices**
                    - Tips and recommendations
-                   
+
                 5. **Troubleshooting**
                    - Common issues and solutions
-                
+
                 ## Conclusion
                 Summary of key learning points.
-                
+
                 ## References
                 - Additional resources
                 - Related documentation
             """,
             KnowledgeType.GUIDE: """
                 # {title}
-                
+
                 ## Introduction
                 This guide provides comprehensive information about {topic}.
-                
+
                 ## Key Concepts
                 - Fundamental principles
                 - Important terminology
-                
+
                 ## Implementation Details
                 - Step-by-step instructions
                 - Configuration options
                 - Example usage
-                
+
                 ## Best Practices
                 - Recommended approaches
                 - Common pitfalls to avoid
-                
+
                 ## Advanced Topics
                 - Expert-level features
                 - Performance optimization
-                
+
                 ## Troubleshooting
                 - Common issues and solutions
                 - Debug techniques
-                
+
                 ## Conclusion
                 Summary and next steps.
             """,
             KnowledgeType.API_DOCUMENTATION: """
                 # {title} API Documentation
-                
+
                 ## Overview
                 API documentation for {topic}.
-                
+
                 ## Authentication
                 - Authentication methods
                 - API key management
-                
+
                 ## Endpoints
-                
+
                 ### GET /api/endpoint
                 - Description: Brief description
                 - Parameters: Request parameters
                 - Response: Example response
                 - Error codes: Common errors
-                
+
                 ## Examples
                 - Request examples
                 - Response examples
                 - Error handling
-                
+
                 ## Rate Limiting
                 - Rate limit information
                 - Best practices
-                
+
                 ## SDK Support
                 - Available SDKs
                 - Integration examples
             """,
             KnowledgeType.FAQ: """
                 # {title} - Frequently Asked Questions
-                
+
                 ## General Questions
-                
+
                 **Q: What is {topic}?**
                 A: Comprehensive answer explaining the concept.
-                
+
                 **Q: How do I get started?**
                 A: Step-by-step getting started guide.
-                
+
                 ## Technical Questions
-                
+
                 **Q: How do I configure {topic}?**
                 A: Configuration instructions and examples.
-                
+
                 **Q: What are the system requirements?**
                 A: Detailed system requirements.
-                
+
                 ## Troubleshooting
-                
+
                 **Q: Why am I getting errors?**
                 A: Common error causes and solutions.
-                
+
                 **Q: How do I debug issues?**
                 A: Debugging techniques and tools.
-                
+
                 ## Advanced Topics
-                
+
                 **Q: How do I optimize performance?**
                 A: Performance optimization strategies.
             """,
             KnowledgeType.TROUBLESHOOTING: """
                 # {title} Troubleshooting Guide
-                
+
                 ## Common Issues
-                
+
                 ### Issue 1: [Problem Description]
                 **Symptoms:**
                 - List of symptoms
-                
+
                 **Causes:**
                 - Potential causes
-                
+
                 **Solutions:**
                 1. Step-by-step solution
                 2. Alternative approaches
-                
+
                 ### Issue 2: [Problem Description]
                 **Symptoms:**
                 - List of symptoms
-                
+
                 **Causes:**
                 - Potential causes
-                
+
                 **Solutions:**
                 1. Step-by-step solution
                 2. Alternative approaches
-                
+
                 ## Diagnostic Tools
                 - Available diagnostic tools
                 - How to use them
-                
+
                 ## Prevention
                 - Best practices to prevent issues
                 - Monitoring recommendations
-                
+
                 ## Getting Help
                 - Where to find additional support
                 - How to report issues
@@ -494,63 +494,63 @@ class KnowledgeGenerator:
         prompts = {
             KnowledgeType.TUTORIAL: f"""
                 Create a comprehensive tutorial on {topic} for {config.target_audience}.
-                
+
                 The tutorial should:
                 - Be clear and easy to follow
                 - Include practical examples
                 - Cover common mistakes
                 - Be appropriate for {config.complexity_level} level
-                
+
                 Topic: {topic}
                 Context: {context}
             """,
             KnowledgeType.GUIDE: f"""
                 Write a comprehensive guide on {topic} for {config.target_audience}.
-                
+
                 The guide should:
                 - Explain key concepts clearly
                 - Provide step-by-step implementation
                 - Include best practices
                 - Cover troubleshooting tips
                 - Be suitable for {config.complexity_level} level
-                
+
                 Topic: {topic}
                 Context: {context}
             """,
             KnowledgeType.API_DOCUMENTATION: f"""
                 Generate API documentation for {topic}.
-                
+
                 Include:
                 - Clear endpoint descriptions
                 - Parameter specifications
                 - Request/response examples
                 - Error handling
                 - Authentication methods
-                
+
                 API: {topic}
                 Context: {context}
             """,
             KnowledgeType.FAQ: f"""
                 Generate frequently asked questions about {topic}.
-                
+
                 Create 5-10 common questions and comprehensive answers that:
                 - Address real user concerns
                 - Provide actionable solutions
                 - Include relevant context
                 - Are appropriate for {config.target_audience}
-                
+
                 Topic: {topic}
                 Context: {context}
             """,
             KnowledgeType.TROUBLESHOOTING: f"""
                 Create a troubleshooting guide for {topic}.
-                
+
                 Include:
                 - Common issues and symptoms
                 - Step-by-step solutions
                 - Diagnostic techniques
                 - Prevention strategies
-                
+
                 Topic: {topic}
                 Context: {context}
             """,
@@ -570,11 +570,11 @@ class KnowledgeGenerator:
         """Enhance template-based content with LLM"""
         enhancement_prompt = f"""
         Enhance the following {config.knowledge_type.value} content to make it more comprehensive and engaging:
-        
+
         Title: {item.title}
         Current Content:
         {item.content}
-        
+
         Please:
         - Add more detailed explanations
         - Include practical examples

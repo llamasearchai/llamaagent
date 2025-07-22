@@ -148,7 +148,7 @@ async def test_intelligent_mock_provider() -> List[Dict[str, Any]]:
     elif success_rate >= 60:
         print("\nPASS GOOD: MockProvider shows strong intelligence!")
     elif success_rate >= 40:
-        print("\n⚠️  MODERATE: MockProvider has some intelligence but needs improvement")
+        print("\nWARNING:  MODERATE: MockProvider has some intelligence but needs improvement")
     else:
         print("\nFAIL POOR: MockProvider needs significant improvement")
     
@@ -191,8 +191,8 @@ async def test_react_agent_integration():
         result = await agent.execute(test_task)
         
         print(f"RESULTS Result: {result.content}")
-        print(f"⏱️  Execution time: {result.execution_time:.2f}s")
-        print(f"🔢 Success: {result.success}")
+        print(f"TIME:  Execution time: {result.execution_time:.2f}s")
+        print(f" Success: {result.success}")
         
         # Check if we got the right answer (100 + 50 = 150)
         expected_answer = "150"

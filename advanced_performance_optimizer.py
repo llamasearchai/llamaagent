@@ -550,10 +550,10 @@ async def demonstrate_optimizations():
     optimization_time = time.time() - start_time
     
     print(f"PASS Processed {len(large_list)} items -> {len(optimized_result)} results")
-    print(f"⏱️  Optimization time: {optimization_time:.4f}s")
+    print(f"TIME:  Optimization time: {optimization_time:.4f}s")
     
     # Test async operations optimization
-    print("\n🔄 Testing Async Operations Optimization")
+    print("\n Testing Async Operations Optimization")
     
     async def sample_async_operation(delay: float = 0.01):
         await asyncio.sleep(delay)
@@ -571,10 +571,10 @@ async def demonstrate_optimizations():
     async_time = time.time() - start_time
     
     print(f"PASS Completed {len(operations)} async operations")
-    print(f"⏱️  Total time: {async_time:.4f}s")
+    print(f"TIME:  Total time: {async_time:.4f}s")
     
     # Test caching
-    print("\n💾 Testing Caching System")
+    print("\n Testing Caching System")
     
     def expensive_computation(n: int) -> int:
         time.sleep(0.01)  # Simulate expensive operation

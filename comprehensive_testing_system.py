@@ -145,7 +145,7 @@ class TestRunner:
         self.current_suite = suite.name
         
         logger.info(f"Analyzing Running test suite: {suite.name}")
-        logger.info(f"📋 Total tests: {len(suite.test_cases)}")
+        logger.info(f"LIST: Total tests: {len(suite.test_cases)}")
         
         # Suite setup
         if suite.setup_suite:
@@ -174,10 +174,10 @@ class TestRunner:
                 logger.error(f"    FAIL FAILED ({result.execution_time:.3f}s): {result.error_message}")
             elif result.status == TestStatus.SKIPPED:
                 skipped += 1
-                logger.info(f"    ⏭️  SKIPPED: {result.error_message}")
+                logger.info(f"    SKIP:  SKIPPED: {result.error_message}")
             else:
                 error += 1
-                logger.error(f"    💥 ERROR ({result.execution_time:.3f}s): {result.error_message}")
+                logger.error(f"     ERROR ({result.execution_time:.3f}s): {result.error_message}")
         
         # Suite teardown
         if suite.teardown_suite:
@@ -185,7 +185,7 @@ class TestRunner:
                 await self._execute_callable(suite.teardown_suite)
                 logger.info("PASS Suite teardown completed")
             except Exception as e:
-                logger.warning(f"⚠️  Suite teardown warning: {e}")
+                logger.warning(f"WARNING:  Suite teardown warning: {e}")
         
         execution_time = time.time() - start_time
         
@@ -535,7 +535,7 @@ class ContinuousIntegration:
         steps_results["unit_tests"] = await self._run_unit_tests()
         
         # Step 3: Integration Tests
-        logger.info("🔗 Step 3: Integration Tests")
+        logger.info(" Step 3: Integration Tests")
         steps_results["integration_tests"] = await self._run_integration_tests()
         
         # Step 4: Performance Tests
@@ -882,7 +882,7 @@ class ComprehensiveTestingSystem:
         summary = report["summary"]
         
         print(f"\nTARGET Overall Status: {summary['overall_status'].upper()}")
-        print(f"⏱️  Total Execution Time: {report['execution_time']:.2f}s")
+        print(f"TIME:  Total Execution Time: {report['execution_time']:.2f}s")
         print(f"Analyzing Total Tests: {summary['total_tests']}")
         print(f"PASS Passed Tests: {summary['passed_tests']}")
         print(f"Performance Success Rate: {summary['success_rate']:.1f}%")
@@ -893,10 +893,10 @@ class ComprehensiveTestingSystem:
         print(f"  Security: {summary['security_score']:.1f}/100")
         
         # Pipeline steps summary
-        print(f"\n🔄 Pipeline Steps:")
+        print(f"\n Pipeline Steps:")
         for step_name, step_result in report["pipeline_result"]["steps"].items():
             status = step_result.get("status", "unknown")
-            status_icon = "PASS" if status == "success" else "⚠️" if status == "warning" else "FAIL"
+            status_icon = "PASS" if status == "success" else "WARNING:" if status == "warning" else "FAIL"
             print(f"  {status_icon} {step_name.replace('_', ' ').title()}: {status}")
         
         # Recommendations
@@ -928,7 +928,7 @@ async def main():
     # Print detailed report
     testing_system.print_test_report(report)
     
-    print(f"\n💾 Detailed report saved to: comprehensive_test_report.json")
+    print(f"\n Detailed report saved to: comprehensive_test_report.json")
     print(f"SUCCESS Comprehensive testing completed!")
 
 

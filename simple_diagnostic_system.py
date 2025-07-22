@@ -82,9 +82,9 @@ class SimpleDiagnosticSystem:
                 if self._should_analyze_file(file_path):
                     self.config_files.append(file_path)
         
-        print(f"📁 Found {len(self.python_files)} Python files")
-        print(f"📁 Found {len(self.config_files)} config files")
-        print(f"📁 Found {len(self.test_files)} test files")
+        print(f" Found {len(self.python_files)} Python files")
+        print(f" Found {len(self.config_files)} config files")
+        print(f" Found {len(self.test_files)} test files")
     
     def _should_analyze_file(self, file_path: Path) -> bool:
         """Determine if a file should be analyzed."""
@@ -344,7 +344,7 @@ class SimpleDiagnosticSystem:
         
         print(f"PASS Diagnostic analysis complete!")
         print(f"RESULTS Found {len(self.problems)} total problems:")
-        print(f"   🔴 Critical: {critical_count}")
+        print(f"    Critical: {critical_count}")
         print(f"   🟠 High: {high_count}")
         print(f"   🟡 Medium: {medium_count}")
         print(f"   🟢 Low: {low_count}")
@@ -444,7 +444,7 @@ class SimpleDiagnosticSystem:
             f.write("END OF DIAGNOSTIC REPORT\n")
             f.write("=" * 80 + "\n")
         
-        print(f"📄 Diagnostic report written to {output_file}")
+        print(f" Diagnostic report written to {output_file}")
     
     def implement_critical_fixes(self) -> None:
         """Implement critical fixes automatically."""
@@ -577,7 +577,7 @@ def main():
     diagnostic_system.implement_critical_fixes()
     
     print("\nSUCCESS Comprehensive diagnostic and fixing process complete!")
-    print("📋 Next steps:")
+    print("LIST: Next steps:")
     print("1. Review the diagnostic_report.txt file")
     print("2. Address any remaining CRITICAL issues manually")
     print("3. Run tests to verify fixes")

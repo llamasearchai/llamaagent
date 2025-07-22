@@ -363,23 +363,23 @@ run_health_checks() {
     health_response=$(curl -s "$api_url/health")
 
     if [[ "$health_response" == *"healthy"* ]]; then
-        log_info "✅ API health check passed"
+        log_info "PASS API health check passed"
     else
-        error_exit "❌ API health check failed: $health_response"
+        error_exit "FAIL API health check failed: $health_response"
     fi
 
     # Check database connectivity
     if curl -f -s "$api_url/health/database" >/dev/null 2>&1; then
-        log_info "✅ Database connectivity check passed"
+        log_info "PASS Database connectivity check passed"
     else
-        log_warn "⚠️  Database connectivity check failed"
+        log_warn "WARNING:  Database connectivity check failed"
     fi
 
     # Check cache connectivity
     if curl -f -s "$api_url/health/cache" >/dev/null 2>&1; then
-        log_info "✅ Cache connectivity check passed"
+        log_info "PASS Cache connectivity check passed"
     else
-        log_warn "⚠️  Cache connectivity check failed"
+        log_warn "WARNING:  Cache connectivity check failed"
     fi
 
     log_info "Health checks completed"
@@ -457,7 +457,7 @@ main() {
     # Generate report
     generate_report
 
-    log_info "🎉 LlamaAgent deployment completed successfully!"
+    log_info "SUCCESS: LlamaAgent deployment completed successfully!"
     log_info "API should be available at: http://localhost:8000"
     log_info "Monitoring: http://localhost:3000 (Grafana)"
     log_info "Metrics: http://localhost:9090 (Prometheus)"

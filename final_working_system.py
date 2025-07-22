@@ -20,7 +20,7 @@ from typing import List, Dict, Any, Optional
 from enum import Enum
 
 
-# ═══════════════════════════ CORE TYPES ═══════════════════════════
+#  CORE TYPES 
 
 @dataclass
 class LLMMessage:
@@ -64,7 +64,7 @@ class AgentConfig:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-# ═══════════════════════════ ENHANCED MOCK PROVIDER ═══════════════════════════
+#  ENHANCED MOCK PROVIDER 
 
 class EnhancedMockProvider:
     """Enhanced mock provider that actually solves problems."""
@@ -207,7 +207,7 @@ class EnhancedMockProvider:
         return "Task completed successfully with comprehensive analysis and appropriate solution."
 
 
-# ═══════════════════════════ SIMPLE MEMORY ═══════════════════════════
+#  SIMPLE MEMORY 
 
 class SimpleMemory:
     """Simple in-memory storage for agent context."""
@@ -224,7 +224,7 @@ class SimpleMemory:
         return [mem for mem in self.memories if query.lower() in mem.lower()]
 
 
-# ═══════════════════════════ TOOL REGISTRY ═══════════════════════════
+#  TOOL REGISTRY 
 
 class ToolRegistry:
     """Registry for managing tools."""
@@ -246,7 +246,7 @@ class ToolRegistry:
         return list(self.tools.keys())
 
 
-# ═══════════════════════════ REACT AGENT ═══════════════════════════
+#  REACT AGENT 
 
 class ReactAgent:
     """Simplified ReactAgent for demonstration."""
@@ -321,7 +321,7 @@ class ReactAgent:
             )
 
 
-# ═══════════════════════════ BENCHMARK SYSTEM ═══════════════════════════
+#  BENCHMARK SYSTEM 
 
 class BenchmarkSystem:
     """Comprehensive benchmark system for testing agent capabilities."""
@@ -367,7 +367,7 @@ class BenchmarkSystem:
     
     async def run_benchmark(self, agent: ReactAgent, max_tasks: Optional[int] = None) -> Dict[str, Any]:
         """Run benchmark tests on the agent."""
-        print("🏁 Running LlamaAgent Benchmark")
+        print(" Running LlamaAgent Benchmark")
         print("=" * 50)
         
         tasks_to_run = self.test_cases[:max_tasks] if max_tasks else self.test_cases
@@ -487,7 +487,7 @@ class BenchmarkSystem:
         }
 
 
-# ═══════════════════════════ MAIN DEMONSTRATION ═══════════════════════════
+#  MAIN DEMONSTRATION 
 
 async def main():
     """Main demonstration of the working LlamaAgent system."""
@@ -548,7 +548,7 @@ async def main():
         print(f"Time: {response.execution_time:.3f}s")
     
     # Run comprehensive benchmark
-    print("\n🏁 Running Comprehensive Benchmark...")
+    print("\n Running Comprehensive Benchmark...")
     
     benchmark = BenchmarkSystem()
     benchmark_results = await benchmark.run_benchmark(agent)
@@ -568,7 +568,7 @@ async def main():
         print("PASS ReactAgent executing tasks successfully")
         print("PASS System ready for production use")
     else:
-        print("⚠️  WARNING: System needs improvement")
+        print("WARNING:  WARNING: System needs improvement")
         print(f"RESULTS Success Rate: {summary['success_rate']:.1f}%")
     
     print(f"\nPerformance Performance Metrics:")
@@ -595,7 +595,7 @@ async def main():
             }
         }, f, indent=2, default=str)
     
-    print(f"\n💾 Results saved to: {results_file}")
+    print(f"\n Results saved to: {results_file}")
     
     return summary['success_rate'] >= 80
 

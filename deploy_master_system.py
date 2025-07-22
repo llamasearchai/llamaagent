@@ -82,10 +82,10 @@ def main():
     display_results(deployment_results)
     
     if deployment_results.get("status") == "completed":
-        console.print("[bold green]✓ Deployment completed successfully!")
+        console.print("[bold green] Deployment completed successfully!")
         return 0
     else:
-        console.print("[bold red]✗ Deployment failed!")
+        console.print("[bold red] Deployment failed!")
         return 1
 
 if __name__ == "__main__":

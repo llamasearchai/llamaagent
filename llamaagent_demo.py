@@ -34,11 +34,11 @@ def print_success(message: str) -> None:
 
 def print_info(message: str) -> None:
     """Print an info message."""
-    print(f"ℹ️  {message}")
+    print(f"ℹ  {message}")
 
 def print_result(title: str, content: str) -> None:
     """Print a formatted result."""
-    print(f"📋 {title}:")
+    print(f"LIST: {title}:")
     print(f"   {content}")
 
 async def demo_llm_factory():
@@ -296,26 +296,26 @@ async def main():
         print("Key capabilities:")
         print("  Agent Multi-provider LLM support")
         print("  INTELLIGENCE Autonomous ReAct agents")
-        print("  🛠️  Extensible tool system")
-        print("  📋 Task planning and execution")
-        print("  🔄 Async/await throughout")
+        print("  BUILD:  Extensible tool system")
+        print("  LIST: Task planning and execution")
+        print("   Async/await throughout")
         print("  Security  Robust error handling")
         print("  RESULTS Comprehensive monitoring")
         print()
         print("Ready to build amazing AI applications! Starting")
     else:
-        print_header("⚠️  Partial Success")
+        print_header("WARNING:  Partial Success")
         print(f"PASS {working_features}/{total_features} features working")
         print("Some components may need additional configuration.")
     
-    print_header("🏁 Demo Complete")
+    print_header(" Demo Complete")
     print(f"Demo completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n\n⏹️  Demo interrupted by user")
+        print("\n\nSTOP:  Demo interrupted by user")
     except Exception as e:
         print(f"\n\nFAIL Demo failed with error: {e}")
         import traceback

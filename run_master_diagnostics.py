@@ -48,9 +48,9 @@ try:
                     if count > 0:
                         emoji = {
                             "CRITICAL": "URGENT",
-                            "HIGH": "⚠️ ",
+                            "HIGH": "WARNING: ",
                             "MEDIUM": "INSIGHT",
-                            "LOW": "ℹ️ ",
+                            "LOW": "ℹ ",
                             "INFO": "Response"
                         }.get(severity.value, "•")
                         print(f"   {emoji} {severity.value}: {count}")
@@ -69,9 +69,9 @@ try:
                 print(f"\nURGENT CRITICAL ISSUES REQUIRING IMMEDIATE ATTENTION:")
                 for issue in critical_issues[:10]:  # Show first 10
                     print(f"   • {issue.title}")
-                    print(f"     📁 {issue.location}")
+                    print(f"      {issue.location}")
                     if issue.line_number:
-                        print(f"     📍 Line {issue.line_number}")
+                        print(f"      Line {issue.line_number}")
                     if issue.suggested_fix:
                         print(f"     INSIGHT {issue.suggested_fix}")
                     print()
@@ -88,8 +88,8 @@ try:
                 print("FIXING Fix critical issues first, then run diagnostics again.")
                 return 1
             elif high_count > 0:
-                print(f"\n⚠️  RESULT: {high_count} high-priority issues found - attention recommended")
-                print("📋 See full report for detailed fixes.")
+                print(f"\nWARNING:  RESULT: {high_count} high-priority issues found - attention recommended")
+                print("LIST: See full report for detailed fixes.")
                 return 0
             else:
                 print(f"\nPASS RESULT: No critical issues found - system is healthy!")
@@ -125,7 +125,7 @@ except ImportError as e:
                 print(f"FAIL {py_file.relative_to(project_root)} - SYNTAX ERROR: {se}")
                 critical_issues.append(f"Syntax error in {py_file.relative_to(project_root)}: {se}")
             except Exception as ex:
-                print(f"⚠️  {py_file.relative_to(project_root)} - Warning: {ex}")
+                print(f"WARNING:  {py_file.relative_to(project_root)} - Warning: {ex}")
         
         print(f"\nRESULTS Basic Analysis Complete:")
         print(f"   • Files Checked: {len(python_files)}")

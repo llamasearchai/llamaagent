@@ -16,7 +16,7 @@ The LlamaAgent framework has undergone extensive debugging, completion, and impr
 - PASS 249 core functionality tests passing
 - PASS 89 advanced feature tests passing
 - FAIL 3 OpenAI integration tests failing (expected - require real API keys)
-- ⏭️ 3 tests skipped (platform-specific or optional dependencies)
+- SKIP: 3 tests skipped (platform-specific or optional dependencies)
 
 ## Key Accomplishments
 
@@ -94,7 +94,7 @@ The LlamaAgent framework has undergone extensive debugging, completion, and impr
 5. **Monitoring** - Comprehensive metrics and health checking
 6. **API Layer** - FastAPI-based with proper error handling
 
-### ⚠️ Requires Configuration
+### WARNING: Requires Configuration
 1. **OpenAI Integration** - Needs API keys for real usage
 2. **Database Storage** - Requires PostgreSQL for vector memory
 3. **Distributed Features** - Needs Redis for caching

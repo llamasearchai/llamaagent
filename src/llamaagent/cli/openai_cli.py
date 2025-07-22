@@ -430,9 +430,9 @@ def test(model: Optional[str], mode: str) -> None:
                         budget_per_task=None,
                     )
                 )
-                console.print("[green]✓ Test passed[/green]")
+                console.print("[green] Test passed[/green]")
             except Exception as e:
-                console.print(f"[red]✗ Test failed: {e}[/red]")
+                console.print(f"[red] Test failed: {e}[/red]")
 
     console.print("[bold green]System tests completed[/bold green]")
 

@@ -187,7 +187,7 @@ def main():
                 print(f"  PASS Fixed successfully!")
                 fixed_count += 1
             except SyntaxError as e:
-                print(f"  ⚠️  Still has errors after fix: {e}")
+                print(f"  WARNING:  Still has errors after fix: {e}")
                 still_failing.append((filepath, str(e)))
         else:
             print(f"  FAIL No changes made")

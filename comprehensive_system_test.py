@@ -315,7 +315,7 @@ class SystemTester:
     
     def test_chat_completions(self) -> bool:
         """Test the chat completions API."""
-        print("\n💬 Testing Chat Completions")
+        print("\n Testing Chat Completions")
         print("-" * 40)
         
         try:
@@ -448,7 +448,7 @@ class SystemTester:
     def stop_api_server(self):
         """Stop the API server."""
         if self.api_server_process:
-            print("\n🛑 Stopping API Server")
+            print("\n Stopping API Server")
             self.api_server_process.terminate()
             self.api_server_process.wait(timeout=10)
             print("PASS API Server stopped")
@@ -517,7 +517,7 @@ class SystemTester:
             print(f"Total Duration: {report['summary']['total_duration']:.1f}s")
             
             # Component breakdown
-            print(f"\n📋 Component Status:")
+            print(f"\nLIST: Component Status:")
             print(f"   MockProvider: {'PASS' if mock_provider_success else 'FAIL'}")
             print(f"   ReactAgent: {'PASS' if react_agent_success else 'FAIL'}")
             print(f"   Final System: {'PASS' if final_system_success else 'FAIL'}")
@@ -538,14 +538,14 @@ class SystemTester:
                 print("PASS API endpoints are working")
                 print("PASS System is ready for production use")
             else:
-                print("⚠️  System needs attention")
+                print("WARNING:  System needs attention")
                 print("FAIL Some components are not functioning properly")
             
             # Save report
             with open("comprehensive_test_report.json", "w") as f:
                 json.dump(report, f, indent=2)
             
-            print(f"\n💾 Detailed report saved to: comprehensive_test_report.json")
+            print(f"\n Detailed report saved to: comprehensive_test_report.json")
             
             return overall_success
             

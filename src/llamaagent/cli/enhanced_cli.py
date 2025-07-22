@@ -102,7 +102,7 @@ class LlamaAnimation:
         """Get success llama animation."""
         return """
          ∩___∩
-        (  ^◡^  )  Success!
+        (  ^^  )  Success!
          > ^ <
         /|   |\\
          |___|
@@ -144,10 +144,10 @@ class EnhancedCLI:
 
         welcome_text = """
          ∩___∩
-        (  ^◡^  )  Welcome to LlamaAgent!
+        (  ^^  )  Welcome to LlamaAgent!
          > ^ <     Type /help for commands
         /|   |\\    Type /quit to exit
-         |___|     
+         |___|
         """
 
         console.print(
@@ -218,7 +218,7 @@ class EnhancedCLI:
 
         status_table.add_row("Agent", status, details)
         status_table.add_row(
-            "Debug Mode", "🐛 Enabled" if self.debug else "Disabled Disabled", ""
+            "Debug Mode", " Enabled" if self.debug else "Disabled Disabled", ""
         )
         status_table.add_row(
             "SPREE Mode",
@@ -239,7 +239,7 @@ class EnhancedCLI:
         msg_count = len(self.conversation_history)
         status_table.add_row(
             "Messages",
-            f"💬 {msg_count}",
+            f" {msg_count}",
             "History available" if msg_count > 0 else "No history",
         )
 
@@ -269,7 +269,7 @@ class EnhancedCLI:
         )
 
         # Create visual bars
-        success_bar = "█" * int(success_rate / 10) + "░" * (10 - int(success_rate / 10))
+        success_bar = "" * int(success_rate / 10) + "" * (10 - int(success_rate / 10))
 
         stats_table.add_row("Total Messages", str(total_messages), "")
         stats_table.add_row("Successful", str(successful_messages), "")
@@ -415,10 +415,10 @@ class EnhancedCLI:
 
         goodbye_llama = """
          ∩___∩
-        (  ^◡^  )  Goodbye!
+        (  ^^  )  Goodbye!
          > ^ <     Thanks for using LlamaAgent.
         /|   |\\    See you next time!
-         |___|     
+         |___|
         """
         console.print(
             Panel(

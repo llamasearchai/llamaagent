@@ -24,22 +24,22 @@ print("-" * 40)
 
 # Create registry
 registry = base.ToolRegistry()
-print(f"✓ Created ToolRegistry")
+print(f" Created ToolRegistry")
 
 # Create tools
 calc_tool = calculator.CalculatorTool()
 repl_tool = python_repl.PythonREPLTool()
-print(f"✓ Created CalculatorTool: '{calc_tool.name}'")
-print(f"✓ Created PythonREPLTool: '{repl_tool.name}'")
+print(f" Created CalculatorTool: '{calc_tool.name}'")
+print(f" Created PythonREPLTool: '{repl_tool.name}'")
 
 # Register tools
 registry.register(calc_tool)
 registry.register(repl_tool)
-print(f"✓ Registered tools: {registry.list_names()}")
+print(f" Registered tools: {registry.list_names()}")
 
 # Retrieve tool
 retrieved = registry.get("calculator")
-print(f"✓ Retrieved calculator: {retrieved.name if retrieved else 'Not found'}")
+print(f" Retrieved calculator: {retrieved.name if retrieved else 'Not found'}")
 
 # Demonstrate tool execution
 print("\n2. Testing Tool Execution:")
@@ -80,7 +80,7 @@ print("-" * 40)
 exec(open(os.path.join(os.path.dirname(__file__), 'src/llamaagent/tools/__init__.py')).read(), globals())
 
 # Now we have access to create_tool_from_function and get_all_tools
-print("✓ Loaded __init__.py functions")
+print(" Loaded __init__.py functions")
 
 # Test create_tool_from_function
 def area_calculator(length: float, width: float) -> float:
@@ -88,14 +88,14 @@ def area_calculator(length: float, width: float) -> float:
     return length * width
 
 custom_tool = create_tool_from_function(area_calculator, name="area_calc")
-print(f"✓ Created custom tool: '{custom_tool.name}' - {custom_tool.description}")
+print(f" Created custom tool: '{custom_tool.name}' - {custom_tool.description}")
 
 area = custom_tool.execute(length=5.0, width=3.0)
-print(f"✓ Area of 5x3 rectangle: {area}")
+print(f" Area of 5x3 rectangle: {area}")
 
 # Test get_all_tools
 all_tools = get_all_tools()
-print(f"\n✓ get_all_tools() returns {len(all_tools)} default tools:")
+print(f"\n get_all_tools() returns {len(all_tools)} default tools:")
 for tool in all_tools:
     print(f"  - {tool.name}: {tool.description}")
 

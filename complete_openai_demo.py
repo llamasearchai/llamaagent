@@ -80,7 +80,7 @@ class CompleteDemonstration:
     
     async def _check_prerequisites(self):
         """Check system prerequisites."""
-        print("\n📋 Checking Prerequisites")
+        print("\nChecking Prerequisites")
         print("-" * 30)
         
         # Check OpenAI API key
@@ -88,20 +88,20 @@ class CompleteDemonstration:
         if openai_key:
             print("PASS OpenAI API key found")
         else:
-            print("⚠️  OpenAI API key not found (some demos will be skipped)")
+            print("WARNING: OpenAI API key not found (some demos will be skipped)")
         
         # Check OpenAI Agents SDK
         if OPENAI_AGENTS_AVAILABLE:
             print("PASS OpenAI Agents SDK available")
         else:
-            print("⚠️  OpenAI Agents SDK not available (using fallback)")
+            print("WARNING:  OpenAI Agents SDK not available (using fallback)")
         
         # Check Ollama
         try:
             ollama_provider = OllamaProvider(model_name="llama3.2:3b")
             print("PASS Ollama connection available")
         except Exception:
-            print("⚠️  Ollama not available (local demos will be skipped)")
+            print("WARNING:  Ollama not available (local demos will be skipped)")
     
     async def _demo_basic_openai_integration(self):
         """Demo basic OpenAI integration."""
@@ -112,7 +112,7 @@ class CompleteDemonstration:
             # Create OpenAI provider
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
-                print("⏭️  Skipping OpenAI demo (no API key)")
+                print("SKIP:  Skipping OpenAI demo (no API key)")
                 return
             
             llm_provider = OpenAIProvider(
@@ -163,7 +163,7 @@ class CompleteDemonstration:
     
     async def _demo_local_model_integration(self):
         """Demo local model integration with Ollama."""
-        print("\n🏠 Demo 2: Local Model Integration (Ollama)")
+        print("\n Demo 2: Local Model Integration (Ollama)")
         print("-" * 45)
         
         try:
@@ -201,17 +201,17 @@ class CompleteDemonstration:
                 print(f"FAIL Task failed: {result.result.error}")
             
         except Exception as e:
-            print(f"⏭️  Skipping local model demo: {e}")
+            print(f"SKIP:  Skipping local model demo: {e}")
     
     async def _demo_budget_tracking(self):
         """Demo budget tracking functionality."""
-        print("\n💰 Demo 3: Budget Tracking")
+        print("\n Demo 3: Budget Tracking")
         print("-" * 30)
         
         try:
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
-                print("⏭️  Skipping budget demo (no API key)")
+                print("SKIP:  Skipping budget demo (no API key)")
                 return
             
             # Create integration with small budget
@@ -235,7 +235,7 @@ class CompleteDemonstration:
             
             adapter = integration.register_agent(agent)
             
-            print(f"💵 Budget limit: ${small_budget}")
+            print(f" Budget limit: ${small_budget}")
             print("RESULTS Initial budget status:")
             budget_status = integration.get_budget_status()
             print(f"   - Current cost: ${budget_status['current_cost']:.4f}")
@@ -249,7 +249,7 @@ class CompleteDemonstration:
             ]
             
             for i, task_text in enumerate(tasks, 1):
-                print(f"\n🔄 Task {i}: {task_text}")
+                print(f"\n Task {i}: {task_text}")
                 
                 task_input = TaskInput(
                     id=f"budget_demo_task_{i}",
@@ -262,15 +262,15 @@ class CompleteDemonstration:
                     
                     budget_status = integration.get_budget_status()
                     print(f"   PASS Completed - Cost: ${budget_status['current_cost']:.4f}")
-                    print(f"   💰 Remaining budget: ${budget_status['remaining_budget']:.4f}")
+                    print(f"    Remaining budget: ${budget_status['remaining_budget']:.4f}")
                     
                     if budget_status['remaining_budget'] <= 0:
-                        print("   ⚠️  Budget limit reached!")
+                        print("   WARNING:  Budget limit reached!")
                         break
                         
                 except Exception as e:
                     if "budget" in str(e).lower():
-                        print(f"   💸 Budget exceeded: {e}")
+                        print(f"    Budget exceeded: {e}")
                         break
                     else:
                         print(f"   FAIL Task failed: {e}")
@@ -282,7 +282,7 @@ class CompleteDemonstration:
     
     async def _demo_tool_usage(self):
         """Demo tool usage with agents."""
-        print("\n🛠️  Demo 4: Tool Usage")
+        print("\nBUILD:  Demo 4: Tool Usage")
         print("-" * 25)
         
         try:
@@ -351,13 +351,13 @@ class CompleteDemonstration:
     
     async def _demo_hybrid_mode(self):
         """Demo hybrid mode switching between OpenAI and local models."""
-        print("\n🔄 Demo 5: Hybrid Mode")
+        print("\n Demo 5: Hybrid Mode")
         print("-" * 25)
         
         try:
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
-                print("⏭️  Skipping hybrid demo (no API key)")
+                print("SKIP:  Skipping hybrid demo (no API key)")
                 return
             
             # Create integration in hybrid mode
@@ -414,7 +414,7 @@ class CompleteDemonstration:
                     context={"demo": "hybrid_mode", "model": "local"}
                 )
                 
-                print("\n🏠 Testing with local model:")
+                print("\n Testing with local model:")
                 print(f"Response Task: {local_task.task}")
                 
                 local_result = await local_agent.execute_task(local_task)
@@ -426,7 +426,7 @@ class CompleteDemonstration:
                     print(f"FAIL Local task failed: {local_result.result.error}")
                 
             except Exception as e:
-                print(f"⏭️  Local model not available: {e}")
+                print(f"SKIP:  Local model not available: {e}")
             
             self._record_result("Hybrid Mode Demo", result, integration.get_budget_status())
             
@@ -441,7 +441,7 @@ class CompleteDemonstration:
         try:
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
-                print("⏭️  Skipping batch demo (no API key)")
+                print("SKIP:  Skipping batch demo (no API key)")
                 return
             
             # Create integration
@@ -473,7 +473,7 @@ class CompleteDemonstration:
                 "List two benefits of renewable energy."
             ]
             
-            print(f"🔄 Processing {len(batch_tasks)} tasks in batch:")
+            print(f" Processing {len(batch_tasks)} tasks in batch:")
             
             results = []
             start_time = datetime.now()
@@ -515,12 +515,12 @@ class CompleteDemonstration:
             successful_tasks = sum(1 for r in results if r["success"])
             
             print("\nRESULTS Batch Results:")
-            print(f"   ⏱️  Total time: {duration:.2f} seconds")
+            print(f"   TIME:  Total time: {duration:.2f} seconds")
             print(f"   PASS Successful: {successful_tasks}/{len(batch_tasks)}")
             print(f"   FAIL Failed: {len(batch_tasks) - successful_tasks}/{len(batch_tasks)}")
             
             budget_status = integration.get_budget_status()
-            print(f"   💰 Total cost: ${budget_status['current_cost']:.4f}")
+            print(f"    Total cost: ${budget_status['current_cost']:.4f}")
             
             self._record_result("Batch Processing Demo", None, {
                 "batch_size": len(batch_tasks),
@@ -568,8 +568,8 @@ class CompleteDemonstration:
                 if isinstance(budget_status, dict):
                     total_cost += budget_status.get("current_cost", 0.0)
         
-        print(f"   💰 Total estimated cost: ${total_cost:.4f}")
-        print(f"   💵 Budget remaining: ${self.budget_limit - total_cost:.4f}")
+        print(f"    Total estimated cost: ${total_cost:.4f}")
+        print(f"    Budget remaining: ${self.budget_limit - total_cost:.4f}")
         
         # Save detailed report
         report_file = f"demo_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
@@ -590,19 +590,19 @@ class CompleteDemonstration:
         with open(report_file, 'w') as f:
             json.dump(report_data, f, indent=2, default=str)
         
-        print(f"📄 Detailed report saved to: {report_file}")
+        print(f" Detailed report saved to: {report_file}")
         
         # System recommendations
         print("\nTARGET System Status:")
         print(f"   FIXING OpenAI Agents SDK: {'PASS Available' if OPENAI_AGENTS_AVAILABLE else 'FAIL Not Available'}")
-        print(f"   🔑 OpenAI API: {'PASS Configured' if os.getenv('OPENAI_API_KEY') else 'FAIL Not Configured'}")
-        print(f"   🏠 Local Models: {'PASS Available' if self._check_ollama() else 'FAIL Not Available'}")
+        print(f"    OpenAI API: {'PASS Configured' if os.getenv('OPENAI_API_KEY') else 'FAIL Not Configured'}")
+        print(f"    Local Models: {'PASS Available' if self._check_ollama() else 'FAIL Not Available'}")
         
         if successful_demos == total_demos:
             print("\nSUCCESS All demonstrations completed successfully!")
             print("   The LlamaAgent system with OpenAI integration is fully operational.")
         else:
-            print("\n⚠️  Some demonstrations failed.")
+            print("\nWARNING:  Some demonstrations failed.")
             print("   Please check the logs and ensure all dependencies are properly configured.")
     
     def _check_ollama(self) -> bool:
@@ -625,12 +625,12 @@ async def main():
     try:
         await demo.run_complete_demo()
     except KeyboardInterrupt:
-        print("\n⏹️  Demo interrupted by user")
+        print("\nSTOP:  Demo interrupted by user")
     except Exception as e:
         print(f"\nFAIL Demo failed with error: {e}")
         logger.error("Demo failed", exc_info=True)
     
-    print("\n👋 Thank you for trying the LlamaAgent + OpenAI integration!")
+    print("\nGOODBYE: Thank you for trying the LlamaAgent + OpenAI integration!")
 
 
 if __name__ == "__main__":

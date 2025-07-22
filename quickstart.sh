@@ -1,7 +1,7 @@
 #!/bin/bash
 # LlamaAgent Master Program Quick Start Script
 
-echo "🚀 LlamaAgent Master Program Quick Start"
+echo "LAUNCH: LlamaAgent Master Program Quick Start"
 echo "========================================"
 
 # Check Python version
@@ -28,13 +28,13 @@ pip install -e . 2>/dev/null || echo "Note: Some dependencies may need to be ins
 
 # Check OpenAI key
 if [ -z "$OPENAI_API_KEY" ]; then
-    echo -e "\n⚠️  Warning: OPENAI_API_KEY not set. OpenAI integration will be disabled."
+    echo -e "\nWARNING:  Warning: OPENAI_API_KEY not set. OpenAI integration will be disabled."
     echo "To enable OpenAI integration, run:"
     echo "  export OPENAI_API_KEY='your-api-key'"
 fi
 
 # Display available commands
-echo -e "\n📋 Available Commands:"
+echo -e "\nLIST: Available Commands:"
 echo "====================="
 echo ""
 echo "1. Start API Server:"

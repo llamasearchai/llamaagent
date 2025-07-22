@@ -35,7 +35,7 @@ class ReactAgent:
     strategic planning with resource-efficient execution.
     """
 
-    # ═══════════════════════════ SPRE PROMPTS ═══════════════════════════════
+    #  SPRE PROMPTS 
 
     PLANNER_PROMPT = """You are a master strategist and planner. Your task is to receive a complex user request and decompose it into a structured, sequential list of logical steps.
 
@@ -244,7 +244,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
         except ImportError:
             self._memory = None
 
-    # ═══════════════════════════ MAIN EXECUTION ═══════════════════════════════
+    #  MAIN EXECUTION 
 
     def run(self, task_input: TaskInput) -> TaskOutput:
         """Synchronous run method for backwards compatibility."""
@@ -373,7 +373,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
                 )
         return None
 
-    # ═══════════════════════════ SPRE PIPELINE ═══════════════════════════════
+    #  SPRE PIPELINE 
 
     async def _execute_spre_pipeline(
         self, task: str, context: Optional[Dict[str, Any]] = None
@@ -955,7 +955,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
 
         return response.content
 
-    # ═══════════════════════════ FALLBACK EXECUTION ═══════════════════════════
+    #  FALLBACK EXECUTION 
 
     async def _simple_execute(
         self, task: str, context: Optional[Dict[str, Any]] = None
@@ -1136,7 +1136,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
 
         return None
 
-    # ═══════════════════════════ UTILITY METHODS ═══════════════════════════
+    #  UTILITY METHODS 
 
     def add_trace(self, event_type: str, data: Any) -> None:
         """Add event to execution trace."""
@@ -1160,7 +1160,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
         result = await self.execute(task, context)
         yield result.content
 
-    # ═══════════════════════════ PROPERTY ACCESSORS ═══════════════════════════
+    #  PROPERTY ACCESSORS 
 
     @property
     def name(self) -> str:
@@ -1182,7 +1182,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
         """Get current execution trace."""
         return self.trace.copy()
 
-    # ═══════════════════════════ CONTEXT MANAGEMENT ═══════════════════════════
+    #  CONTEXT MANAGEMENT 
 
     async def save_context(self, context_data: Dict[str, Any]) -> None:
         """Save context data for future reference."""
@@ -1209,7 +1209,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
                 self.add_trace("context_load_error", {"error": str(e)})
         return None
 
-    # ═══════════════════════════ ADVANCED FEATURES ═══════════════════════════
+    #  ADVANCED FEATURES 
 
     async def explain_reasoning(self) -> str:
         """Generate explanation of the reasoning process."""
@@ -1284,7 +1284,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
 
         return metrics
 
-    # ═══════════════════════════ CLEANUP AND SHUTDOWN ═══════════════════════════
+    #  CLEANUP AND SHUTDOWN 
 
     async def cleanup(self) -> None:
         """Cleanup resources and close connections."""
@@ -1320,7 +1320,7 @@ Provide a comprehensive final answer that addresses the original task by synthes
             f")"
         )
 
-    # ═══════════════════════════ ASYNC CONTEXT MANAGER ═══════════════════════════
+    #  ASYNC CONTEXT MANAGER 
 
     async def __aenter__(self):
         """Async context manager entry."""

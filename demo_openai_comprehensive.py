@@ -85,7 +85,7 @@ class OpenAIComprehensiveDemo:
                 self.tools[tool.name] = tool
             
             logger.info(f"PASS Integration initialized with ${self.budget_limit} budget")
-            logger.info(f"🛠️  Available tools: {list(self.tools.keys())}")
+            logger.info(f"BUILD:  Available tools: {list(self.tools.keys())}")
             
             return True
             
@@ -95,7 +95,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_health_check(self):
         """Demo health check functionality."""
-        logger.info("\n🏥 Demo: Health Check")
+        logger.info("\n Demo: Health Check")
         logger.info("-" * 40)
         
         try:
@@ -172,7 +172,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_chat_models(self):
         """Demo flagship and cost-optimized chat models."""
-        logger.info("\n💬 Demo: Chat Models")
+        logger.info("\n Demo: Chat Models")
         logger.info("-" * 40)
         
         try:
@@ -273,7 +273,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_text_to_speech(self):
         """Demo text-to-speech conversion."""
-        logger.info("\n🔊 Demo: Text-to-Speech")
+        logger.info("\n Demo: Text-to-Speech")
         logger.info("-" * 40)
         
         try:
@@ -323,7 +323,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_embeddings(self):
         """Demo text embeddings."""
-        logger.info("\n🔢 Demo: Text Embeddings")
+        logger.info("\n Demo: Text Embeddings")
         logger.info("-" * 40)
         
         try:
@@ -409,7 +409,7 @@ class OpenAIComprehensiveDemo:
                     flagged = mod_result["flagged"]
                     categories = mod_result["categories"]
                     
-                    status = "🚫 FLAGGED" if flagged else "PASS SAFE"
+                    status = " FLAGGED" if flagged else "PASS SAFE"
                     logger.info(f"  Content {i+1}: {status}")
                     
                     if flagged:
@@ -434,7 +434,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_budget_tracking(self):
         """Demo budget tracking and usage monitoring."""
-        logger.info("\n💰 Demo: Budget Tracking")
+        logger.info("\n Demo: Budget Tracking")
         logger.info("-" * 40)
         
         try:
@@ -537,7 +537,7 @@ class OpenAIComprehensiveDemo:
     
     async def demo_error_handling(self):
         """Demo error handling and edge cases."""
-        logger.info("\n⚠️ Demo: Error Handling")
+        logger.info("\nWARNING: Demo: Error Handling")
         logger.info("-" * 40)
         
         try:
@@ -630,7 +630,7 @@ class OpenAIComprehensiveDemo:
         with open(report_path, 'w') as f:
             json.dump(report_data, f, indent=2, default=str)
         
-        logger.info(f"\n📄 Report saved to: {report_path}")
+        logger.info(f"\n Report saved to: {report_path}")
         
         return report_data
     
@@ -683,11 +683,11 @@ async def main():
         report = await demo.run_all_demos()
         
         logger.info("\nSUCCESS Demo completed successfully!")
-        logger.info(f"💰 Total cost: ${report['budget_status']['total_cost']:.4f}")
+        logger.info(f" Total cost: ${report['budget_status']['total_cost']:.4f}")
         logger.info(f"Success rate: {report['summary']['success_rate']:.1f}%")
         
     except KeyboardInterrupt:
-        logger.info("\n⏹️ Demo interrupted by user")
+        logger.info("\nSTOP: Demo interrupted by user")
     except Exception as e:
         logger.error(f"FAIL Demo failed: {e}")
 

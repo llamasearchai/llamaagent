@@ -342,8 +342,8 @@ services:
 ### Getting Help
 
 - Documentation [Documentation](https://docs.llamaagent.ai)
-- 💬 [Discord Community](https://discord.gg/llamaagent)
-- 🐛 [Issue Tracker](https://github.com/yourusername/llamaagent/issues)
-- 📧 [Email Support](mailto:support@llamaagent.ai)
+-  [Discord Community](https://discord.gg/llamaagent)
+-  [Issue Tracker](https://github.com/yourusername/llamaagent/issues)
+-  [Email Support](mailto:support@llamaagent.ai)
 
 Welcome to the LlamaAgent community! LlamaAgentEnhanced

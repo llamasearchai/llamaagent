@@ -180,28 +180,28 @@ class MasterSystemOrchestrator:
                 try:
                     self.metrics_collector = MetricsCollector()
                     await self.metrics_collector.initialize()
-                    self.logger.info("✓ Metrics collector initialized")
+                    self.logger.info(" Metrics collector initialized")
                 except Exception as e:
-                    self.logger.warning(f"⚠ Metrics collector initialization failed: {e}")
+                    self.logger.warning(f" Metrics collector initialization failed: {e}")
                     
                 try:
                     self.health_checker = HealthChecker()
                     await self.health_checker.initialize()
-                    self.logger.info("✓ Health checker initialized")
+                    self.logger.info(" Health checker initialized")
                 except Exception as e:
-                    self.logger.warning(f"⚠ Health checker initialization failed: {e}")
+                    self.logger.warning(f" Health checker initialization failed: {e}")
                     
                 try:
                     self.llm_factory = LLMFactory()
-                    self.logger.info("✓ LLM factory initialized")
+                    self.logger.info(" LLM factory initialized")
                 except Exception as e:
-                    self.logger.warning(f"⚠ LLM factory initialization failed: {e}")
+                    self.logger.warning(f" LLM factory initialization failed: {e}")
                     
                 try:
                     self.tool_registry = ToolRegistry()
-                    self.logger.info("✓ Tool registry initialized")
+                    self.logger.info(" Tool registry initialized")
                 except Exception as e:
-                    self.logger.warning(f"⚠ Tool registry initialization failed: {e}")
+                    self.logger.warning(f" Tool registry initialization failed: {e}")
             
             self.is_running = True
             self.start_time = datetime.now(timezone.utc)
@@ -259,10 +259,10 @@ class MasterSystemOrchestrator:
                     
                     if result["passed"]:
                         test_results["passed"] += 1
-                        self.logger.info(f"✓ {test_name} test passed")
+                        self.logger.info(f" {test_name} test passed")
                     else:
                         test_results["failed"] += 1
-                        self.logger.warning(f"✗ {test_name} test failed: {result.get('error', 'Unknown error')}")
+                        self.logger.warning(f" {test_name} test failed: {result.get('error', 'Unknown error')}")
                         
                 except Exception as e:
                     test_results["tests"][test_name] = {
@@ -272,7 +272,7 @@ class MasterSystemOrchestrator:
                     }
                     test_results["total_tests"] += 1
                     test_results["failed"] += 1
-                    self.logger.error(f"✗ {test_name} test error: {e}")
+                    self.logger.error(f" {test_name} test error: {e}")
                     
                 progress.advance(task)
                 
@@ -687,15 +687,15 @@ class MasterSystemOrchestrator:
         status_table.add_column("Details", style="white")
         
         # System info
-        status_table.add_row("System", "✓ Running" if self.is_running else "✗ Stopped", 
+        status_table.add_row("System", " Running" if self.is_running else " Stopped", 
                            f"Uptime: {(datetime.now(timezone.utc) - self.start_time).total_seconds():.1f}s" if self.start_time else "Not started")
         
         # Component status
         components = [
-            ("Core Modules", "✓ Available" if CORE_MODULES_AVAILABLE else "✗ Missing", "LLM, Agents, Tools"),
-            ("Advanced Modules", "✓ Available" if ADVANCED_MODULES_AVAILABLE else "✗ Missing", "Cache, Router, Security"),
-            ("Metrics", "✓ Active" if self.metrics_collector else "✗ Inactive", "Performance monitoring"),
-            ("Health Check", "✓ Active" if self.health_checker else "✗ Inactive", "System health monitoring")
+            ("Core Modules", " Available" if CORE_MODULES_AVAILABLE else " Missing", "LLM, Agents, Tools"),
+            ("Advanced Modules", " Available" if ADVANCED_MODULES_AVAILABLE else " Missing", "Cache, Router, Security"),
+            ("Metrics", " Active" if self.metrics_collector else " Inactive", "Performance monitoring"),
+            ("Health Check", " Active" if self.health_checker else " Inactive", "System health monitoring")
         ]
         
         for name, status, details in components:
@@ -716,7 +716,7 @@ class MasterSystemOrchestrator:
         results_table.add_column("Details", style="white")
         
         for test_name, result in test_results["tests"].items():
-            status = "✓ Pass" if result["passed"] else "✗ Fail"
+            status = " Pass" if result["passed"] else " Fail"
             duration = f"{result['duration']:.3f}s"
             details = result.get("details", result.get("error", ""))
             results_table.add_row(test_name, status, duration, details)
@@ -736,7 +736,7 @@ class MasterSystemOrchestrator:
             report = await self.generate_system_report()
             progress.stop()
             
-        self.console.print(f"[green]✓ Report generated successfully[/green]")
+        self.console.print(f"[green] Report generated successfully[/green]")
         self.console.print(f"Report saved to: {self.config.results_dir}")
         
         # Show summary
@@ -789,7 +789,7 @@ class MasterSystemOrchestrator:
             await self.metrics_collector.shutdown()
             
         self.is_running = False
-        self.logger.info("✓ Master system shutdown complete")
+        self.logger.info(" Master system shutdown complete")
 
 async def main():
     """Main entry point for the LlamaAgent Master System."""
@@ -814,25 +814,25 @@ async def main():
             console.print("[red]Failed to initialize system![/red]")
             return
             
-        console.print("[green]✓ System initialized successfully[/green]")
+        console.print("[green] System initialized successfully[/green]")
         
         # Run tests
         console.print("\n[yellow]Running comprehensive tests...[/yellow]")
         test_results = await orchestrator.run_comprehensive_tests()
         
         success_rate = test_results.get("summary", {}).get("success_rate", 0)
-        console.print(f"[green]✓ Tests completed: {test_results['passed']}/{test_results['total_tests']} passed ({success_rate:.1f}%)[/green]")
+        console.print(f"[green] Tests completed: {test_results['passed']}/{test_results['total_tests']} passed ({success_rate:.1f}%)[/green]")
         
         # Generate report
         console.print("\n[yellow]Generating system report...[/yellow]")
         report = await orchestrator.generate_system_report()
-        console.print("[green]✓ System report generated[/green]")
+        console.print("[green] System report generated[/green]")
         
         # Show quick summary
         console.print(f"\n[bold cyan]System Summary:[/bold cyan]")
         console.print(f"• Overall Health: [bold]{report['system_status']['health_status']}[/bold]")
-        console.print(f"• Core Modules: [bold]{'✓' if CORE_MODULES_AVAILABLE else '✗'}[/bold]")
-        console.print(f"• Advanced Modules: [bold]{'✓' if ADVANCED_MODULES_AVAILABLE else '✗'}[/bold]")
+        console.print(f"• Core Modules: [bold]{'' if CORE_MODULES_AVAILABLE else ''}[/bold]")
+        console.print(f"• Advanced Modules: [bold]{'' if ADVANCED_MODULES_AVAILABLE else ''}[/bold]")
         console.print(f"• Test Success Rate: [bold]{success_rate:.1f}%[/bold]")
         
         # Start interactive CLI

@@ -392,9 +392,9 @@ verify_deployment() {
         
         log_info "Checking $name..."
         if curl -sf --max-time 10 "$endpoint" > /dev/null 2>&1; then
-            log_info "✓ $name is healthy"
+            log_info " $name is healthy"
         else
-            log_warn "✗ $name is not responding"
+            log_warn " $name is not responding"
             failed_checks+=("$name")
         fi
     done

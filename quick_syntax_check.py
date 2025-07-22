@@ -136,9 +136,9 @@ def main():
         if os.path.exists(file_path):
             success, error = check_file(file_path)
             if success:
-                print(f"✓ {file_path}")
+                print(f" {file_path}")
             else:
-                print(f"✗ {file_path}: {error}")
+                print(f" {file_path}: {error}")
                 errors.append((file_path, error))
         else:
             print(f"? {file_path} (not found)")

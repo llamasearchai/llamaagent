@@ -33,7 +33,7 @@ def main():
     exclude_patterns = ["__pycache__", ".venv", "venv", ".git", "build", "dist"]
     python_files = [f for f in python_files if not any(pattern in str(f) for pattern in exclude_patterns)]
     
-    print(f"📁 Found {len(python_files)} Python files to analyze")
+    print(f" Found {len(python_files)} Python files to analyze")
     
     # Initialize problem tracking
     problems = []
@@ -73,7 +73,7 @@ def main():
             check_code_quality(py_file, content, lines, problems, project_root)
             
         except UnicodeDecodeError:
-            print(f"⚠️  {py_file.relative_to(project_root)} - Encoding error")
+            print(f"WARNING:  {py_file.relative_to(project_root)} - Encoding error")
             problems.append({
                 'severity': 'HIGH',
                 'category': 'CONFIGURATION_ERROR',
@@ -85,7 +85,7 @@ def main():
             })
             files_with_errors += 1
         except Exception as e:
-            print(f"⚠️  {py_file.relative_to(project_root)} - {str(e)}")
+            print(f"WARNING:  {py_file.relative_to(project_root)} - {str(e)}")
     
     # Check for missing critical files
     check_project_structure(project_root, problems)
@@ -111,8 +111,8 @@ def main():
         print("FIXING Fix critical issues first before running the system.")
         return 1
     elif high_count > 0:
-        print(f"\n⚠️  RESULT: {high_count} high-priority issues found.")
-        print("📋 See full report for details.")
+        print(f"\nWARNING:  RESULT: {high_count} high-priority issues found.")
+        print("LIST: See full report for details.")
         return 0
     else:
         print(f"\nPASS RESULT: No critical issues found!")
@@ -288,7 +288,7 @@ def generate_report(project_root: Path, problems: List[Dict], total_files: int, 
         if critical_count > 0:
             f.write(f"URGENT URGENT: Fix {critical_count} critical issues immediately - system may not function\n")
         if high_count > 0:
-            f.write(f"⚠️  HIGH PRIORITY: Address {high_count} high-priority issues to prevent major problems\n")
+            f.write(f"WARNING:  HIGH PRIORITY: Address {high_count} high-priority issues to prevent major problems\n")
         
         if problems_by_category.get('SYNTAX_ERROR'):
             f.write("FIXING Fix syntax errors first - they prevent code execution\n")

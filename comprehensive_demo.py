@@ -30,14 +30,14 @@ from llamaagent.types import TaskInput
 def print_banner():
     """Print an impressive banner."""
     banner = """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║                    LLAMAAGENT COMPREHENSIVE DEMO                      ║
-║                                                                              ║
-║              Production-Ready AI Agent Platform                              ║
-║              Author: Nik Jois <nikjois@llamasearch.ai>                      ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+
+                                                                              
+                    LLAMAAGENT COMPREHENSIVE DEMO                      
+                                                                              
+              Production-Ready AI Agent Platform                              
+              Author: Nik Jois <nikjois@llamasearch.ai>                      
+                                                                              
+
 """
     print(banner)
 
@@ -117,10 +117,10 @@ async def test_core_agent_functionality():
             execution_time = time.time() - start_time
             
             print(f"   PASS Status: {result.status.value}")
-            print(f"   ⏱️  Execution time: {execution_time:.2f}s")
+            print(f"   TIME:  Execution time: {execution_time:.2f}s")
             if result.result:
                 content = result.result.content[:150] + "..." if len(result.result.content) > 150 else result.result.content
-                print(f"   💬 Result: {content}")
+                print(f"    Result: {content}")
             
             results.append({
                 "task": task_desc,
@@ -145,7 +145,7 @@ async def test_core_agent_functionality():
     total_time = sum(r["execution_time"] for r in results)
     
     print(f"   Success Rate: {successful_tasks}/{len(results)} ({100*successful_tasks/len(results):.1f}%)")
-    print(f"   ⏱️  Total Execution Time: {total_time:.2f}s")
+    print(f"   TIME:  Total Execution Time: {total_time:.2f}s")
     print(f"   Average Time per Task: {total_time/len(results):.2f}s")
     
     return results
@@ -165,12 +165,12 @@ def test_api_functionality():
         if response.status_code == 200:
             data = response.json()
             print(f"   PASS Root endpoint: {data['message']}")
-            print(f"   📋 Version: {data['version']}")
+            print(f"   LIST: Version: {data['version']}")
             print(f"   User Author: {data['author']}")
         else:
             print(f"   FAIL Root endpoint failed: {response.status_code}")
     except Exception as e:
-        print(f"   ⚠️  API server not running: {e}")
+        print(f"   WARNING:  API server not running: {e}")
         return False
     
     # Test health endpoint
@@ -179,7 +179,7 @@ def test_api_functionality():
         if response.status_code == 200:
             health_data = response.json()
             print(f"   PASS Health endpoint: {health_data['status']}")
-            print(f"   ⏱️  Uptime: {health_data['uptime_seconds']:.1f}s")
+            print(f"   TIME:  Uptime: {health_data['uptime_seconds']:.1f}s")
             print(f"   Tools available: {len(health_data.get('tools_available', []))}")
         else:
             print(f"   FAIL Health endpoint failed: {response.status_code}")
@@ -233,11 +233,11 @@ def test_system_capabilities():
         "Benchmarking": "PASS GAIA, SPRE evaluation systems"
     }
     
-    print("📋 Production-Ready Features:")
+    print("LIST: Production-Ready Features:")
     for feature, status in capabilities.items():
         print(f"   {status} {feature}")
     
-    print("\n🏗️  Architecture Highlights:")
+    print("\n  Architecture Highlights:")
     architecture_points = [
         "SPRE (Strategic Planning & Resourceful Execution) methodology",
         "Modular plugin architecture for tools and providers",
@@ -250,7 +250,7 @@ def test_system_capabilities():
     ]
     
     for point in architecture_points:
-        print(f"   🔹 {point}")
+        print(f"    {point}")
 
 
 def test_deployment_readiness():
@@ -264,7 +264,7 @@ def test_deployment_readiness():
         "FastAPI Direct": "uvicorn src.llamaagent.api:app --host 0.0.0.0 --port 8000"
     }
     
-    print("🐳 Deployment Options:")
+    print(" Deployment Options:")
     for option, command in deployment_options.items():
         print(f"   PASS {option}: {command}")
     
@@ -279,7 +279,7 @@ def test_deployment_readiness():
     
     print("\nNETWORK API Endpoints:")
     for endpoint, description in api_endpoints.items():
-        print(f"   📡 {endpoint} - {description}")
+        print(f"    {endpoint} - {description}")
 
 
 async def run_comprehensive_demo():
@@ -312,7 +312,7 @@ async def run_comprehensive_demo():
     if api_working:
         print("   NETWORK API Server: PASS Operational")
     else:
-        print("   NETWORK API Server: ⚠️  Not running (start with: python master_program.py server)")
+        print("   NETWORK API Server: WARNING:  Not running (start with: python master_program.py server)")
     
     print("\nLlamaAgent is production-ready with:")
     production_features = [
@@ -330,7 +330,7 @@ async def run_comprehensive_demo():
         print(f"   Enhanced {feature}")
     
     print("\nReady to impress Anthropic engineers!")
-    print("📧 Contact: Nik Jois <nikjois@llamasearch.ai>")
+    print(" Contact: Nik Jois <nikjois@llamasearch.ai>")
     
     print("\n" + "="*80)
     print("  Featured LLAMAAGENT: PRODUCTION-READY AI AGENT PLATFORM Featured")

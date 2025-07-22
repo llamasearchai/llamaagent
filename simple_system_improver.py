@@ -57,7 +57,7 @@ def main() -> bool:
         print("The LlamaAgent codebase is now optimized and ready for use.")
         return True
     else:
-        print("⚠️ Some improvements failed. Please review the errors above.")
+        print("WARNING: Some improvements failed. Please review the errors above.")
         return False
 
 if __name__ == "__main__":

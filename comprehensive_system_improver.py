@@ -580,7 +580,7 @@ class SystemImprover:
         console.print(table)
         
         # Display operation results
-        console.print("\n[bold]📋 Operation Results:[/bold]")
+        console.print("\n[bold]LIST: Operation Results:[/bold]")
         for result in self.results:
             status = "PASS" if result.success else "FAIL"
             console.print(f"{status} {result.message}")
@@ -609,7 +609,7 @@ def main(project_root: Path, verbose: bool):
             console.print("\n[bold green]SUCCESS System improvement completed successfully![/bold green]")
             console.print("[dim]The LlamaAgent codebase is now production-ready and impressive.[/dim]")
         else:
-            console.print("\n[bold yellow]⚠️ System improvement completed with some issues.[/bold yellow]")
+            console.print("\n[bold yellow]WARNING: System improvement completed with some issues.[/bold yellow]")
             console.print("[dim]Review the report and address remaining issues.[/dim]")
             
     except Exception as e:

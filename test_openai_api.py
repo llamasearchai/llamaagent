@@ -16,7 +16,7 @@ try:
     )
     from llamaagent.tools.openai_tools import OPENAI_TOOLS
     
-    print("✓ Successfully imported API modules")
+    print(" Successfully imported API modules")
     
     # List available model types
     print("\nAvailable model types:")
@@ -33,13 +33,13 @@ try:
         if hasattr(route, 'path') and hasattr(route, 'methods'):
             print(f"  - {', '.join(route.methods)} {route.path}")
     
-    print("\n✓ API structure verified successfully!")
+    print("\n API structure verified successfully!")
     
 except ImportError as e:
-    print(f"✗ Import error: {e}")
+    print(f" Import error: {e}")
     import traceback
     traceback.print_exc()
 except Exception as e:
-    print(f"✗ Error: {e}")
+    print(f" Error: {e}")
     import traceback
     traceback.print_exc()

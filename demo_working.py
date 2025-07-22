@@ -56,13 +56,13 @@ class LlamaAgentDemo:
         try:
             # 1. Provider Factory
             self.provider_factory = ProviderFactory()
-            logger.info("✓ Provider factory initialized")
+            logger.info(" Provider factory initialized")
             
             # 2. Tool Registry
             self.tools = ToolRegistry()
             self.tools.register(CalculatorTool())
             self.tools.register(PythonREPLTool())
-            logger.info(f"✓ Tool registry initialized with {len(self.tools.list_tools())} tools")
+            logger.info(f" Tool registry initialized with {len(self.tools.list_tools())} tools")
             
             # 3. Mock Provider (for reliable testing)
             mock_provider = MockProvider(
@@ -74,7 +74,7 @@ class LlamaAgentDemo:
                     "plan": "Here's a strategic plan:\n1. Analysis\n2. Implementation\n3. Testing"
                 }
             )
-            logger.info("✓ Mock provider initialized")
+            logger.info(" Mock provider initialized")
             
             # 4. Agent Configuration
             agent_config = AgentConfig(
@@ -86,11 +86,11 @@ class LlamaAgentDemo:
             react_agent = ReactAgent(config=agent_config)
             self.agents["demo"] = react_agent
             self.agents["demo_provider"] = mock_provider  # Store provider separately
-            logger.info("✓ ReAct agent created")
+            logger.info(" ReAct agent created")
             
             # 6. Agent Orchestrator
             self.orchestrator = AgentOrchestrator()
-            logger.info("✓ Agent orchestrator initialized")
+            logger.info(" Agent orchestrator initialized")
             
             logger.info("LlamaAgent system fully initialized!")
             return True
@@ -224,14 +224,14 @@ class LlamaAgentDemo:
                 invalid_msg = LLMMessage(role="invalid", content="test")
                 logger.error("Should have failed!")
             except ValueError as e:
-                logger.info(f"✓ Caught invalid role error: {e}")
+                logger.info(f" Caught invalid role error: {e}")
             
             # Test empty content
             try:
                 empty_msg = LLMMessage(role="user", content="")
                 logger.error("Should have failed!")
             except ValueError as e:
-                logger.info(f"✓ Caught empty content error: {e}")
+                logger.info(f" Caught empty content error: {e}")
             
             # Test immutability
             try:
@@ -239,7 +239,7 @@ class LlamaAgentDemo:
                 msg.content = "modified"
                 logger.error("Should have failed!")
             except AttributeError as e:
-                logger.info(f"✓ Caught immutability violation: {type(e).__name__}")
+                logger.info(f" Caught immutability violation: {type(e).__name__}")
             
             return True
             
@@ -303,7 +303,7 @@ class LlamaAgentDemo:
         results = {}
         for name, demo_func in demos:
             try:
-                logger.info(f"\n🔄 Running {name} demo...")
+                logger.info(f"\n Running {name} demo...")
                 success = await demo_func()
                 results[name] = success
                 if success:
@@ -311,7 +311,7 @@ class LlamaAgentDemo:
                 else:
                     logger.error(f"FAIL {name} demo failed")
             except Exception as e:
-                logger.error(f"💥 {name} demo crashed: {e}")
+                logger.error(f" {name} demo crashed: {e}")
                 results[name] = False
         
         # Summary
@@ -332,7 +332,7 @@ class LlamaAgentDemo:
             logger.info("SUCCESS ALL DEMONSTRATIONS COMPLETED SUCCESSFULLY!")
             logger.info("LlamaAgent system is fully operational!")
         else:
-            logger.warning(f"⚠️  {total - successful} demonstrations failed")
+            logger.warning(f"WARNING:  {total - successful} demonstrations failed")
         
         return successful == total
 
@@ -346,7 +346,7 @@ async def main():
         logger.info("\nLlamaAgent demonstration completed successfully!")
         logger.info("The system is ready for production use.")
     else:
-        logger.error("\n💥 Some demonstrations failed.")
+        logger.error("\n Some demonstrations failed.")
         logger.error("Please check the logs for details.")
     
     return success
@@ -358,8 +358,8 @@ if __name__ == "__main__":
         success = asyncio.run(main())
         sys.exit(0 if success else 1)
     except KeyboardInterrupt:
-        logger.info("\n🛑 Demonstration interrupted by user")
+        logger.info("\n Demonstration interrupted by user")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"\n💥 Demonstration crashed: {e}")
+        logger.error(f"\n Demonstration crashed: {e}")
         sys.exit(1) 

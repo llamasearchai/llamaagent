@@ -376,7 +376,7 @@ def main():
     if validation_passed:
         print("PASS POST-FIX VALIDATION PASSED")
     else:
-        print("⚠️  POST-FIX VALIDATION FAILED")
+        print("WARNING:  POST-FIX VALIDATION FAILED")
     
     return 0 if validation_passed else 1
 

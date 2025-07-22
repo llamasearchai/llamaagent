@@ -38,7 +38,7 @@ class LlamaAgentDemo:
         
         # Create LLM provider
         self.provider = create_provider('mock')
-        print("✓ Mock LLM provider created")
+        print(" Mock LLM provider created")
         
         # Create tool registry
         tools = ToolRegistry()
@@ -46,12 +46,12 @@ class LlamaAgentDemo:
         # Add calculator tool
         calculator = CalculatorTool()
         tools.register(calculator)
-        print("✓ Calculator tool registered")
+        print(" Calculator tool registered")
         
         # Add Python REPL tool
         python_repl = PythonREPLTool()
         tools.register(python_repl)
-        print("✓ Python REPL tool registered")
+        print(" Python REPL tool registered")
         
         # Create agent configuration
         config = AgentConfig(
@@ -61,7 +61,7 @@ class LlamaAgentDemo:
             temperature=0.1,
             max_tokens=1000
         )
-        print("✓ Agent configuration created")
+        print(" Agent configuration created")
         
         # Create ReactAgent
         self.agent = ReactAgent(
@@ -69,7 +69,7 @@ class LlamaAgentDemo:
             llm_provider=self.provider,
             tools=tools
         )
-        print("✓ ReactAgent created successfully")
+        print(" ReactAgent created successfully")
         print()
     
     async def run_mathematical_tasks(self):
@@ -108,7 +108,7 @@ class LlamaAgentDemo:
     
     async def run_programming_tasks(self):
         """Test programming and code execution capabilities."""
-        print("\n💻 Testing Programming Capabilities...")
+        print("\nCODE: Testing Programming Capabilities...")
         
         tasks = [
             "Write a Python function to calculate the factorial of a number",
@@ -248,14 +248,14 @@ class LlamaAgentDemo:
         # System capabilities demonstrated
         print(f"\nPASS Capabilities Successfully Demonstrated:")
         capabilities = [
-            "✓ Mathematical calculations with calculator tool",
-            "✓ Python code execution with REPL tool", 
-            "✓ Complex reasoning and planning",
-            "✓ Multi-tool task coordination",
-            "✓ Structured task input/output handling",
-            "✓ Async task execution",
-            "✓ Error handling and reporting",
-            "✓ Agent configuration and customization"
+            " Mathematical calculations with calculator tool",
+            " Python code execution with REPL tool", 
+            " Complex reasoning and planning",
+            " Multi-tool task coordination",
+            " Structured task input/output handling",
+            " Async task execution",
+            " Error handling and reporting",
+            " Agent configuration and customization"
         ]
         
         for capability in capabilities:

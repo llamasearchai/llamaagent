@@ -42,7 +42,7 @@ Created a feature-rich command-line interface with:
 Total Tests: 273
 PASS Passed: 255 (93.4%)
 FAIL Failed: 15 (5.5%)
-⏭️ Skipped: 3 (1.1%)
+SKIP: Skipped: 3 (1.1%)
 ```
 
 Failed tests are primarily due to:
@@ -125,18 +125,18 @@ python -m llamaagent enhanced --no-spree
 
 ```
 LlamaAgent/
-├── src/llamaagent/
-│   ├── cli/
-│   │   ├── interactive.py      (Original CLI)
-│   │   └── enhanced_cli.py     (New Enhanced CLI)
-│   ├── llm/
-│   │   ├── providers/          (Fixed type errors)
-│   │   └── factory.py          (Corrected base classes)
-│   └── api/
-│       └── main.py             (Fixed provider usage)
-├── llamaagent_cli.py           (Main entry point)
-├── demo_enhanced_cli.py        (Interactive demo)
-└── CLI_FEATURES.md             (Documentation)
+ src/llamaagent/
+    cli/
+       interactive.py      (Original CLI)
+       enhanced_cli.py     (New Enhanced CLI)
+    llm/
+       providers/          (Fixed type errors)
+       factory.py          (Corrected base classes)
+    api/
+        main.py             (Fixed provider usage)
+ llamaagent_cli.py           (Main entry point)
+ demo_enhanced_cli.py        (Interactive demo)
+ CLI_FEATURES.md             (Documentation)
 ```
 
 ## Future Recommendations

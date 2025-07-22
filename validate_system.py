@@ -34,11 +34,11 @@ class SystemValidator:
     def print_banner(self):
         """Print validation banner."""
         print(f"{BLUE}")
-        print("╔═══════════════════════════════════════════════════════════╗")
-        print("║         LlamaAgent Master Program Validator               ║")
-        print("║                                                           ║")
-        print("║    Comprehensive System Validation & Health Check         ║")
-        print("╚═══════════════════════════════════════════════════════════╝")
+        print("")
+        print("         LlamaAgent Master Program Validator               ")
+        print("                                                           ")
+        print("    Comprehensive System Validation & Health Check         ")
+        print("")
         print(f"{NC}\n")
     
     def check(self, name: str, condition: bool, error_msg: str = "", warning: bool = False):
@@ -49,7 +49,7 @@ class SystemValidator:
         else:
             if warning:
                 self.warnings.append((name, error_msg))
-                print(f"{YELLOW}⚠️  {name}: {error_msg}{NC}")
+                print(f"{YELLOW}WARNING:  {name}: {error_msg}{NC}")
             else:
                 self.errors.append((name, error_msg))
                 print(f"{RED}FAIL {name}: {error_msg}{NC}")

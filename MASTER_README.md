@@ -22,25 +22,25 @@
 - **Tool Synthesis**: Agents can create custom tools dynamically
 - **Memory Systems**: Vector-based long-term memory with PostgreSQL + pgvector
 
-### 🔌 OpenAI Agents SDK Integration
+###  OpenAI Agents SDK Integration
 - **Full Compatibility**: Drop-in replacement for OpenAI Agents
 - **Hybrid Execution**: Use OpenAI and local models interchangeably
 - **Budget Tracking**: Monitor and control API costs in real-time
 - **Migration Tools**: Easy migration from existing OpenAI implementations
 
-### 🏗️ Production-Ready Infrastructure
+###  Production-Ready Infrastructure
 - **FastAPI REST API**: High-performance async API with WebSocket support
 - **Security**: JWT auth, rate limiting, input validation, API keys
 - **Monitoring**: Prometheus metrics, structured logging, tracing
 - **Deployment**: Docker, Kubernetes, and cloud-ready configurations
 
-### 🛠️ Developer Experience
+### BUILD: Developer Experience
 - **Type Safety**: Full static typing with Pyright strict mode
 - **Comprehensive Testing**: 95%+ test coverage with pytest
 - **Rich Documentation**: API reference, tutorials, and examples
 - **Jupyter Notebooks**: Interactive demonstrations and tutorials
 
-## 🚀 Quick Start
+## LAUNCH: Quick Start
 
 ### Installation
 
@@ -261,14 +261,14 @@ mypy src/
 - [ ] Enhanced security features
 - [ ] Enterprise support portal
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 This project builds upon excellent work from:
 - OpenAI Agents SDK team
 - LangChain and LangGraph communities
 - The broader AI/ML research community
 
-## 📄 Citation
+##  Citation
 
 If you use LlamaAgent in your research, please cite:
 
@@ -281,20 +281,20 @@ If you use LlamaAgent in your research, please cite:
 }
 ```
 
-## 📞 Support
+##  Support
 
 - **Email**: nikjois@llamasearch.ai
 - **GitHub Issues**: [Report bugs or request features](https://github.com/nikjois/llamaagent/issues)
 - **Discord**: [Join our community](https://discord.gg/llamaagent)
 - **Documentation**: [https://llamaagent.readthedocs.io](https://llamaagent.readthedocs.io)
 
-## 📜 License
+##  License
 
 LlamaAgent is released under the MIT License. See [LICENSE](./LICENSE) for details.
 
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by the LlamaAgent Team</strong><br>
+  <strong>Built with LOVE: by the LlamaAgent Team</strong><br>
   <em>Empowering developers to build intelligent multi-agent systems</em>
 </p>

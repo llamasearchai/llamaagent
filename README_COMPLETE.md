@@ -378,21 +378,21 @@ report = metrics.get_report()
 ### System Overview
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   API Layer     │     │   CLI Layer     │     │   SDK Layer     │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │                       │                         │
-         └───────────────────────┴─────────────────────────┘
-                                 │
-                     ┌───────────┴───────────┐
-                     │    Agent Manager      │
-                     └───────────┬───────────┘
-                                 │
-        ┌────────────────────────┼────────────────────────┐
-        │                        │                        │
-┌───────┴────────┐     ┌────────┴────────┐     ┌────────┴────────┐
-│  LLM Providers │     │     Tools       │     │     Memory      │
-└────────────────┘     └─────────────────┘     └─────────────────┘
+          
+   API Layer             CLI Layer             SDK Layer     
+          
+                                                         
+         
+                                 
+                     
+                         Agent Manager      
+                     
+                                 
+        
+                                                        
+          
+  LLM Providers           Tools                 Memory      
+          
 ```
 
 ### Key Components
@@ -475,4 +475,4 @@ If you use LlamaAgent in your research, please cite:
 
 ---
 
-Built with ❤️ by the LlamaAgent Team
+Built with LOVE: by the LlamaAgent Team

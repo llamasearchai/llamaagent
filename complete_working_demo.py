@@ -528,7 +528,7 @@ async def run_complete_demo():
         print()
     
     # Performance comparison
-    print("🔄 PERFORMANCE COMPARISON")
+    print(" PERFORMANCE COMPARISON")
     print("=" * 40)
     print("Previous MockProvider (Generic Responses):")
     print("  Success Rate: 0.0%")
@@ -575,7 +575,7 @@ async def run_complete_demo():
     with open(results_file, 'w') as f:
         json.dump(results_dict, f, indent=2)
     
-    print(f"📁 Results saved to: {results_file}")
+    print(f" Results saved to: {results_file}")
     print()
     
     # Final assessment
@@ -594,9 +594,9 @@ async def run_complete_demo():
         print("PASS Significant improvement over generic MockProvider")
         print("PASS Most tasks completed successfully")
     elif results.summary.success_rate >= 0.4:
-        print("⚠️  MODERATE: LlamaAgent system shows improvement but needs work")
+        print("WARNING:  MODERATE: LlamaAgent system shows improvement but needs work")
         print("PASS Some tasks completed successfully")
-        print("⚠️  Room for further enhancement")
+        print("WARNING:  Room for further enhancement")
     else:
         print("FAIL POOR: System needs significant improvement")
     

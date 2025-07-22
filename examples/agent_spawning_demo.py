@@ -50,7 +50,7 @@ async def demo_basic_spawning():
     )
     
     if result.success:
-        print(f"✓ Spawned agent: {result.agent_id}")
+        print(f" Spawned agent: {result.agent_id}")
         print(f"  Spawn time: {result.spawn_time:.2f}s")
         
         # Execute a task with the spawned agent
@@ -67,7 +67,7 @@ async def demo_basic_spawning():
         roles=[AgentRole.RESEARCHER, AgentRole.ANALYZER, AgentRole.PLANNER],
     )
     
-    print(f"✓ Spawned team with {len(team_results)} agents:")
+    print(f" Spawned team with {len(team_results)} agents:")
     for name, result in team_results.items():
         if result.success:
             print(f"  - {name}: {result.agent_id}")
@@ -103,7 +103,7 @@ async def demo_agent_pool():
     # Start the pool
     print("\n1. Starting agent pool...")
     await pool.start()
-    print(f"✓ Pool started with {pool.config.initial_agents} agents")
+    print(f" Pool started with {pool.config.initial_agents} agents")
     
     # Submit tasks
     print("\n2. Submitting tasks to pool...")
@@ -137,7 +137,7 @@ async def demo_agent_pool():
     
     # Stop the pool
     await pool.stop()
-    print("\n✓ Pool stopped")
+    print("\n Pool stopped")
 
 
 async def demo_communication():
@@ -177,7 +177,7 @@ async def demo_communication():
         )
         worker_results.append(result)
     
-    print("✓ Spawned coordinator and 2 workers")
+    print(" Spawned coordinator and 2 workers")
     
     # Create channels
     from llamaagent.spawning import AgentChannel
@@ -229,7 +229,7 @@ async def demo_communication():
                 f"Research on aspect {i+1} completed"
             )
     
-    print("\n✓ Communication demonstration complete")
+    print("\n Communication demonstration complete")
     
     # Clean up
     await spawner.terminate_agent(coordinator_result.agent_id, cascade=True)
@@ -275,13 +275,13 @@ async def demo_orchestrator_integration():
     )
     
     orchestrator.register_workflow(workflow)
-    print("✓ Workflow registered")
+    print(" Workflow registered")
     
     # Execute workflow
     print("\n2. Executing workflow with dynamic spawning...")
     result = await orchestrator.execute_workflow("research_project")
     
-    print(f"\n✓ Workflow completed:")
+    print(f"\n Workflow completed:")
     print(f"  Success: {result.success}")
     print(f"  Execution time: {result.execution_time:.2f}s")
     print(f"  Steps completed: {len(result.results)}")
@@ -316,13 +316,13 @@ async def demo_orchestrator_integration():
     # Start pool
     if orchestrator.agent_pool:
         await orchestrator.agent_pool.start()
-        print("✓ Agent pool started")
+        print(" Agent pool started")
     
     # Execute pool-based workflow
     print("\n4. Executing pool-based workflow...")
     pool_result = await orchestrator.execute_workflow("batch_processing")
     
-    print(f"\n✓ Pool workflow completed:")
+    print(f"\n Pool workflow completed:")
     print(f"  Success: {pool_result.success}")
     print(f"  Items processed: {len(pool_result.results)}")
     
@@ -337,7 +337,7 @@ async def demo_orchestrator_integration():
     # Stop pool
     if orchestrator.agent_pool:
         await orchestrator.agent_pool.stop()
-        print("\n✓ Agent pool stopped")
+        print("\n Agent pool stopped")
 
 
 async def main():

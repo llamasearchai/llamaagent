@@ -54,15 +54,15 @@ class OpenAIIntegrationDemo:
         )
         
         self.integration = OpenAIAgentsIntegration(config)
-        print(f"✓ OpenAI integration configured (Budget: ${config.budget_limit})")
+        print(f" OpenAI integration configured (Budget: ${config.budget_limit})")
         
         # Create orchestrator
         self.orchestrator = AgentOrchestrator()
-        print("✓ Agent orchestrator initialized")
+        print(" Agent orchestrator initialized")
         
         # Create specialized agents
         await self._create_agents()
-        print(f"✓ Created {len(self.agents)} specialized agents")
+        print(f" Created {len(self.agents)} specialized agents")
         
     async def _create_agents(self):
         """Create a suite of specialized agents."""

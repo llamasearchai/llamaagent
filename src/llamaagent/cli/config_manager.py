@@ -431,7 +431,7 @@ def setup_interactive_config() -> None:
     manager = ConfigManager()
 
     # API Keys setup
-    print("\n📋 API Keys Setup:")
+    print("\nLIST: API Keys Setup:")
 
     # OpenAI
     openai_key = input("OpenAI API Key (leave empty to skip): ").strip()
@@ -446,7 +446,7 @@ def setup_interactive_config() -> None:
         print("PASS Anthropic API key set")
 
     # CLI preferences
-    print("\n📋 CLI Preferences:")
+    print("\nLIST: CLI Preferences:")
 
     default_model = input(
         f"Default model [{manager.get('cli.default_model')}]: "
@@ -468,7 +468,7 @@ def setup_interactive_config() -> None:
     # Validate configuration
     issues = manager.validate_config()
     if issues:
-        print("\n⚠️  Configuration issues found:")
+        print("\nWARNING:  Configuration issues found:")
         for issue in issues:
             print(f"  - {issue}")
     else:

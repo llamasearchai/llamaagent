@@ -429,11 +429,11 @@ class ComprehensiveSyntaxFixer:
                         "fixes": result["fixes"],
                         "iterations": result["iterations"]
                     })
-                    print(f"  ✓ Fixed {len(result['fixes'])} issues in {result['iterations']} iteration(s)")
+                    print(f"   Fixed {len(result['fixes'])} issues in {result['iterations']} iteration(s)")
                 elif result["success"]:
-                    print(f"  ✓ No syntax errors found")
+                    print(f"   No syntax errors found")
                 else:
-                    print(f"  ✗ Failed: {result['error']}")
+                    print(f"   Failed: {result['error']}")
 
     def generate_report(self, output_file: str = "syntax_fix_report.json") -> None:
         """Generate a detailed report of all fixes."""

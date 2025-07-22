@@ -308,13 +308,13 @@ def status() -> None:
     }
 
     for provider, key in api_keys.items():
-        status = "✓ Configured" if key else "✗ Missing"
+        status = " Configured" if key else " Missing"
         details = "API key set" if key else "Set in environment"
         table.add_row(f"{provider} API", status, details)
 
     # Check database
     db_path = Path("llamaagent.db")
-    db_status = "✓ Exists" if db_path.exists() else "✗ Not found"
+    db_status = " Exists" if db_path.exists() else " Not found"
     db_details = f"Size: {db_path.stat().st_size if db_path.exists() else 0} bytes"
     table.add_row("Database", db_status, db_details)
 
@@ -329,10 +329,10 @@ def status() -> None:
     for name, module in dependencies:
         try:
             __import__(module)
-            status = "✓ Installed"
+            status = " Installed"
             details = "Available"
         except ImportError:
-            status = "✗ Missing"
+            status = " Missing"
             details = f"pip install {module}"
 
         table.add_row(f"{name}", status, details)

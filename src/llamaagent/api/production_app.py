@@ -122,26 +122,26 @@ class RateLimiter:
         self.clients = {}
         self.default_limit = 100  # requests per minute
         self.default_window = 60  # seconds
-    
+
     async def check_rate_limit(self, client_id: str, limit: int = None, window: int = None) -> bool:
         """Check if client is within rate limit."""
         limit = limit or self.default_limit
         window = window or self.default_window
-        
+
         now = time.time()
         if client_id not in self.clients:
             self.clients[client_id] = []
-        
+
         # Clean old requests
         self.clients[client_id] = [
-            req_time for req_time in self.clients[client_id] 
+            req_time for req_time in self.clients[client_id]
             if now - req_time < window
         ]
-        
+
         # Check limit
         if len(self.clients[client_id]) >= limit:
             return False
-        
+
         # Add current request
         self.clients[client_id].append(now)
         return True
@@ -152,14 +152,14 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, rate_limiter: RateLimiter):
         super().__init__(app)
         self.rate_limiter = rate_limiter
-    
+
     async def dispatch(self, request: StarletteRequest, call_next):
         # Skip rate limiting for health checks
         if request.url.path in ["/health", "/metrics"]:
             return await call_next(request)
         # Get client identifier
         client_id = request.client.host if request.client else "unknown"
-        
+
         # Check rate limit
         if not await self.rate_limiter.check_rate_limit(client_id):
             return JSONResponse(
@@ -171,7 +171,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: StarletteRequest, call_next):
         start_time = time.time()
-        
+
         # Log request
         logger.info(f"Request: {request.method} {request.url.path} from {request.client.host if request.client else 'unknown'}")
         # Process request
@@ -187,7 +187,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, cache_ttl: int = 300):
         super().__init__(app)
         self.cache_ttl = cache_ttl
-    
+
     async def dispatch(self, request: StarletteRequest, call_next):
         # Only cache GET requests
         if request.method != "GET":
@@ -212,7 +212,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
                     "status_code": response.status_code,
                     "timestamp": time.time()
                 }
-        
+
         return response
 
 
@@ -364,7 +364,7 @@ async def lifespan(app: FastAPI):
     finally:
         # Shutdown
         await cleanup_application()
-        logger.info("🛑 LlamaAgent Production API shut down cleanly")
+        logger.info(" LlamaAgent Production API shut down cleanly")
 async def initialize_application():
     """Initialize all application components."""
     logger.info("Initializing Initializing LlamaAgent Production API...")
@@ -391,7 +391,7 @@ async def initialize_application():
             await app_state["database"].initialize()
             logger.info("PASS Database initialized")
         except Exception as e:
-            logger.warning(f"⚠️ Database initialization failed: {e}")
+            logger.warning(f"WARNING: Database initialization failed: {e}")
     # Initialize security manager
     if SecurityManager:
         app_state["security_manager"] = SecurityManager()
@@ -404,7 +404,7 @@ async def initialize_application():
                 app_state["openai_integration"] = OpenAIAgentsIntegration(api_key=api_key)
                 logger.info("PASS OpenAI integration initialized")
             except Exception as e:
-                logger.warning(f"⚠️ OpenAI integration failed: {e}")
+                logger.warning(f"WARNING: OpenAI integration failed: {e}")
     # Initialize tools
     app_state["tools"] = ToolRegistry()
     app_state["tools"].register_tool(CalculatorTool())
@@ -443,14 +443,14 @@ async def cleanup_application():
     # Shutdown orchestrator
     if app_state["orchestrator"]:
         await app_state["orchestrator"].shutdown()
-    
+
     # Close database connections
     if app_state["database"]:
         await app_state["database"].cleanup()
-    
+
     # Clear cache
     app_state["cache"].clear()
-    
+
     logger.info("PASS Cleanup completed")
 # Create FastAPI app
 app = FastAPI(
@@ -596,7 +596,7 @@ async def health_check():
 
     # Get memory usage
     memory_info = psutil.virtual_memory()
-    
+
     # Check components
     components = {
         "orchestrator": app_state["orchestrator"] is not None,
@@ -606,7 +606,7 @@ async def health_check():
         "security_manager": app_state["security_manager"] is not None,
         "openai_integration": app_state["openai_integration"] is not None,
     }
-    
+
     # Check providers
     providers_available = []
     for provider_name in ["mock", "openai", "anthropic", "ollama"]:
@@ -638,9 +638,9 @@ async def health_check():
 async def get_metrics():
     """Get comprehensive system metrics."""
     import psutil
-    
+
     memory_info = psutil.virtual_memory()
-    
+
     return MetricsResponse(
         requests_total=len(app_state.get("request_log", []),
         requests_per_minute=0.0,  # Calculate from request log
@@ -682,7 +682,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     "content": f"Agent {agent_id} not found")
                 })
                 continue
-            
+
             # Process message
             if ws_message.type == "chat":
                 try:
@@ -697,19 +697,19 @@ async def websocket_endpoint(websocket: WebSocket):
                         "tokens_used": response.tokens_used,
                         "metadata": response.metadata)
                     })
-                    
+
                 except Exception as e:
                     await websocket.send_text(json.dumps({
                         "type": "error",)
                         "content": f"Error processing message: {str(e)}"
                     })
-            
+
             elif ws_message.type == "ping":
                 await websocket.send_text(json.dumps({
                     "type": "pong",
                     "content": "Server is alive")
                 })
-    
+
     except WebSocketDisconnect:
         pass
     finally:
@@ -730,7 +730,7 @@ async def upload_file(
     # Save file
     upload_dir = Path("uploads")
     file_path = upload_dir / f"{file_id}_{file.filename}"
-    
+
     with open(file_path, "wb") as f:
         content = await file.read()
         f.write(content)
@@ -746,9 +746,9 @@ async def upload_file(
         "file_path": str(file_path),
         "processing_status": "uploaded"
     }
-    
+
     app_state["file_uploads"][file_id] = file_metadata
-    
+
     return FileUploadResponse(**file_metadata, metadata={"user_id": user["user_id"]})
 @app.get("/files/{file_id}", tags=["Files"])
 async def get_file(file_id: str, user: Dict[str, Any] = Depends(require_auth):
@@ -814,18 +814,18 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
             "task": task,
             "user_id": user_id
         }
-        
+
         # Get file metadata
         file_metadata = app_state["file_uploads"][file_id]
-        
+
         # Read file content
         with open(file_metadata["file_path"], "r", encoding="utf-8") as f:
             file_content = f.read()
-        
+
         # Process with agent
         agent = app_state["agents"]["default"]
         full_task = f"{task}\n\nFile content:\n{file_content}"
-        
+
         response = await agent.execute(full_task)
         # Update task status
         app_state["background_tasks"][task_id].update({
@@ -835,10 +835,10 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
             "execution_time": response.execution_time,
             "tokens_used": response.tokens_used
         })
-        
+
         # Update file processing status
         app_state["file_uploads"][file_id]["processing_status"] = "completed"
-        
+
     except Exception as e:
         # Update task status
         app_state["background_tasks"][task_id].update({
@@ -846,7 +846,7 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
             "completed_at": datetime.now(timezone.utc).isoformat(),
             "error": str(e)
         })
-        
+
         # Update file processing status
         app_state["file_uploads"][file_id]["processing_status"] = "failed"
 
@@ -868,23 +868,23 @@ async def chat_completions(request: ChatCompletionRequest):
                 description=f"Agent for {request.model}",
             )
             agent = ReactAgent(
-                config=config, 
-                llm_provider=provider, 
+                config=config,
+                llm_provider=provider,
                 tools=app_state["tools"]
             )
             app_state["agents"][agent_name] = agent
-        
+
         # Extract task from messages
         if request.messages:
             task = request.messages[-1].content
         else:
             task = "Hello"
-        
+
         # Execute task
         start_time = time.time()
         response = await agent.execute(task)
         execution_time = time.time() - start_time
-        
+
         # Format response
         choice = {
             "index": 0,
@@ -895,7 +895,7 @@ async def chat_completions(request: ChatCompletionRequest):
             "finish_reason": "stop",
             "logprobs": None
         }
-        
+
         return ChatCompletionResponse(
             id=f"chatcmpl-{uuid.uuid4().hex[:8]}",
             created=int(time.time(),
@@ -908,7 +908,7 @@ async def chat_completions(request: ChatCompletionRequest):
             },
             system_fingerprint=f"fp_{uuid.uuid4().hex[:8]}"
         )
-        
+
     except Exception as e:
         logger.error(f"Chat completion error: {e}")
         raise HTTPException(status_code=500, detail=str(e)
@@ -927,7 +927,7 @@ async def list_agents():
             "status": "active",
             "created_at": datetime.now(timezone.utc).isoformat()
         })
-    
+
     return {"agents": agents, "total": len(agents)}
 
 
@@ -955,7 +955,7 @@ async def create_agent(
         # Store agent
         agent_id = str(uuid.uuid4())
         app_state["agents"][agent_id] = agent
-        
+
         return {
             "agent_id": agent_id,
             "name": request.name,
@@ -965,7 +965,7 @@ async def create_agent(
             "created_at": datetime.now(timezone.utc).isoformat(),
             "created_by": user["user_id"]
         }
-        
+
     except Exception as e:
         logger.error(f"Agent creation error: {e}")
         raise HTTPException(status_code=500, detail=str(e)
@@ -982,7 +982,7 @@ async def execute_task(request: TaskExecuteRequest):
         start_time = time.time()
         response = await agent.execute(request.task, request.context)
         execution_time = time.time() - start_time
-        
+
         return TaskExecuteResponse(
             task_id=task_id,
             status=TaskStatus.COMPLETED,
@@ -994,7 +994,7 @@ async def execute_task(request: TaskExecuteRequest):
             metadata=response.metadata,
             cached=False
         )
-        
+
     except Exception as e:
         logger.error(f"Task execution error: {e}")
         raise HTTPException(status_code=500, detail=str(e)
@@ -1015,7 +1015,7 @@ async def list_tasks(user: Dict[str, Any] = Depends(require_auth):
         task_id: task for task_id, task in app_state["background_tasks"].items()
         if task.get("user_id") == user["user_id"]
     }
-    
+
     return {"tasks": user_tasks, "total": len(user_tasks)}
 
 
@@ -1028,7 +1028,7 @@ async def system_info(user: Dict[str, Any] = Depends(require_auth):
     import sys
 
     import psutil
-    
+
     return {
         "system": {
             "platform": sys.platform,
@@ -1066,10 +1066,10 @@ async def reset_system(user: Dict[str, Any] = Depends(require_auth):
     app_state["background_tasks"] = {}
     app_state["file_uploads"] = {}
     app_state["cache"] = {}
-    
+
     # Recreate default agent
     await create_default_agent()
-    
+
     return {"message": "System reset completed"}
 
 

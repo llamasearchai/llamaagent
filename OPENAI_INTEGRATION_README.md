@@ -8,7 +8,7 @@
 
 ---
 
-## 🚀 Overview
+## LAUNCH: Overview
 
 This project provides a complete, production-ready integration between our LlamaAgent framework and OpenAI's Agents SDK. The integration enables:
 
@@ -19,27 +19,27 @@ This project provides a complete, production-ready integration between our Llama
 - **Automated testing and benchmarking**
 - **Docker containerization** for deployment
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    LlamaAgent System                        │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
-│  │   CLI Interface │  │  FastAPI Server │  │  Integration │ │
-│  │                 │  │                 │  │   Manager    │ │
-│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
-│  │ OpenAI Agents   │  │ Budget Tracker  │  │ Agent        │ │
-│  │ SDK Integration │  │                 │  │ Registry     │ │
-│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
-│  │ OpenAI Provider │  │ Ollama Provider │  │ Tool         │ │
-│  │ (GPT-4o-mini)   │  │ (Llama 3.2)     │  │ Registry     │ │
-│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────────────┘
+
+                    LlamaAgent System                        
+
+       
+     CLI Interface     FastAPI Server     Integration  
+                                           Manager     
+       
+
+       
+   OpenAI Agents      Budget Tracker     Agent         
+   SDK Integration                       Registry      
+       
+
+       
+   OpenAI Provider    Ollama Provider    Tool          
+   (GPT-4o-mini)      (Llama 3.2)        Registry      
+       
+
 ```
 
 ## Package Installation
@@ -193,7 +193,7 @@ Create `~/.llamaagent/config.json`:
 }
 ```
 
-## 💰 Budget Management
+##  Budget Management
 
 The system includes comprehensive budget tracking:
 
@@ -226,7 +226,7 @@ print(f"Remaining budget: ${budget_status['remaining_budget']}")
 | GPT-4o | $2.50/1M tokens | $10.00/1M tokens | $0.01-0.10 |
 | Llama 3.2 (local) | Free | Free | $0.00 |
 
-## 🛠️ Features
+## BUILD: Features
 
 ### Core Capabilities
 
@@ -331,7 +331,7 @@ curl -X POST "http://localhost:8000/tasks" \
   }'
 ```
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 ### Build and Run
 
@@ -430,7 +430,7 @@ integration = create_openai_integration(
 )
 ```
 
-## 🚀 Production Deployment
+## LAUNCH: Production Deployment
 
 ### Kubernetes
 
@@ -568,11 +568,11 @@ python -m pytest tests/ -v
 - Add tests for new features
 - Update documentation
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License. See LICENSE file for details.
 
-## 📞 Support
+##  Support
 
 For questions, issues, or support:
 
@@ -591,7 +591,7 @@ For questions, issues, or support:
 - Comprehensive testing
 - Documentation
 
-### Planned 🚧
+### Planned 
 - Web UI dashboard
 - Advanced analytics
 - More model providers
@@ -601,6 +601,6 @@ For questions, issues, or support:
 
 ---
 
-**Built with ❤️ by Nik Jois for the LlamaAgent project**
+**Built with LOVE: by Nik Jois for the LlamaAgent project**
 
 *This integration enables seamless use of both OpenAI's powerful models and local alternatives, with complete budget control and production-ready features.* 

@@ -91,13 +91,13 @@ def process_file(file_path: Path) -> bool:
         if content != original_content:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            print(f"✓ Fixed: {file_path}")
+            print(f" Fixed: {file_path}")
             return True
         
         return False
         
     except Exception as e:
-        print(f"✗ Error processing {file_path}: {e}")
+        print(f" Error processing {file_path}: {e}")
         return False
 
 def main() -> None:

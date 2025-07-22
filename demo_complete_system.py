@@ -47,7 +47,7 @@ class LlamaAgentDemo:
         # Initialize database manager
         self.print_subsection("Database Manager Initialization")
         self.db_manager = DatabaseManager()
-        print(f"✓ Database manager initialized")
+        print(f" Database manager initialized")
         print(f"  Host: {self.db_manager.config.host}")
         print(f"  Port: {self.db_manager.config.port}")
         print(f"  Database: {self.db_manager.config.database}")
@@ -64,11 +64,11 @@ class LlamaAgentDemo:
             max_connections=50
         )
         custom_db = DatabaseManager(custom_config)
-        print(f"✓ Custom configuration created")
+        print(f" Custom configuration created")
         print(f"  Connection string: {custom_db._build_connection_string()}")
         
         # Note: We don't actually connect to avoid requiring a live database
-        print(f"✓ Database system ready (connection would be established in production)")
+        print(f" Database system ready (connection would be established in production)")
         
         self.demo_results["database"] = {
             "status": "ready",
@@ -86,7 +86,7 @@ class LlamaAgentDemo:
         # Initialize GDT generator
         self.print_subsection("GDT Generator Initialization")
         self.gdt_generator = GDTGenerator()
-        print(f"✓ GDT generator initialized")
+        print(f" GDT generator initialized")
         print(f"  Available generators: {list(self.gdt_generator.generators.keys())}")
         print(f"  Validator rules: {self.gdt_generator.validator.rules}")
         
@@ -98,7 +98,7 @@ class LlamaAgentDemo:
             tags=["demo", "sample", "text"],
             metadata={"source": "demo_script", "version": "1.0"}
         )
-        print(f"✓ Text item created: {text_item.id}")
+        print(f" Text item created: {text_item.id}")
         print(f"  Content: {text_item.content['text'][:50]}...")
         print(f"  Tags: {text_item.tags}")
         
@@ -115,7 +115,7 @@ class LlamaAgentDemo:
             },
             tags=["demo", "conversation", "greeting"]
         )
-        print(f"✓ Conversation item created: {conversation_item.id}")
+        print(f" Conversation item created: {conversation_item.id}")
         print(f"  Messages: {len(conversation_item.content['messages'])}")
         print(f"  Context: {conversation_item.content['context']}")
         
@@ -130,7 +130,7 @@ class LlamaAgentDemo:
         
         # Create dataset
         dataset = GDTDataset("demo_dataset", "Demonstration dataset showcasing various features")
-        print(f"✓ Dataset created: {dataset.name}")
+        print(f" Dataset created: {dataset.name}")
         print(f"  Description: {dataset.description}")
         
         # Add various items
@@ -158,7 +158,7 @@ class LlamaAgentDemo:
             )
             dataset.append(item)
         
-        print(f"✓ Added {len(dataset)} items to dataset")
+        print(f" Added {len(dataset)} items to dataset")
         
         # Test filtering
         text_items = dataset.filter_by_type(DataType.TEXT)
@@ -172,11 +172,11 @@ class LlamaAgentDemo:
         # Test serialization
         dataset_dict = dataset.to_dict()
         serialized_size = len(json.dumps(dataset_dict))
-        print(f"✓ Dataset serialized to {serialized_size} bytes")
+        print(f" Dataset serialized to {serialized_size} bytes")
         
         # Test deserialization
         restored_dataset = GDTDataset.from_dict(dataset_dict)
-        print(f"✓ Dataset restored with {len(restored_dataset)} items")
+        print(f" Dataset restored with {len(restored_dataset)} items")
         
         self.demo_results["dataset"] = {
             "name": dataset.name,
@@ -218,13 +218,13 @@ class LlamaAgentDemo:
         short_result = validator.validate_item(short_item)
         empty_result = validator.validate_item(empty_item)
         
-        print(f"✓ Valid item validation: {valid_result['status'].value}")
+        print(f" Valid item validation: {valid_result['status'].value}")
         print(f"  Errors: {len(valid_result['errors'])}, Warnings: {len(valid_result['warnings'])}")
         
-        print(f"✓ Short item validation: {short_result['status'].value}")
+        print(f" Short item validation: {short_result['status'].value}")
         print(f"  Errors: {len(short_result['errors'])}, Warnings: {len(short_result['warnings'])}")
         
-        print(f"✓ Empty item validation: {empty_result['status'].value}")
+        print(f" Empty item validation: {empty_result['status'].value}")
         print(f"  Errors: {len(empty_result['errors'])}, Warnings: {len(empty_result['warnings'])}")
         
         # Validate dataset
@@ -236,7 +236,7 @@ class LlamaAgentDemo:
         warning_count = sum(1 for r in validation_results if r['status'] == ValidationStatus.WARNING)
         invalid_count = sum(1 for r in validation_results if r['status'] == ValidationStatus.INVALID)
         
-        print(f"✓ Dataset validation completed:")
+        print(f" Dataset validation completed:")
         print(f"  Valid: {valid_count}, Warnings: {warning_count}, Invalid: {invalid_count}")
         
         self.demo_results["validation"] = {
@@ -260,7 +260,7 @@ class LlamaAgentDemo:
         )
         
         normalized_item = transformer.transform_item(original_item, "normalize_text")
-        print(f"✓ Text normalization:")
+        print(f" Text normalization:")
         print(f"  Original: '{original_item.content['text']}'")
         print(f"  Normalized: '{normalized_item.content['text']}'")
         
@@ -272,7 +272,7 @@ class LlamaAgentDemo:
             timestamp=time.time(),
             version="1.0"
         )
-        print(f"✓ Metadata addition:")
+        print(f" Metadata addition:")
         print(f"  Added metadata: {metadata_item.metadata}")
         
         # Test conversation formatting
@@ -288,7 +288,7 @@ class LlamaAgentDemo:
         )
         
         formatted_conv = transformer.transform_item(conv_item, "format_conversation")
-        print(f"✓ Conversation formatting:")
+        print(f" Conversation formatting:")
         print(f"  Fixed messages: {formatted_conv.content['messages']}")
         
         # Test dataset transformation
@@ -296,7 +296,7 @@ class LlamaAgentDemo:
         dataset.extend([original_item, conv_item])
         
         transformed_dataset = transformer.transform_data(dataset, "normalize_text")
-        print(f"✓ Dataset transformation completed:")
+        print(f" Dataset transformation completed:")
         print(f"  Original dataset: {len(dataset)} items")
         print(f"  Transformed dataset: {len(transformed_dataset)} items")
         
@@ -322,7 +322,7 @@ class LlamaAgentDemo:
         )
         text_generation_time = time.time() - start_time
         
-        print(f"✓ Generated text dataset:")
+        print(f" Generated text dataset:")
         print(f"  Items: {len(text_dataset)}")
         print(f"  Generation time: {text_generation_time:.3f}s")
         print(f"  Sample text: {text_dataset[0].content['text'][:100]}...")
@@ -338,7 +338,7 @@ class LlamaAgentDemo:
         )
         conv_generation_time = time.time() - start_time
         
-        print(f"✓ Generated conversation dataset:")
+        print(f" Generated conversation dataset:")
         print(f"  Items: {len(conv_dataset)}")
         print(f"  Generation time: {conv_generation_time:.3f}s")
         print(f"  Sample conversation: {len(conv_dataset[0].content['messages'])} messages")
@@ -350,7 +350,7 @@ class LlamaAgentDemo:
         text_valid = sum(1 for r in text_validation if r['status'] == ValidationStatus.VALID)
         conv_valid = sum(1 for r in conv_validation if r['status'] == ValidationStatus.VALID)
         
-        print(f"✓ Generated data validation:")
+        print(f" Generated data validation:")
         print(f"  Text dataset: {text_valid}/{len(text_dataset)} valid")
         print(f"  Conversation dataset: {conv_valid}/{len(conv_dataset)} valid")
         
@@ -382,7 +382,7 @@ class LlamaAgentDemo:
         )
         generation_time = time.time() - start_time
         
-        print(f"✓ Large dataset generation:")
+        print(f" Large dataset generation:")
         print(f"  Items: {len(large_dataset)}")
         print(f"  Time: {generation_time:.3f}s")
         print(f"  Rate: {len(large_dataset)/generation_time:.1f} items/second")
@@ -395,7 +395,7 @@ class LlamaAgentDemo:
         
         valid_count = sum(1 for r in validation_results if r['status'] == ValidationStatus.VALID)
         
-        print(f"✓ Bulk validation:")
+        print(f" Bulk validation:")
         print(f"  Items validated: {len(validation_results)}")
         print(f"  Time: {validation_time:.3f}s")
         print(f"  Rate: {len(validation_results)/validation_time:.1f} items/second")
@@ -415,7 +415,7 @@ class LlamaAgentDemo:
         restored_dataset = GDTDataset.from_dict(dataset_dict)
         deserialization_time = time.time() - start_time
         
-        print(f"✓ Serialization performance:")
+        print(f" Serialization performance:")
         print(f"  To dict: {serialization_time:.3f}s")
         print(f"  To JSON: {json_time:.3f}s ({len(json_str)} bytes)")
         print(f"  From dict: {deserialization_time:.3f}s")
@@ -457,7 +457,7 @@ class LlamaAgentDemo:
         
         # Register custom generator
         self.gdt_generator.register_generator(DataType.STRUCTURED, CustomDataGenerator())
-        print(f"✓ Custom generator registered for {DataType.STRUCTURED}")
+        print(f" Custom generator registered for {DataType.STRUCTURED}")
         
         # Generate with custom generator
         custom_dataset = self.gdt_generator.generate_dataset(
@@ -467,7 +467,7 @@ class LlamaAgentDemo:
             custom_value="demo_value"
         )
         
-        print(f"✓ Custom dataset generated:")
+        print(f" Custom dataset generated:")
         print(f"  Items: {len(custom_dataset)}")
         print(f"  Sample content: {custom_dataset[0].content}")
         
@@ -486,7 +486,7 @@ class LlamaAgentDemo:
             processed_at=time.time()
         )
         
-        print(f"✓ Transformation chaining:")
+        print(f" Transformation chaining:")
         print(f"  Original: '{item.content['text']}'")
         print(f"  Final: '{transformed.content['text']}'")
         print(f"  Metadata: {transformed.metadata}")
@@ -512,7 +512,7 @@ class LlamaAgentDemo:
         with open("demo_results.json", "w") as f:
             json.dump(self.demo_results, f, indent=2, default=str)
         
-        print(f"✓ Demo results saved to demo_results.json")
+        print(f" Demo results saved to demo_results.json")
         print(f"  Sections completed: {len(self.demo_results)}")
         print(f"  File size: {Path('demo_results.json').stat().st_size} bytes")
     

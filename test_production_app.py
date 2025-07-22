@@ -563,6 +563,6 @@ if __name__ == "__main__":
         print("PASS Error handling robust")
         print("PASS Performance meets requirements")
     else:
-        print("\n⚠️  Some tests failed - review and fix issues")
+        print("\nWARNING:  Some tests failed - review and fix issues")
     
     exit(0 if success else 1) 

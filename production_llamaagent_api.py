@@ -34,7 +34,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 
 
-# ═══════════════════════════ CORE TYPES ═══════════════════════════
+#  CORE TYPES 
 
 @dataclass
 class LLMMessage:
@@ -78,7 +78,7 @@ class AgentConfig:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-# ═══════════════════════════ API MODELS ═══════════════════════════
+#  API MODELS 
 
 class ChatMessage(BaseModel):
     """Chat message for API."""
@@ -132,7 +132,7 @@ class HealthResponse(BaseModel):
     components: Dict[str, str] = Field(..., description="Component statuses")
 
 
-# ═══════════════════════════ ENHANCED MOCK PROVIDER ═══════════════════════════
+#  ENHANCED MOCK PROVIDER 
 
 class EnhancedMockProvider:
     """Enhanced mock provider that actually solves problems."""
@@ -277,7 +277,7 @@ class EnhancedMockProvider:
         return "Task completed successfully with comprehensive analysis and appropriate solution."
 
 
-# ═══════════════════════════ SIMPLE MEMORY ═══════════════════════════
+#  SIMPLE MEMORY 
 
 class SimpleMemory:
     """Simple in-memory storage for agent context."""
@@ -294,7 +294,7 @@ class SimpleMemory:
         return [mem for mem in self.memories if query.lower() in mem.lower()]
 
 
-# ═══════════════════════════ TOOL REGISTRY ═══════════════════════════
+#  TOOL REGISTRY 
 
 class ToolRegistry:
     """Registry for managing tools."""
@@ -316,7 +316,7 @@ class ToolRegistry:
         return list(self.tools.keys())
 
 
-# ═══════════════════════════ REACT AGENT ═══════════════════════════
+#  REACT AGENT 
 
 class ReactAgent:
     """Simplified ReactAgent for production use."""
@@ -391,7 +391,7 @@ class ReactAgent:
             )
 
 
-# ═══════════════════════════ APPLICATION STATE ═══════════════════════════
+#  APPLICATION STATE 
 
 class ApplicationState:
     """Global application state."""
@@ -429,7 +429,7 @@ class ApplicationState:
         return time.time() - self.start_time
 
 
-# ═══════════════════════════ APPLICATION SETUP ═══════════════════════════
+#  APPLICATION SETUP 
 
 app_state = ApplicationState()
 
@@ -444,7 +444,7 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    print("🛑 Shutting down LlamaAgent API...")
+    print(" Shutting down LlamaAgent API...")
 
 
 # Create FastAPI application
@@ -470,7 +470,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 security = HTTPBearer(auto_error=False)
 
 
-# ═══════════════════════════ API ENDPOINTS ═══════════════════════════
+#  API ENDPOINTS 
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -711,7 +711,7 @@ async def root():
     }
 
 
-# ═══════════════════════════ MAIN APPLICATION ═══════════════════════════
+#  MAIN APPLICATION 
 
 if __name__ == "__main__":
     print("LlamaAgent LlamaAgent Production API Server")

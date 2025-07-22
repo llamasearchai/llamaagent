@@ -15,13 +15,13 @@ NC='\033[0m' # No Color
 
 # Banner
 echo -e "${BLUE}"
-echo "╔═══════════════════════════════════════════════════════════╗"
-echo "║           LlamaAgent Master Program Launcher              ║"
-echo "║                                                           ║"
-echo "║  Complete AI Agent System with Dynamic Task Planning      ║"
-echo "║                                                           ║"
-echo "║  Version: 2.0.0 | Author: Nik Jois                       ║"
-echo "╚═══════════════════════════════════════════════════════════╝"
+echo ""
+echo "           LlamaAgent Master Program Launcher              "
+echo "                                                           "
+echo "  Complete AI Agent System with Dynamic Task Planning      "
+echo "                                                           "
+echo "  Version: 2.0.0 | Author: Nik Jois                       "
+echo ""
 echo -e "${NC}"
 
 # Function to check dependencies
@@ -30,7 +30,7 @@ check_dependencies() {
     
     # Check Python
     if ! command -v python3 &> /dev/null; then
-        echo -e "${RED}❌ Python 3 is not installed${NC}"
+        echo -e "${RED}FAIL Python 3 is not installed${NC}"
         exit 1
     fi
     
@@ -38,18 +38,18 @@ check_dependencies() {
     PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
     REQUIRED_VERSION="3.8"
     if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$PYTHON_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]; then
-        echo -e "${RED}❌ Python $REQUIRED_VERSION or higher is required (found $PYTHON_VERSION)${NC}"
+        echo -e "${RED}FAIL Python $REQUIRED_VERSION or higher is required (found $PYTHON_VERSION)${NC}"
         exit 1
     fi
     
-    echo -e "${GREEN}✅ Python $PYTHON_VERSION${NC}"
+    echo -e "${GREEN}PASS Python $PYTHON_VERSION${NC}"
     
     # Check Docker (optional)
     if command -v docker &> /dev/null; then
-        echo -e "${GREEN}✅ Docker is installed${NC}"
+        echo -e "${GREEN}PASS Docker is installed${NC}"
         DOCKER_AVAILABLE=true
     else
-        echo -e "${YELLOW}⚠️  Docker not found (optional)${NC}"
+        echo -e "${YELLOW}WARNING:  Docker not found (optional)${NC}"
         DOCKER_AVAILABLE=false
     fi
 }
@@ -82,7 +82,7 @@ setup_environment() {
     # Set Python path
     export PYTHONPATH="${PWD}/src:${PYTHONPATH}"
     
-    echo -e "${GREEN}✅ Environment ready${NC}"
+    echo -e "${GREEN}PASS Environment ready${NC}"
 }
 
 # Function to check API keys
@@ -90,19 +90,19 @@ check_api_keys() {
     echo -e "\n${YELLOW}Checking API keys...${NC}"
     
     if [ -z "$OPENAI_API_KEY" ]; then
-        echo -e "${YELLOW}⚠️  OPENAI_API_KEY not set${NC}"
+        echo -e "${YELLOW}WARNING:  OPENAI_API_KEY not set${NC}"
         echo "OpenAI integration will be disabled."
         echo "To enable, run: export OPENAI_API_KEY='your-key'"
         OPENAI_ENABLED=false
     else
-        echo -e "${GREEN}✅ OpenAI API key configured${NC}"
+        echo -e "${GREEN}PASS OpenAI API key configured${NC}"
         OPENAI_ENABLED=true
     fi
     
     if [ -z "$ANTHROPIC_API_KEY" ]; then
-        echo -e "${YELLOW}⚠️  ANTHROPIC_API_KEY not set${NC}"
+        echo -e "${YELLOW}WARNING:  ANTHROPIC_API_KEY not set${NC}"
     else
-        echo -e "${GREEN}✅ Anthropic API key configured${NC}"
+        echo -e "${GREEN}PASS Anthropic API key configured${NC}"
     fi
 }
 
@@ -112,7 +112,7 @@ create_directories() {
     
     mkdir -p logs data cache config/ssl nginx grafana/dashboards grafana/datasources prometheus
     
-    echo -e "${GREEN}✅ Directories created${NC}"
+    echo -e "${GREEN}PASS Directories created${NC}"
 }
 
 # Function to run tests
@@ -120,9 +120,9 @@ run_tests() {
     echo -e "\n${YELLOW}Running system tests...${NC}"
     
     if python3 test_master_program.py > /tmp/test_output.log 2>&1; then
-        echo -e "${GREEN}✅ All tests passed${NC}"
+        echo -e "${GREEN}PASS All tests passed${NC}"
     else
-        echo -e "${RED}❌ Tests failed${NC}"
+        echo -e "${RED}FAIL Tests failed${NC}"
         echo "Check /tmp/test_output.log for details"
         read -p "Continue anyway? (y/N) " -n 1 -r
         echo
@@ -139,7 +139,7 @@ start_docker() {
     # Build and start containers
     docker-compose -f docker-compose.master.yml up -d --build
     
-    echo -e "${GREEN}✅ Docker containers started${NC}"
+    echo -e "${GREEN}PASS Docker containers started${NC}"
     echo -e "Services:"
     echo -e "  - API: http://localhost:8000"
     echo -e "  - Prometheus: http://localhost:9091"
@@ -154,7 +154,7 @@ start_standalone() {
     
     # Check if port is already in use
     if lsof -Pi :8000 -sTCP:LISTEN -t >/dev/null ; then
-        echo -e "${RED}❌ Port 8000 is already in use${NC}"
+        echo -e "${RED}FAIL Port 8000 is already in use${NC}"
         echo "Please stop the existing service or choose a different port"
         exit 1
     fi

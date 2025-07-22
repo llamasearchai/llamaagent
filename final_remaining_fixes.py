@@ -108,7 +108,7 @@ def main():
         print(f"  PASS {file}: {description}")
     
     print("\nPASS All syntax errors should now be fixed!")
-    print("\n📌 You can now:")
+    print("\n You can now:")
     print("  1. Run the basic test: python test_basic_functionality.py")
     print("  2. Run pytest: pytest tests/")
     print("  3. Try the CLI: python -m src.llamaagent.cli.main --help")

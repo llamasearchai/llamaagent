@@ -95,9 +95,9 @@ def main():
                             print(f"Attempting to fix {py_file}:{line_num}")
                             if fix_syntax_error(py_file, line_num, result.stderr):
                                 fixed_count += 1
-                                print(f"  ✓ Fixed!")
+                                print(f"   Fixed!")
                             else:
-                                print(f"  ✗ Could not auto-fix")
+                                print(f"   Could not auto-fix")
                             break
                     except Exception as e:
                         print(f"  Error: {e}")

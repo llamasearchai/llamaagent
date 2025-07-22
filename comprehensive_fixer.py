@@ -182,7 +182,7 @@ class ComprehensiveFixer:
                     f.write(content)
                 print(f"PASS Removed mock fallback from {file_path}")
             else:
-                print(f"ℹ️ No mock fallback found in {file_path}")
+                print(f"ℹ No mock fallback found in {file_path}")
                 
         except Exception as e:
             print(f"FAIL Error removing mock fallback from {file_path}: {e}")
@@ -271,7 +271,7 @@ class ComprehensiveFixer:
                     f.write(content)
                 print(f"PASS Fixed placeholder values in {file_path}")
             else:
-                print(f"ℹ️ No placeholder values found in {file_path}")
+                print(f"ℹ No placeholder values found in {file_path}")
                 
         except Exception as e:
             print(f"FAIL Error fixing placeholder values in {file_path}: {e}")
@@ -334,7 +334,7 @@ class ComprehensiveFixer:
                 
                 for pattern in mock_usage_patterns:
                     if re.search(pattern, content):
-                        print(f"⚠️ Found mock usage in production file {file_path}")
+                        print(f"WARNING: Found mock usage in production file {file_path}")
                         # Replace with proper implementation or remove
                         content = re.sub(pattern, '# TODO: Replace mock usage', content)
             
@@ -343,7 +343,7 @@ class ComprehensiveFixer:
                     f.write(content)
                 print(f"PASS Fixed mock imports in {file_path}")
             else:
-                print(f"ℹ️ No mock imports found in {file_path}")
+                print(f"ℹ No mock imports found in {file_path}")
                 
         except Exception as e:
             print(f"FAIL Error fixing mock imports in {file_path}: {e}")
@@ -501,7 +501,7 @@ def test_fixtures_available():
                     f.write(content)
                 print(f"PASS Added test assertions to {file_path}")
             else:
-                print(f"ℹ️ Test assertions already present in {file_path}")
+                print(f"ℹ Test assertions already present in {file_path}")
                 
         except Exception as e:
             print(f"FAIL Error adding test assertions to {file_path}: {e}")
@@ -1029,7 +1029,7 @@ def main():
     fixer.run_comprehensive_fixes()
     
     print("\nSUCCESS All fixes completed!")
-    print("📋 Next steps:")
+    print("LIST: Next steps:")
     print("1. Run tests to verify fixes")
     print("2. Review any remaining errors")
     print("3. Commit changes")

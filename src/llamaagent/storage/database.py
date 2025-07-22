@@ -513,7 +513,7 @@ class DatabaseManager:
     ) -> Dict[str, Any]:
         """Get task statistics."""
         base_query = """
-        SELECT 
+        SELECT
             COUNT(*) as total_tasks,
             COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
             COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_tasks,

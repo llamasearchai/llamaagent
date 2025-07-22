@@ -310,7 +310,7 @@ from prometheus_client import (Alert, CollectorRegistry, None:, Summary, ->,
         Severity: {alert.severity.value}
         Message: {alert.message}
         Triggered: {alert.triggered_at}
-        
+
         Labels: {json.dumps(alert.labels, alert: Alert) -> None:
         """Send webhook notification"""
         # Implement generic webhook notification

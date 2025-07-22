@@ -60,15 +60,15 @@ class ProviderDemo:
     def show_banner(self):
         """Display demo banner."""
         banner = """
-    ╔═══════════════════════════════════════════════════════════════════════════════╗
-    ║                    LlamaAgent Swappable Provider Demo                         ║
-    ║                                                                               ║
-    ║  • Mock Provider - Always available for testing                              ║
-    ║  • OpenAI Provider - GPT models via official API                             ║
-    ║  • Local Llama Provider - Transformers-based local models                    ║
-    ║                                                                               ║
-    ║  Author: Nik Jois <nikjois@llamasearch.ai>                                   ║
-    ╚═══════════════════════════════════════════════════════════════════════════════╝
+    
+                        LlamaAgent Swappable Provider Demo                         
+                                                                                   
+      • Mock Provider - Always available for testing                              
+      • OpenAI Provider - GPT models via official API                             
+      • Local Llama Provider - Transformers-based local models                    
+                                                                                   
+      Author: Nik Jois <nikjois@llamasearch.ai>                                   
+    
         """
         
         self.console.print(Panel(
@@ -108,17 +108,17 @@ class ProviderDemo:
                 
                 if available:
                     self.providers[provider_info["name"]] = provider
-                    self.console.print(f"✓ [green]{provider_info['name']} provider initialized[/green]")
+                    self.console.print(f" [green]{provider_info['name']} provider initialized[/green]")
                 else:
-                    self.console.print(f"✗ [yellow]{provider_info['name']} provider not available[/yellow]")
+                    self.console.print(f" [yellow]{provider_info['name']} provider not available[/yellow]")
                     
             except Exception as e:
-                self.console.print(f"✗ [red]{provider_info['name']} provider failed: {e}[/red]")
+                self.console.print(f" [red]{provider_info['name']} provider failed: {e}[/red]")
         
         # Always ensure mock provider is available
         if "mock" not in self.providers:
             self.providers["mock"] = create_provider("mock", model_name="mock-model")
-            self.console.print("✓ [green]Mock provider added as fallback[/green]")
+            self.console.print(" [green]Mock provider added as fallback[/green]")
     
     async def create_test_agents(self):
         """Create test agents with different providers."""
@@ -148,12 +148,12 @@ class ProviderDemo:
                     )
                     
                     self.agents[agent_name] = agent
-                    self.console.print(f"✓ [green]Created {agent_name} with {provider_name} provider[/green]")
+                    self.console.print(f" [green]Created {agent_name} with {provider_name} provider[/green]")
                     
                 except Exception as e:
-                    self.console.print(f"✗ [red]Failed to create {agent_name}: {e}[/red]")
+                    self.console.print(f" [red]Failed to create {agent_name}: {e}[/red]")
             else:
-                self.console.print(f"✗ [yellow]Skipping {agent_name} - {provider_name} not available[/yellow]")
+                self.console.print(f" [yellow]Skipping {agent_name} - {provider_name} not available[/yellow]")
     
     async def run_provider_tests(self):
         """Run tests with different providers."""
@@ -211,7 +211,7 @@ class ProviderDemo:
                         
                         progress.update(task, completed=True)
                         
-                        status = "✓" if response.success else "✗"
+                        status = "" if response.success else ""
                         self.console.print(f"  {status} {agent_name}: {response.content[:50]}...")
                         
                 except Exception as e:
@@ -222,7 +222,7 @@ class ProviderDemo:
                         "tokens": 0,
                         "time": 0
                     }
-                    self.console.print(f"  ✗ {agent_name}: Error - {e}")
+                    self.console.print(f"   {agent_name}: Error - {e}")
             
             results[scenario['name']] = scenario_results
         
@@ -246,9 +246,9 @@ class ProviderDemo:
                 if provider in scenario_results:
                     result = scenario_results[provider]
                     if result["success"]:
-                        status = f"✓ ({result['tokens']} tokens)"
+                        status = f" ({result['tokens']} tokens)"
                     else:
-                        status = "✗ Failed"
+                        status = " Failed"
                 else:
                     status = "N/A"
                 
@@ -338,14 +338,14 @@ class ProviderDemo:
         capabilities_table.add_column("Llama Local", style="magenta")
         
         features = [
-            ("Always Available", "✓", "API Key Required", "Libraries Required"),
-            ("Streaming Support", "✓", "✓", "Simulated"),
+            ("Always Available", "", "API Key Required", "Libraries Required"),
+            ("Streaming Support", "", "", "Simulated"),
             ("Cost", "Free", "Pay per token", "Hardware cost"),
             ("Latency", "Low", "Network dependent", "Hardware dependent"),
             ("Privacy", "Complete", "Sent to OpenAI", "Complete"),
             ("Customization", "Limited", "Limited", "Full control"),
             ("Model Selection", "Fixed", "Multiple GPT models", "Any HF model"),
-            ("Offline Support", "✓", "✗", "✓")
+            ("Offline Support", "", "", "")
         ]
         
         for feature, mock, openai, llama in features:

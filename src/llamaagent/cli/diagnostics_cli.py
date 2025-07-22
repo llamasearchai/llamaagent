@@ -123,12 +123,12 @@ def run(
 
     if critical_count > 0:
         console.print(
-            f"\n[red]⚠️  {critical_count} critical issues found - system may not function properly![/red]"
+            f"\n[red]WARNING:  {critical_count} critical issues found - system may not function properly![/red]"
         )
         raise typer.Exit(1)
     elif high_count > 0:
         console.print(
-            f"\n[yellow]⚠️  {high_count} high-priority issues found - attention recommended[/yellow]"
+            f"\n[yellow]WARNING:  {high_count} high-priority issues found - attention recommended[/yellow]"
         )
         raise typer.Exit(0)
     else:
@@ -197,9 +197,9 @@ def _display_console_report(report, verbose: bool):
             console.print(
                 f"\n[{color}]{problem.severity.value}[/{color}] - {problem.title}"
             )
-            console.print(f"  📁 {problem.location}")
+            console.print(f"   {problem.location}")
             if problem.line_number:
-                console.print(f"  📍 Line {problem.line_number}")
+                console.print(f"   Line {problem.line_number}")
             console.print(f"  Issue {problem.description}")
             if problem.suggested_fix:
                 console.print(f"  INSIGHT {problem.suggested_fix}")
@@ -274,7 +274,7 @@ def _output_text_report(
 
     high_issues = [p for p in report.problems if p.severity == ProblemSeverity.HIGH]
     if high_issues:
-        console.print("\n[yellow]⚠️  HIGH PRIORITY ISSUES:[/yellow]")
+        console.print("\n[yellow]WARNING:  HIGH PRIORITY ISSUES:[/yellow]")
         for issue in high_issues[:5]:  # Show first 5
             console.print(f"  • {issue.title} ({issue.location})")
         if len(high_issues) > 5:
@@ -317,7 +317,7 @@ def quick():
                 console.print(f"[red]FAIL {file_path} - Syntax Error: {e}[/red]")
                 critical_issues.append(f"Syntax error in {file_path}: {e}")
             except Exception as e:
-                console.print(f"[yellow]⚠️  {file_path} - Warning: {e}[/yellow]")
+                console.print(f"[yellow]WARNING:  {file_path} - Warning: {e}[/yellow]")
         else:
             console.print(f"[red]FAIL {file_path} - Missing[/red]")
             critical_issues.append(f"Missing critical file: {file_path}")

@@ -76,7 +76,7 @@ class ReasoningStrategy(ABC):
 
     @abstractmethod
     async def reason(
-        self, 
+        self,
         context: ReasoningContext,
         current_state: Dict[str, Any],
         thought_chain: List[ThoughtNode]
@@ -94,7 +94,7 @@ class DeductiveReasoning(ReasoningStrategy):
     """Deductive reasoning: general to specific"""
 
     async def reason(
-        self, 
+        self,
         context: ReasoningContext,
         current_state: Dict[str, Any],
         thought_chain: List[ThoughtNode]
@@ -119,7 +119,7 @@ class DeductiveReasoning(ReasoningStrategy):
         if not conclusions:
             conclusions = self._basic_deduction(premises)
         best_conclusion = max(conclusions, key=lambda x: x.get("confidence", 0) if conclusions else None
-        
+
         return ThoughtNode(
             thought=f"Deductive reasoning from {len(premises)} premises",
             reasoning_type=ReasoningType.DEDUCTIVE,
@@ -145,7 +145,7 @@ class DeductiveReasoning(ReasoningStrategy):
     def _basic_deduction(self, premises: List[str]) -> List[Dict[str, Any]]:
         """Basic deductive reasoning without explicit rules"""
         conclusions = []
-        
+
         # Simple pattern matching for basic deductions
         for premise in premises:
             if "all" in premise.lower() and "are" in premise.lower():
@@ -159,7 +159,7 @@ class DeductiveReasoning(ReasoningStrategy):
     def validate_reasoning(self, thought_node: ThoughtNode) -> Tuple[bool, List[str]]:
         """Validate deductive reasoning"""
         errors = []
-        
+
         # Check logical consistency
         if not thought_node.supporting_evidence:
             errors.append("No supporting evidence provided")
@@ -180,7 +180,7 @@ class InductiveReasoning(ReasoningStrategy):
         self.min_examples = min_examples
 
     async def reason(
-        self, 
+        self,
         context: ReasoningContext,
         current_state: Dict[str, Any],
         thought_chain: List[ThoughtNode]
@@ -194,7 +194,7 @@ class InductiveReasoning(ReasoningStrategy):
                 reasoning_type=ReasoningType.INDUCTIVE,
                 confidence=0.0
             )
-        
+
         # Identify patterns in observations
         patterns = self._identify_patterns(observations)
         # Generate generalizations
@@ -204,9 +204,9 @@ class InductiveReasoning(ReasoningStrategy):
             generalizations.append(generalization)
         # Select best generalization
         best_generalization = max(generalizations, key=len) if generalizations else "No clear pattern identified"
-        
+
         confidence = min(0.9, 0.5 + (len(observations) / 20))
-        
+
         return ThoughtNode(
             thought=f"Inductive reasoning from {len(observations)} observations",
             reasoning_type=ReasoningType.INDUCTIVE,
@@ -219,14 +219,14 @@ class InductiveReasoning(ReasoningStrategy):
     def _identify_patterns(self, observations: List[str]) -> List[Dict[str, Any]]:
         """Identify patterns in observations"""
         patterns = []
-        
+
         # Count common elements
         element_counts = {}
         for obs in observations:
             elements = obs.split()
             for elem in elements:
                 element_counts[elem] = element_counts.get(elem, 0) + 1
-        
+
         # Convert to patterns
         for elem, count in element_counts.items():
             if count > 1:
@@ -235,7 +235,7 @@ class InductiveReasoning(ReasoningStrategy):
                     "frequency": count / len(observations),
                     "support": count
                 })
-        
+
         return sorted(patterns, key=lambda x: x["frequency"], reverse=True)
     def _create_generalization(self, pattern: Dict[str, Any]) -> str:
         """Create generalization from pattern"""
@@ -244,11 +244,11 @@ class InductiveReasoning(ReasoningStrategy):
     def validate_reasoning(self, thought_node: ThoughtNode) -> Tuple[bool, List[str]]:
         """Validate inductive reasoning"""
         errors = []
-        
+
         # Check sample size
         if len(thought_node.supporting_evidence) < self.min_examples:
             errors.append(f"Insufficient examples (need {self.min_examples})")
-        
+
         # Check confidence aligns with evidence
         expected_confidence = min(0.9, 0.5 + (len(thought_node.supporting_evidence) / 20))
         if abs(thought_node.confidence - expected_confidence) > 0.1:
@@ -260,7 +260,7 @@ class CausalReasoning(ReasoningStrategy):
     """Causal reasoning: cause-effect relationships"""
 
     async def reason(
-        self, 
+        self,
         context: ReasoningContext,
         current_state: Dict[str, Any],
         thought_chain: List[ThoughtNode]
@@ -285,7 +285,7 @@ class CausalReasoning(ReasoningStrategy):
             conclusion = f"Event '{chain['cause']}' likely causes '{chain['effect']}'"
             conclusions.append(conclusion)
         confidence = min(0.85, 0.6 + (len(causal_chains) / 10)) if causal_chains else 0.2
-        
+
         return ThoughtNode(
             thought=f"Causal reasoning from {len(events)} events",
             reasoning_type=ReasoningType.CAUSAL,
@@ -298,7 +298,7 @@ class CausalReasoning(ReasoningStrategy):
     def _identify_causal_chains(self, events: List[str], relationships: List[str]) -> List[Dict[str, Any]]:
         """Identify potential causal chains"""
         chains = []
-        
+
         # Simple temporal and semantic analysis
         for i, event_a in enumerate(events):
             for j, event_b in enumerate(events):
@@ -316,12 +316,12 @@ class CausalReasoning(ReasoningStrategy):
     def _has_causal_relationship(self, event_a: str, event_b: str, relationships: List[str]) -> bool:
         """Check if events have causal relationship"""
         causal_words = ["causes", "leads to", "results in", "triggers", "influences"]
-        
+
         for rel in relationships:
             if event_a in rel and event_b in rel:
                 if any(word in rel.lower() for word in causal_words):
                     return True
-        
+
         return False
 
     def _build_causal_model(self, causal_chains: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -337,7 +337,7 @@ class CausalReasoning(ReasoningStrategy):
     def validate_reasoning(self, thought_node: ThoughtNode) -> Tuple[bool, List[str]]:
         """Validate causal reasoning"""
         errors = []
-        
+
         # Check for temporal consistency
         causal_model = thought_node.metadata.get("causal_model", {})
         if not causal_model.get("edges"):
@@ -372,7 +372,7 @@ class ChainEngine:
         return logger
 
     async def reason(
-        self, 
+        self,
         context: ReasoningContext,
         initial_state: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -382,7 +382,7 @@ class ChainEngine:
             # Initialize reasoning chain
             thought_chain: List[ThoughtNode] = []
             current_state = initial_state or {}
-            
+
             # Select appropriate strategies
             selected_strategies = self._select_strategies(context.objective, current_state)
             self.logger.info(f"Starting reasoning with strategies: {[s.value for s in selected_strategies]}")
@@ -393,7 +393,7 @@ class ChainEngine:
                 if next_strategy not in self.strategies:
                     self.logger.warning(f"Strategy {next_strategy} not available")
                     continue
-                
+
                 # Apply strategy
                 strategy = self.strategies[next_strategy]
                 try:
@@ -403,18 +403,18 @@ class ChainEngine:
                     if not is_valid:
                         self.logger.warning(f"Invalid reasoning: {errors}")
                         continue
-                    
+
                     thought_chain.append(thought_node)
                     # Update state
                     current_state = self._update_state(current_state, thought_node)
                     # Check termination conditions
                     if self._should_terminate(thought_chain, context):
                         break
-                        
+
                 except Exception as e:
                     self.logger.error(f"Error in reasoning strategy {next_strategy}: {e}")
                     continue
-            
+
             # Synthesize final conclusion
             conclusion = self._synthesize_conclusion(thought_chain, context)
             return {
@@ -428,10 +428,10 @@ class ChainEngine:
     def _select_strategies(self, objective: str, current_state: Dict[str, Any]) -> List[ReasoningType]:
         """Select appropriate reasoning strategies"""
         strategies = []
-        
+
         # Analyze objective
         objective_lower = objective.lower()
-        
+
         # Rule-based strategy selection
         if any(word in objective_lower for word in ["prove", "demonstrate", "show"]):
             strategies.append(ReasoningType.DEDUCTIVE)
@@ -442,7 +442,7 @@ class ChainEngine:
         # Default strategies if none selected
         if not strategies:
             strategies = [ReasoningType.DEDUCTIVE, ReasoningType.INDUCTIVE]
-        
+
         return strategies
 
     def _select_next_strategy(self, available_strategies: List[ReasoningType], thought_chain: List[ThoughtNode]) -> ReasoningType:
@@ -451,20 +451,20 @@ class ChainEngine:
             # Start with deductive if available
             if ReasoningType.DEDUCTIVE in available_strategies:
                 return ReasoningType.DEDUCTIVE
-        
+
         # Rotate through strategies
         last_strategy = thought_chain[-1].reasoning_type if thought_chain else None
-        
+
         for strategy in available_strategies:
             if strategy != last_strategy:
                 return strategy
-        
+
         return available_strategies[0]
 
     def _update_state(self, current_state: Dict[str, Any], thought_node: ThoughtNode) -> Dict[str, Any]:
         """Update reasoning state"""
         new_state = current_state.copy()
-        
+
         # Add conclusions as new premises
         new_state.setdefault("premises", []).extend(thought_node.conclusions)
         # Update based on reasoning type
@@ -476,18 +476,18 @@ class ChainEngine:
         """Check if reasoning should terminate"""
         if not thought_chain:
             return False
-        
+
         # Check confidence threshold
         latest_node = thought_chain[-1]
         if latest_node.confidence >= context.confidence_threshold:
             return True
-        
+
         # Check if no progress is being made
         if len(thought_chain) >= 3:
             recent_confidences = [node.confidence for node in thought_chain[-3:]]
             if max(recent_confidences) - min(recent_confidences) < 0.1:
                 return True
-        
+
         return False
 
     def _synthesize_conclusion(self, thought_chain: List[ThoughtNode], context: ReasoningContext) -> Dict[str, Any]:
@@ -498,7 +498,7 @@ class ChainEngine:
                 "confidence": 0.0,
                 "rationale": "Empty thought chain"
             }
-        
+
         # Find highest confidence node
         best_node = max(thought_chain, key=lambda x: x.confidence)
         # Combine conclusions

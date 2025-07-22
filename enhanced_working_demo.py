@@ -548,7 +548,7 @@ async def run_enhanced_demo():
         print()
     
     # Performance comparison
-    print("🔄 PERFORMANCE EVOLUTION")
+    print(" PERFORMANCE EVOLUTION")
     print("=" * 40)
     print("1. Original MockProvider (Generic Responses):")
     print("   Success Rate: 0.0%")
@@ -597,7 +597,7 @@ async def run_enhanced_demo():
     with open(results_file, 'w') as f:
         json.dump(results_dict, f, indent=2)
     
-    print(f"📁 Results saved to: {results_file}")
+    print(f" Results saved to: {results_file}")
     print()
     
     # Final assessment
@@ -623,7 +623,7 @@ async def run_enhanced_demo():
         print("PASS Significant improvement over generic MockProvider")
         print("PASS Most tasks completed successfully")
     else:
-        print("⚠️  MODERATE: System needs further enhancement")
+        print("WARNING:  MODERATE: System needs further enhancement")
     
     print()
     print("Starting SYSTEM CAPABILITIES DEMONSTRATED:")

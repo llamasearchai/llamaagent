@@ -67,17 +67,17 @@ The LlamaAgent system has been completely implemented as a comprehensive, produc
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     LlamaAgent Complete System                 │
-├─────────────────┬───────────────┬─────────────────┬─────────────┤
-│   Web Layer     │   API Layer   │  Business Logic │ Data Layer  │
-│                 │               │                 │             │
-│ • FastAPI       │ • REST APIs   │ • Agent Pool    │ • PostgreSQL│
-│ • WebSockets    │ • GraphQL     │ • SPRE Engine   │ • Redis     │
-│ • Nginx         │ • Auth/AuthZ  │ • OpenAI SDK    │ • Qdrant    │
-│ • Load Balancer │ • Rate Limit  │ • Tool Engine   │ • File Store│
-│                 │ • Monitoring  │ • Orchestrator  │             │
-└─────────────────┴───────────────┴─────────────────┴─────────────┘
+
+                     LlamaAgent Complete System                 
+
+   Web Layer        API Layer     Business Logic  Data Layer  
+                                                              
+ • FastAPI        • REST APIs    • Agent Pool     • PostgreSQL
+ • WebSockets     • GraphQL      • SPRE Engine    • Redis     
+ • Nginx          • Auth/AuthZ   • OpenAI SDK     • Qdrant    
+ • Load Balancer  • Rate Limit   • Tool Engine    • File Store
+                  • Monitoring   • Orchestrator               
+
 ```
 
 ## Component Implementation Details

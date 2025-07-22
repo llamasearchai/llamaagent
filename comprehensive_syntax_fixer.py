@@ -374,11 +374,11 @@ class SyntaxFixer:
                         "file": str(filepath),
                         "fixes": result["fixes"]
                     })
-                    print(f"  ✓ Fixed {len(result['fixes'])} issues")
+                    print(f"   Fixed {len(result['fixes'])} issues")
                 elif result["success"]:
-                    print(f"  ✓ No syntax errors found")
+                    print(f"   No syntax errors found")
                 else:
-                    print(f"  ✗ Failed: {result['error']}")
+                    print(f"   Failed: {result['error']}")
 
     def generate_report(self, output_file: str = "syntax_fix_report.json") -> None:
         """Generate a detailed report of all fixes."""

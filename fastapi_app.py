@@ -129,7 +129,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
-    logger.info("🛑 Shutting down LlamaAgent FastAPI Server")
+    logger.info(" Shutting down LlamaAgent FastAPI Server")
     if db_manager:
         await db_manager.close()
 

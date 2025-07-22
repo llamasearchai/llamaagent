@@ -65,7 +65,7 @@ class DemoRunner:
         # Initialize vector memory
         self.vector_memory = VectorMemory()
         
-        print("✓ Storage and cache initialized")
+        print(" Storage and cache initialized")
         
     async def demo_basic_agent(self):
         """Demonstrate basic agent functionality."""
@@ -398,7 +398,7 @@ class DemoRunner:
             agent_results = [r for r in self.results if "agent" in r]
             if agent_results:
                 create_agent_performance_plot(agent_results)
-                print("✓ Agent performance plot created")
+                print(" Agent performance plot created")
         
         return report
         
@@ -419,7 +419,7 @@ class DemoRunner:
             # Generate report
             report = self.generate_report()
             
-            print("\n✓ Demo completed successfully!")
+            print("\n Demo completed successfully!")
             print("\nKey Features Demonstrated:")
             print("- Multi-provider LLM support with MockProvider")
             print("- Tool creation and execution")

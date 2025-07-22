@@ -198,7 +198,7 @@ class FocusedSyntaxFixer:
         print("=" * 50)
         
         # Find target files
-        print("\n📁 Finding target files...")
+        print("\n Finding target files...")
         target_files = self.find_target_files()
         print(f"Found {len(target_files)} Python files in core directories")
         
@@ -271,7 +271,7 @@ class FocusedSyntaxFixer:
         with open('focused_syntax_report.json', 'w') as f:
             json.dump(report, f, indent=2)
         
-        print("\n📄 Detailed report saved to: focused_syntax_report.json")
+        print("\n Detailed report saved to: focused_syntax_report.json")
 
     def validate_core_modules(self):
         """Validate that core modules can be imported."""

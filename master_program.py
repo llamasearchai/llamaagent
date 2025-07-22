@@ -485,14 +485,14 @@ def build():
                 )
                 if result.returncode == 0:
                     progress.update(task, completed=1)
-                    console.print(f"[green]✓[/green] {step_name}")
+                    console.print(f"[green][/green] {step_name}")
                 else:
-                    console.print(f"[red]✗[/red] {step_name}")
+                    console.print(f"[red][/red] {step_name}")
                     console.print(f"[red]{result.stderr}[/red]")
             except subprocess.TimeoutExpired:
                 console.print(f"[yellow]⏱[/yellow] {step_name} (timeout)")
             except Exception as e:
-                console.print(f"[red]✗[/red] {step_name}: {e}")
+                console.print(f"[red][/red] {step_name}: {e}")
 
 @cli.command()
 def status():

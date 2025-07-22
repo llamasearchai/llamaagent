@@ -977,7 +977,7 @@ async def demonstrate_enhanced_benchmarking():
     benchmark_system = EnhancedBenchmarkSystem()
     
     # Show available suites
-    print("\n📋 Available Benchmark Suites:")
+    print("\nLIST: Available Benchmark Suites:")
     suites = benchmark_system.get_available_suites()
     for name, info in suites.items():
         print(f"  {name}: {info['total_tasks']} tasks - {info['description']}")

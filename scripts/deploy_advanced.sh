@@ -304,17 +304,17 @@ run_health_checks() {
     
     # Check API health
     if curl -f http://localhost:8000/health > /dev/null 2>&1; then
-        log_success "✓ API health check passed"
+        log_success " API health check passed"
     else
-        log_error "✗ API health check failed"
+        log_error " API health check failed"
         return 1
     fi
     
     # Check database connection
     if curl -f http://localhost:8000/health > /dev/null 2>&1; then
-        log_success "✓ Database health check passed"
+        log_success " Database health check passed"
     else
-        log_error "✗ Database health check failed"
+        log_error " Database health check failed"
         return 1
     fi
     
@@ -326,9 +326,9 @@ run_health_checks() {
     
     for endpoint in "${endpoints[@]}"; do
         if curl -f "http://localhost:8000${endpoint}" > /dev/null 2>&1; then
-            log_success "✓ Endpoint ${endpoint} is accessible"
+            log_success " Endpoint ${endpoint} is accessible"
         else
-            log_warning "⚠ Endpoint ${endpoint} may not be ready yet"
+            log_warning " Endpoint ${endpoint} may not be ready yet"
         fi
     done
     
@@ -414,7 +414,7 @@ main() {
     sleep 10
     run_health_checks
     
-    log_success "🚀 LlamaAgent Advanced deployment completed successfully!"
+    log_success "LAUNCH: LlamaAgent Advanced deployment completed successfully!"
     echo ""
     echo "Next steps:"
     echo "1. Update API keys in .env file"
