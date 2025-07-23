@@ -5,6 +5,39 @@ All notable changes to LlamaAgent will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-01-15
+
+### Added
+- **Cognitive Architecture**: Complete implementation of advanced reasoning systems
+  - Tree of Thoughts reasoning engine with multi-path exploration
+  - Graph of Thoughts for non-linear concept mapping
+  - Constitutional AI safety and ethics system
+  - Meta-reasoning with adaptive strategy selection
+  - Unified cognitive agent interface
+- **Comprehensive Test Suite**: Added 18+ cognitive architecture tests (all passing)
+- **Advanced Routing System**: New types.py module with shared routing types
+- **Package Structure Improvements**: Better import organization and compatibility
+- **Professional Logo**: SVG logo integration across documentation
+
+### Fixed
+- **Critical Syntax Errors**: Resolved 17+ syntax errors across core modules
+- **Circular Imports**: Fixed routing module circular dependencies
+- **Import Issues**: Added missing AgentRole exports and corrected import paths
+- **Prometheus Metrics**: Resolved duplicate metric registration conflicts
+- **Demo System**: Working ReactAgent examples with proper error handling
+
+### Changed
+- **Code Quality**: Applied black formatting and isort organization
+- **Documentation Cleanup**: Removed obsolete files and improved structure
+- **Error Handling**: Enhanced exception handling across components
+- **Testing Infrastructure**: Improved test reliability and coverage
+
+### Technical Improvements
+- Enhanced package structure for better Python compatibility
+- Improved virtual environment handling in development workflow
+- Professional git commit history and release process
+- Comprehensive cleanup of legacy and duplicate files
+
 ## [0.1.1] - 2025-07-15
 
 ### Added
@@ -127,6 +160,6 @@ This is the initial release, so no migration is required.
 
 ---
 
-**Author**: Nik Jois <nikjois@llamasearch.ai>  
-**License**: MIT  
-**Homepage**: https://github.com/nikjois/llamaagent 
+**Author**: Nik Jois <nikjois@llamasearch.ai>
+**License**: MIT
+**Homepage**: https://github.com/nikjois/llamaagent
