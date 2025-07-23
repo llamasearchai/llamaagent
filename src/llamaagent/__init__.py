@@ -11,7 +11,6 @@ import builtins
 import os
 import shutil
 import sys
-import types
 import warnings
 from pathlib import Path
 from typing import Any, Coroutine, Optional, TypeVar
@@ -289,6 +288,7 @@ if "pytest" in sys.modules:
 
 for _missing in ("datasette_llm",):
     if _missing not in sys.modules:  # pragma: no cover
+        import types
         sys.modules[_missing] = types.ModuleType(_missing)
 
 # Main entry point
