@@ -182,9 +182,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
 
         # Log request
-        logger.info(
-            f"Request: {request.method} {request.url.path} from {request.client.host if request.client else 'unknown'}"
-        )
+        client_host = request.client.host if request.client else 'unknown'
+        logger.info(f"Request: {request.method} {request.url.path} from {client_host}")
 
         # Process request
         response = await call_next(request)
@@ -518,7 +517,7 @@ async def create_default_agent() -> None:
 
 async def cleanup_application() -> None:
     """Clean up application resources."""
-    logger.info("🧹 Cleaning up application resources...")
+    logger.info("Cleaning up application resources...")
 
     # Close WebSocket connections
     for ws in app_state["websocket_connections"]:
@@ -544,7 +543,9 @@ async def cleanup_application() -> None:
 # Create FastAPI app
 app = FastAPI(
     title="LlamaAgent Production API",
-    description="Production-ready AI agent platform with comprehensive enterprise features",
+    description=(
+        "Production-ready AI agent platform with comprehensive " "enterprise features"
+    ),
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
@@ -657,7 +658,10 @@ async def root() -> Dict[str, Any]:
         "message": "LlamaAgent Production API",
         "version": "1.0.0",
         "author": "Nik Jois <nikjois@llamasearch.ai>",
-        "description": "Production-ready AI agent platform with comprehensive enterprise features",
+        "description": (
+            "Production-ready AI agent platform with comprehensive "
+            "enterprise features"
+        ),
         "features": [
             "Multiple LLM providers",
             "Agent orchestration",

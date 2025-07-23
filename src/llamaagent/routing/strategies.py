@@ -4,7 +4,10 @@ Routing strategies for intelligent AI provider selection.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, cast
+
+if TYPE_CHECKING:
+    from .provider_registry import ProviderRegistry
 
 from .task_analyzer import TaskCharacteristics, TaskComplexity, TaskType
 from .types import RoutingDecision
@@ -42,7 +45,7 @@ class RoutingStrategy(ABC):
 class TaskBasedRouting(RoutingStrategy):
     """Route based on task type (debugging, refactoring, new code, etc.)."""
 
-    def __init__(self, provider_registry):
+    def __init__(self, provider_registry: 'ProviderRegistry') -> None:
         self.provider_registry = provider_registry
 
         # Define task type to provider mappings
@@ -119,10 +122,13 @@ class TaskBasedRouting(RoutingStrategy):
             selected = available_providers[0]
             confidence = 0.5
         else:
-            selected = max(scores, key=scores.get)
+            selected = max(scores, key=lambda k: scores[k])
             confidence = scores[selected]
 
-        reasoning = f"Selected {selected} for {task_type.value} task based on historical performance"
+        reasoning = (
+            f"Selected {selected} for {task_type.value} task "
+            "based on historical performance"
+        )
 
         return RoutingDecision(
             provider_id=selected,
@@ -137,7 +143,7 @@ class TaskBasedRouting(RoutingStrategy):
 class LanguageBasedRouting(RoutingStrategy):
     """Route based on programming language expertise."""
 
-    def __init__(self, provider_registry):
+    def __init__(self, provider_registry: 'ProviderRegistry') -> None:
         self.provider_registry = provider_registry
 
         # Define language to provider expertise mappings
@@ -224,7 +230,7 @@ class LanguageBasedRouting(RoutingStrategy):
                     success_rate = metrics[provider_id].get("success_rate", 1.0)
                     scores[provider_id] *= success_rate
 
-            selected = max(scores, key=scores.get)
+            selected = max(scores, key=lambda k: scores[k])
             confidence = scores[selected]
             reasoning = (
                 f"Selected {selected} based on expertise in {', '.join(languages)}"
@@ -236,14 +242,17 @@ class LanguageBasedRouting(RoutingStrategy):
             reasoning=reasoning,
             estimated_cost=0.0,
             estimated_duration=0.0,
-            metadata={"languages": list(languages), "scores": scores},
+            metadata={
+                "languages": list(languages),
+                "scores": scores if 'scores' in locals() else {},
+            },
         )
 
 
 class ComplexityBasedRouting(RoutingStrategy):
     """Route based on task complexity."""
 
-    def __init__(self, provider_registry):
+    def __init__(self, provider_registry: 'ProviderRegistry') -> None:
         self.provider_registry = provider_registry
 
         # Define complexity to provider suitability
@@ -309,7 +318,9 @@ class ComplexityBasedRouting(RoutingStrategy):
 
             scores[provider_id] = base_score
 
-        selected = max(scores, key=scores.get) if scores else available_providers[0]
+        selected = (
+            max(scores, key=lambda k: scores[k]) if scores else available_providers[0]
+        )
         confidence = scores.get(selected, 0.5)
         reasoning = f"Selected {selected} for {complexity.value} complexity task"
 
@@ -327,8 +338,12 @@ class PerformanceBasedRouting(RoutingStrategy):
     """Route based on historical performance metrics."""
 
     def __init__(
-        self, provider_registry, weight_success=0.4, weight_latency=0.3, weight_cost=0.3
-    ):
+        self,
+        provider_registry: 'ProviderRegistry',
+        weight_success: float = 0.4,
+        weight_latency: float = 0.3,
+        weight_cost: float = 0.3,
+    ) -> None:
         self.provider_registry = provider_registry
         self.weight_success = weight_success
         self.weight_latency = weight_latency
@@ -383,9 +398,15 @@ class PerformanceBasedRouting(RoutingStrategy):
             scores[provider_id] = total_score
 
         # Select best performer
-        selected = max(scores, key=scores.get) if scores else available_providers[0]
+        selected = (
+            max(scores, key=lambda k: scores[k]) if scores else available_providers[0]
+        )
         confidence = scores.get(selected, 0.5)
-        reasoning = f"Selected {selected} based on performance metrics (success: {self.weight_success}, latency: {self.weight_latency}, cost: {self.weight_cost})"
+        reasoning = (
+            f"Selected {selected} based on performance metrics "
+            f"(success: {self.weight_success}, latency: {self.weight_latency}, "
+            f"cost: {self.weight_cost})"
+        )
 
         return RoutingDecision(
             provider_id=selected,
@@ -407,7 +428,12 @@ class PerformanceBasedRouting(RoutingStrategy):
 class CostOptimizedRouting(RoutingStrategy):
     """Route to minimize costs while maintaining quality."""
 
-    def __init__(self, provider_registry, quality_threshold=0.8, budget_limit=None):
+    def __init__(
+        self,
+        provider_registry: 'ProviderRegistry',
+        quality_threshold: float = 0.8,
+        budget_limit: Optional[float] = None,
+    ) -> None:
         self.provider_registry = provider_registry
         self.quality_threshold = quality_threshold
         self.budget_limit = budget_limit
@@ -454,10 +480,15 @@ class CostOptimizedRouting(RoutingStrategy):
             reasoning = "No providers meet cost/quality criteria, using fallback"
         else:
             # Sort by cost (ascending) then by quality (descending)
-            eligible_providers.sort(key=lambda x: (x[1], -x[2]))
+            eligible_providers.sort(
+                key=lambda x: (cast(float, x[1]), -cast(float, x[2]))
+            )
             selected = eligible_providers[0][0]
             confidence = eligible_providers[0][2]
-            reasoning = f"Selected {selected} as lowest cost provider meeting quality threshold {self.quality_threshold}"
+            reasoning = (
+                f"Selected {selected} as lowest cost provider meeting "
+                f"quality threshold {self.quality_threshold}"
+            )
 
         return RoutingDecision(
             provider_id=selected,
@@ -523,14 +554,15 @@ class HybridRouting(RoutingStrategy):
             total_confidence += decision.confidence * weight
 
         # Select provider with highest aggregate score
-        selected = max(provider_scores, key=provider_scores.get)
+        selected = max(provider_scores, key=lambda k: provider_scores[k])
         confidence = min(provider_scores[selected], 1.0)  # Cap at 1.0
 
         # Combine reasoning from all strategies
         reasoning_parts = []
-        for decision, weight in decisions:
+        for i, (decision, weight) in enumerate(decisions):
             if decision.provider_id == selected:
-                reasoning_parts.append(f"{type(decision).__name__} ({weight:.1%})")
+                strategy_name = type(self.strategies[i][0]).__name__
+                reasoning_parts.append(f"{strategy_name} ({weight:.1%})")
 
         reasoning = f"Hybrid routing selected {selected} based on: " + ", ".join(
             reasoning_parts
@@ -554,7 +586,12 @@ class HybridRouting(RoutingStrategy):
 class ConsensusRouting(RoutingStrategy):
     """Route to multiple providers and aggregate results."""
 
-    def __init__(self, provider_registry, min_providers=3, consensus_threshold=0.7):
+    def __init__(
+        self,
+        provider_registry: 'ProviderRegistry',
+        min_providers: int = 3,
+        consensus_threshold: float = 0.7,
+    ) -> None:
         self.provider_registry = provider_registry
         self.min_providers = min_providers
         self.consensus_threshold = consensus_threshold
@@ -587,7 +624,7 @@ class ConsensusRouting(RoutingStrategy):
             combined_score = diversity_score * 0.3 + quality_score * 0.7
             provider_scores.append((provider_id, combined_score))
         # Sort by score and select top providers
-        provider_scores.sort(key=lambda x: x[1], reverse=True)
+        provider_scores.sort(key=lambda x: cast(float, x[1]), reverse=True)
         selected_providers = [p[0] for p in provider_scores[: self.min_providers]]
 
         if len(selected_providers) < self.min_providers:
@@ -596,12 +633,18 @@ class ConsensusRouting(RoutingStrategy):
                 selected_providers[0] if selected_providers else available_providers[0]
             )
             confidence = 0.6
-            reasoning = f"Insufficient providers for consensus, using single provider {selected}"
+            reasoning = (
+                f"Insufficient providers for consensus, "
+                f"using single provider {selected}"
+            )
         else:
             # Return first provider as primary, others as alternatives
             selected = selected_providers[0]
             confidence = 0.9  # High confidence due to consensus approach
-            reasoning = f"Selected {self.min_providers} providers for consensus: {', '.join(selected_providers)}"
+            reasoning = (
+                f"Selected {self.min_providers} providers for consensus: "
+                f"{', '.join(selected_providers)}"
+            )
 
         return RoutingDecision(
             provider_id=selected,
@@ -621,12 +664,16 @@ class AdaptiveRouting(RoutingStrategy):
     """Routing strategy that adapts based on historical performance."""
 
     def __init__(
-        self, provider_registry, base_strategy: RoutingStrategy, learning_rate=0.1
-    ):
+        self,
+        provider_registry: 'ProviderRegistry',
+        base_strategy: RoutingStrategy,
+        learning_rate: float = 0.1,
+    ) -> None:
         self.provider_registry = provider_registry
         self.base_strategy = base_strategy
         self.learning_rate = learning_rate
-        self.provider_weights = {}  # Dynamic weights for each provider
+        # Dynamic weights for each provider
+        self.provider_weights: Dict[str, float] = {}
 
     async def route(
         self,
@@ -668,10 +715,13 @@ class AdaptiveRouting(RoutingStrategy):
             adjusted_scores[provider_id] = adjusted_score
 
         # Select best provider after adjustments
-        selected = max(adjusted_scores, key=adjusted_scores.get)
+        selected = max(adjusted_scores, key=lambda k: adjusted_scores[k])
         confidence = adjusted_scores[selected]
 
-        reasoning = f"Adaptive routing selected {selected} based on learned performance (base: {base_decision.provider_id})"
+        reasoning = (
+            f"Adaptive routing selected {selected} based on learned "
+            f"performance (base: {base_decision.provider_id})"
+        )
 
         return RoutingDecision(
             provider_id=selected,
@@ -698,5 +748,6 @@ class AdaptiveRouting(RoutingStrategy):
         # Clamp weight to reasonable range
         self.provider_weights[provider_id] = max(0.1, min(2.0, new_weight))
         logger.debug(
-            f"Updated weight for {provider_id}: {current_weight:.2f} -> {new_weight:.2f}"
+            f"Updated weight for {provider_id}: "
+            f"{current_weight:.2f} -> {new_weight:.2f}"
         )
