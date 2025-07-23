@@ -32,7 +32,7 @@ class TestLLMProviders:
     def test_llm_factory_fails_without_api_key(self):
         """Test LLM factory fails properly without API key."""
         factory = LLMFactory()
-        with pytest.raises(ValueError, match="Unsupported provider"):
+        with pytest.raises(ValueError, match="OpenAI API key is required"):
             factory.get_provider("openai")
 
     def test_mock_provider_generates_response(self):

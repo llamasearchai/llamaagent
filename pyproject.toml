@@ -477,14 +477,12 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src"]
-branch = true
-parallel = true
 omit = [
-    "src/llamaagent/__about__.py",
-    "tests/*",
     "*/tests/*",
+    "*/test_*",
     "*/__pycache__/*",
-    "*/site-packages/*",
+    "*/venv/*",
+    "*/.venv/*"
 ]
 
 [tool.coverage.paths]
@@ -493,18 +491,14 @@ tests = ["tests", "*/llamaagent/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "no cov",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "raise NotImplementedError",
     "pragma: no cover",
     "def __repr__",
-    "if self.debug:",
-    "if settings.DEBUG",
     "raise AssertionError",
     "raise NotImplementedError",
-    "if 0:",
-    "if False:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
+show_missing = true
+skip_covered = false
+precision = 2
+fail_under = 0

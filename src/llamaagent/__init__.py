@@ -23,6 +23,7 @@ from ._version import __version__
 from .agents import ReactAgent
 from .agents.base import AgentConfig, AgentRole
 from .llm import LLMFactory, LLMMessage, LLMResponse, create_provider
+from . import tools
 from .tools import ToolRegistry, get_all_tools
 
 # Suppress SSL warnings that occur with certain Python/SSL configurations

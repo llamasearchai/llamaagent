@@ -1,3 +1,0 @@
-[console_scripts]
-llamaagent = llamaagent.cli:main
-llamaagent-interactive = llamaagent.cli.interactive:run_interactive_experiment
