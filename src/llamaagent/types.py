@@ -18,25 +18,27 @@ from .agents.base import AgentConfig, AgentResponse
 @dataclass
 class LLMMessage:
     """Message structure for LLM providers"""
+
     role: str  # "system", "user", "assistant"
     content: str
     metadata: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self) -> None:
         if self.metadata is None:
             self.metadata = {}
 
 
-@dataclass  
+@dataclass
 class LLMResponse:
     """Response structure from LLM providers"""
+
     content: str
     model: Optional[str] = None
     provider: Optional[str] = None
     tokens_used: int = 0
     usage: Optional[Dict[str, Any]] = None
     metadata: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self) -> None:
         if self.usage is None:
             self.usage = {}
@@ -46,6 +48,7 @@ class LLMResponse:
 
 class TaskStatus(Enum):
     """Status of a task execution"""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -56,6 +59,7 @@ class TaskStatus(Enum):
 @dataclass
 class TaskInput:
     """Input data for a task"""
+
     task: str
     context: Optional[Dict[str, Any]] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -64,6 +68,7 @@ class TaskInput:
 @dataclass
 class TaskOutput:
     """Output data from a task"""
+
     result: str
     success: bool = True
     metadata: Optional[Dict[str, Any]] = None
@@ -72,6 +77,7 @@ class TaskOutput:
 @dataclass
 class TaskResult:
     """Complete result of a task execution"""
+
     input: TaskInput
     output: TaskOutput
     status: TaskStatus
@@ -81,11 +87,11 @@ class TaskResult:
 
 __all__ = [
     "LLMMessage",
-    "LLMResponse", 
+    "LLMResponse",
     "TaskStatus",
-    "TaskInput", 
+    "TaskInput",
     "TaskOutput",
     "TaskResult",
     "AgentConfig",
-    "AgentResponse"
+    "AgentResponse",
 ]

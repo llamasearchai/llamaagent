@@ -33,17 +33,23 @@ except ImportError:
     KafkaProducer = None
 
 try:
-    from prometheus_client import Counter, Gauge, Histogram, CollectorRegistry
-    
+    from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
+
     # Create a local registry to avoid conflicts during testing
     local_registry = CollectorRegistry()
-    
+
     orchestration_tasks = Counter(
-        "orchestration_tasks_total", "Total orchestration tasks", ["status"],
-        registry=local_registry
+        "orchestration_tasks_total",
+        "Total orchestration tasks",
+        ["status"],
+        registry=local_registry,
     )
-    active_workflows = Gauge("active_workflows", "Number of active workflows", registry=local_registry)
-    task_execution_time = Histogram("task_execution_seconds", "Task execution time", registry=local_registry)
+    active_workflows = Gauge(
+        "active_workflows", "Number of active workflows", registry=local_registry
+    )
+    task_execution_time = Histogram(
+        "task_execution_seconds", "Task execution time", registry=local_registry
+    )
 except ImportError:
     orchestration_tasks = None
     active_workflows = None

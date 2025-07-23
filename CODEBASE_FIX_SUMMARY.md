@@ -8,7 +8,7 @@ This document summarizes the fixes applied to the LlamaAgent codebase to get eve
 ### 1. Syntax Errors (17 total)
 Fixed various syntax errors including:
 - Missing closing parentheses
-- Extra colons in function definitions  
+- Extra colons in function definitions
 - Missing parentheses in expressions
 - Incorrect indentation
 - Unmatched parentheses in f-strings

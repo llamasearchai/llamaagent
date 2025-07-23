@@ -90,11 +90,13 @@ class BaseProvider(ABC):
         Raises:
             NotImplementedError: If the provider doesn't support embeddings
         """
-        logger.warning(f"Embeddings not supported by {self.provider_name}, returning empty embeddings")
+        logger.warning(
+            f"Embeddings not supported by {self.provider_name}, returning empty embeddings"
+        )
         return {
             "embeddings": [[0.0] * 768],  # Default embedding dimension
             "model": "none",
-            "usage": {"prompt_tokens": 0, "total_tokens": 0}
+            "usage": {"prompt_tokens": 0, "total_tokens": 0},
         }
 
     @abstractmethod

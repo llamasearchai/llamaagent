@@ -352,7 +352,7 @@ class ToolRegistry:
             "aliases": self._aliases.copy(),
             "usage_stats": self._usage_stats.copy(),
         }
-    
+
     async def cleanup(self) -> None:
         """Cleanup all registered tools."""
         # Clear all registries

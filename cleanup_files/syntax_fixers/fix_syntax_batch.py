@@ -5,16 +5,17 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def get_syntax_errors():
     """Get all Python files with syntax errors."""
     src_dir = Path("/Users/o2/Desktop/llamaagent/src")
     errors = []
-    
+
     for py_file in src_dir.rglob("*.py"):
         result = subprocess.run(
             [sys.executable, "-m", "py_compile", str(py_file)],
             capture_output=True,
-            text=True
+            text=True,
         )
         if result.stderr:
             # Parse the error to get file and line number
@@ -34,8 +35,9 @@ def get_syntax_errors():
                                 # If we can't parse line number, still include the file
                                 errors.append((file_path, 0, result.stderr))
                         break
-    
+
     return sorted(errors)
+
 
 if __name__ == "__main__":
     errors = get_syntax_errors()

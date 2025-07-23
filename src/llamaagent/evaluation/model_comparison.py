@@ -29,7 +29,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 class ComparisonMetric(str, Enum):
     """Metrics for model comparison"""
-    
+
     ACCURACY = "accuracy"
     LATENCY = "latency"
     THROUGHPUT = "throughput"
@@ -42,7 +42,7 @@ class ComparisonMetric(str, Enum):
 
 class StatisticalTest(str, Enum):
     """Statistical tests for significance"""
-    
+
     T_TEST = "t_test"
     MANN_WHITNEY = "mann_whitney"
     WILCOXON = "wilcoxon"
@@ -52,14 +52,14 @@ class StatisticalTest(str, Enum):
 @dataclass
 class ModelPerformance:
     """Performance metrics for a single model"""
-    
+
     model_name: str
     benchmark_results: List[Any]  # List of benchmark results
     aggregated_metrics: Dict[str, float]
     strengths: List[str]
     weaknesses: List[str]
     overall_score: float
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -75,7 +75,7 @@ class ModelPerformance:
 @dataclass
 class ComparisonResult:
     """Result of statistical comparison between two models"""
-    
+
     model_a: str
     model_b: str
     metric: str
@@ -89,7 +89,7 @@ class ComparisonResult:
 @dataclass
 class ComparisonReport:
     """Comprehensive model comparison report"""
-    
+
     comparison_id: str
     models: List[str]
     benchmarks_used: List[str]
@@ -116,7 +116,7 @@ class ComparisonReport:
 
 class ModelComparator:
     """Advanced model comparison system"""
-    
+
     def __init__(
         self,
         benchmark_engine: Optional[Any] = None,
@@ -127,13 +127,13 @@ class ModelComparator:
             self.benchmark_engine = BenchmarkEngine()
         else:
             self.benchmark_engine = benchmark_engine
-            
+
         self.results_path = results_path or Path("./comparison_results")
         self.results_path.mkdir(parents=True, exist_ok=True)
         # Configuration
         self.confidence_level = 0.95
         self.significance_threshold = 0.05
-        
+
         # Metric weights for overall scoring
         self.metric_weights = {
             ComparisonMetric.ACCURACY: 0.3,
@@ -143,7 +143,7 @@ class ModelComparator:
             ComparisonMetric.QUALITY_SCORE: 0.1,
             ComparisonMetric.RESOURCE_USAGE: 0.1,
         }
-    
+
     async def compare_models(
         self,
         comparison_id: str,
@@ -153,7 +153,7 @@ class ModelComparator:
     ) -> ComparisonReport:
         """Comprehensive model comparison"""
         config = config or {}
-        
+
         logger.info(f"Starting model comparison: {comparison_id}")
         # Run benchmarks for all models
         all_results: Dict[str, List[Any]] = {}
@@ -179,9 +179,9 @@ class ModelComparator:
                         f"Failed to run benchmark {benchmark_id} for {model_name}: {e}"
                     )
                     continue
-            
+
             all_results[model_name] = model_results
-        
+
         # Analyze performance for each model
         model_performances: Dict[str, ModelPerformance] = {}
         for model_name, benchmark_results in all_results.items():
@@ -189,7 +189,7 @@ class ModelComparator:
                 model_name, benchmark_results
             )
             model_performances[model_name] = performance
-        
+
         # Perform statistical comparisons
         statistical_comparisons = await self._perform_statistical_comparisons(
             model_performances
@@ -219,7 +219,7 @@ class ModelComparator:
         await self._save_report(report)
         logger.info(f"Completed model comparison: {comparison_id}")
         return report
-    
+
     async def _analyze_model_performance(
         self, model_name: str, benchmark_results: List[Any]
     ) -> ModelPerformance:
@@ -302,13 +302,13 @@ class ModelComparator:
         if execution_times:
             aggregated["overall_execution_time"] = statistics.mean(execution_times)
         return aggregated
-    
+
     async def _create_performance_profile(
         self, benchmark_results: List[Any]
     ) -> Dict[str, float]:
         """Create detailed performance profile"""
         profile: Dict[str, float] = {}
-        
+
         # Consistency analysis
         profile["consistency"] = self._calculate_consistency(benchmark_results)
         # Scalability analysis
@@ -322,7 +322,7 @@ class ModelComparator:
                 name = result['benchmark_id']
             else:
                 name = f"benchmark_{len(profile['benchmark_breakdown'])}"
-                
+
             if hasattr(result, 'success_rate'):
                 profile["benchmark_breakdown"][name] = {
                     "success_rate": result.success_rate,
@@ -333,14 +333,14 @@ class ModelComparator:
                     "success_rate": result.get('success_rate', 0.0),
                     "execution_time": result.get('avg_execution_time', 0.0)
                 }
-        
+
         return profile
-    
+
     def _calculate_consistency(self, benchmark_results: List[Any]) -> float:
         """Calculate consistency score based on variance in performance"""
         if len(benchmark_results) < 2:
             return 1.0
-        
+
         success_rates = []
         for result in benchmark_results:
             if hasattr(result, 'success_rate'):
@@ -349,21 +349,21 @@ class ModelComparator:
                 success_rates.append(result['success_rate'])
         if not success_rates or all(sr == success_rates[0] for sr in success_rates):
             return 1.0
-        
+
         # Lower variance = higher consistency
         variance = statistics.variance(success_rates)
         consistency = max(0.0, 1.0 - variance)
         return consistency
-    
+
     def _calculate_scalability(self, benchmark_results: List[Any]) -> float:
         """Calculate scalability score based on performance vs task count"""
         if len(benchmark_results) < 2:
             return 1.0
-        
+
         # Simple scalability metric based on execution time vs task count correlation
         task_counts = []
         execution_times = []
-        
+
         for result in benchmark_results:
             if hasattr(result, 'total_tasks') and hasattr(result, 'execution_time'):
                 task_counts.append(result.total_tasks)
@@ -373,7 +373,7 @@ class ModelComparator:
                 execution_times.append(result.get('avg_execution_time', 1.0))
         if len(set(task_counts)) < 2:
             return 1.0
-        
+
         # Calculate correlation
         try:
             correlation = np.corrcoef(task_counts, execution_times)[0, 1]
@@ -382,14 +382,14 @@ class ModelComparator:
             return scalability
         except Exception:
             return 0.5  # Default neutral score
-    
+
     async def _identify_strengths_weaknesses(
         self, aggregated_metrics: Dict[str, float], performance_profile: Dict[str, float]
     ) -> Tuple[List[str], List[str]]:
         """Identify model strengths and weaknesses"""
         strengths: List[str] = []
         weaknesses: List[str] = []
-        
+
         # Success rate analysis
         success_rate = aggregated_metrics.get("overall_success_rate", 0.0)
         if success_rate >= 0.9:
@@ -416,21 +416,21 @@ class ModelComparator:
             elif accuracy < 0.7:
                 weaknesses.append("Low accuracy")
         return strengths, weaknesses
-    
+
     async def _calculate_overall_score(
         self, aggregated_metrics: Dict[str, float]
     ) -> float:
         """Calculate overall performance score"""
         score = 0.0
         total_weight = 0.0
-        
+
         # Map metrics to comparison metrics and apply weights
         metric_mappings = {
             "overall_success_rate": ComparisonMetric.SUCCESS_RATE,
             "avg_accuracy_score_mean": ComparisonMetric.ACCURACY,
             "overall_execution_time": ComparisonMetric.LATENCY,
         }
-        
+
         for metric_key, comparison_metric in metric_mappings.items():
             if (
                 metric_key in aggregated_metrics
@@ -438,7 +438,7 @@ class ModelComparator:
             ):
                 weight = self.metric_weights[comparison_metric]
                 value = aggregated_metrics[metric_key]
-                
+
                 # Normalize value (0-1 scale)
                 if comparison_metric == ComparisonMetric.LATENCY:
                     # For latency, lower is better
@@ -448,29 +448,29 @@ class ModelComparator:
                     normalized_value = min(1.0, max(0.0, value))
                 score += weight * normalized_value
                 total_weight += weight
-        
+
         return score / total_weight if total_weight > 0 else 0.5
-    
+
     async def _perform_statistical_comparisons(
         self, model_performances: Dict[str, ModelPerformance]
     ) -> List[ComparisonResult]:
         """Perform statistical comparisons between models"""
         comparisons: List[ComparisonResult] = []
-        
+
         model_names = list(model_performances.keys())
         # Compare each pair of models
         for i in range(len(model_names)):
             for j in range(i + 1, len(model_names)):
                 model_a = model_names[i]
                 model_b = model_names[j]
-                
+
                 # Key metrics to compare
                 key_metrics = [
                     "overall_success_rate",
                     "avg_accuracy_score_mean",
                     "overall_execution_time"
                 ]
-                
+
                 for metric in key_metrics:
                     comparison = await self._compare_models_on_metric(
                         model_a, model_b, metric, model_performances
@@ -478,7 +478,7 @@ class ModelComparator:
                     if comparison:
                         comparisons.append(comparison)
         return comparisons
-    
+
     async def _compare_models_on_metric(
         self,
         model_a: str,
@@ -489,20 +489,20 @@ class ModelComparator:
         """Compare two models on a specific metric"""
         perf_a = model_performances[model_a]
         perf_b = model_performances[model_b]
-        
+
         value_a = perf_a.aggregated_metrics.get(metric, 0.0)
         value_b = perf_b.aggregated_metrics.get(metric, 0.0)
         if value_a == 0.0 and value_b == 0.0:
             return None
-        
+
         # Calculate difference and significance (simplified)
         difference = value_a - value_b
         relative_difference = abs(difference) / max(abs(value_a), abs(value_b), 1e-10)
-        
+
         # Simple significance test based on relative difference
         significant = relative_difference > 0.05  # 5% threshold
         p_value = 0.01 if significant else 0.5  # Simplified
-        
+
         # Interpretation
         if significant:
             better_model = model_a if difference > 0 else model_b
@@ -514,7 +514,7 @@ class ModelComparator:
             interpretation = (
                 f"No significant difference between {model_a} and {model_b} on {metric}"
             )
-        
+
         return ComparisonResult(
             model_a=model_a,
             model_b=model_b,
@@ -525,23 +525,23 @@ class ModelComparator:
             confidence_level=self.confidence_level,
             interpretation=interpretation
         )
-    
+
     async def _generate_rankings(
         self, model_performances: Dict[str, ModelPerformance]
     ) -> Dict[str, List[Tuple[str, float]]]:
         """Generate model rankings by different criteria"""
         rankings: Dict[str, List[Tuple[str, float]]] = {}
-        
+
         # Key metrics to rank on
         metrics_to_rank = [
             ("Overall Performance", "overall_score"),
             ("Success Rate", "overall_success_rate"),
             ("Execution Time", "overall_execution_time")
         ]
-        
+
         for rank_name, metric_key in metrics_to_rank:
             model_scores: List[Tuple[str, float]] = []
-            
+
             for model_name, performance in model_performances.items():
                 if metric_key == "overall_score":
                     score = performance.overall_score
@@ -552,9 +552,9 @@ class ModelComparator:
             reverse_sort = metric_key != "overall_execution_time"
             model_scores.sort(key=lambda x: x[1], reverse=reverse_sort)
             rankings[rank_name] = model_scores
-        
+
         return rankings
-    
+
     async def _create_summary(
         self,
         model_performances: Dict[str, ModelPerformance],
@@ -563,15 +563,15 @@ class ModelComparator:
     ) -> Dict[str, Any]:
         """Create comparison summary"""
         summary: Dict[str, Any] = {}
-        
+
         # Best overall model
         if "Overall Performance" in rankings and rankings["Overall Performance"]:
             summary["best_overall_model"] = rankings["Overall Performance"][0][0]
-        
+
         # Model scores
         for model_name, performance in model_performances.items():
             summary[f"{model_name}_score"] = performance.overall_score
-        
+
         # Statistical insights
         significant_comparisons = [c for c in statistical_comparisons if c.significant]
         summary["significant_differences"] = len(significant_comparisons)
@@ -580,9 +580,9 @@ class ModelComparator:
         for rank_name, ranked_models in rankings.items():
             if ranked_models:
                 summary[f"best_{rank_name.lower().replace(' ', '_')}"] = ranked_models[0][0]
-        
+
         return summary
-    
+
     async def _generate_recommendations(
         self,
         model_performances: Dict[str, ModelPerformance],
@@ -590,7 +590,7 @@ class ModelComparator:
     ) -> List[str]:
         """Generate actionable recommendations"""
         recommendations: List[str] = []
-        
+
         # Overall best model recommendation
         best_overall = max(
             model_performances.items(),
@@ -599,7 +599,7 @@ class ModelComparator:
         recommendations.append()
             f"For overall performance, recommend {best_overall[0]} with score {best_overall[1].overall_score:.3f}"
         )
-        
+
         # Accuracy recommendations
         accuracy_scores = {
             name: perf.aggregated_metrics.get("avg_accuracy_score_mean", 0.0)
@@ -611,7 +611,7 @@ class ModelComparator:
                 recommendations.append()
                     f"For highest accuracy, recommend {most_accurate[0]} for accuracy"
                 )
-        
+
         # Speed recommendations
         speed_scores = {
             name: perf.aggregated_metrics.get("overall_execution_time", float('inf')
@@ -623,45 +623,45 @@ class ModelComparator:
                 recommendations.append()
                     f"For fastest execution, recommend {fastest[0]}"
                 )
-        
+
         # Significant differences
         significant_comparisons = [c for c in statistical_comparisons if c.significant]
         if significant_comparisons:
             recommendations.append()
                 f"Found {len(significant_comparisons)} statistically significant differences"
             )
-        
+
         # Model-specific recommendations
         for model_name, performance in model_performances.items():
             if performance.weaknesses:
                 recommendations.append()
                     f"{model_name} needs improvement in: {', '.join(performance.weaknesses)}"
                 )
-        
+
         return recommendations
-    
+
     async def _save_report(self, report: ComparisonReport) -> None:
         """Save comparison report to storage"""
         report_file = self.results_path / f"{report.comparison_id}.json"
-        
+
         with open(report_file, "w") as f:
             json.dump(report.to_dict(), f, indent=2)
-    
+
     async def load_comparison_report(
         self, comparison_id: str
     ) -> Optional[ComparisonReport]:
         """Load a saved comparison report"""
         report_file = self.results_path / f"{comparison_id}.json"
-        
+
         if not report_file.exists():
             return None
-        
+
         try:
             with open(report_file, "r") as f:
                 data = json.load(f)
             # Convert back to ComparisonReport object (simplified)
             return data  # Return dict for now
-            
+
         except Exception as e:
             logger.error(f"Failed to load comparison report {comparison_id}: {e}")
             return None

@@ -6,6 +6,7 @@ import py_compile
 import sys
 from pathlib import Path
 
+
 def check_file(file_path):
     """Check if a file compiles without syntax errors."""
     try:
@@ -15,6 +16,7 @@ def check_file(file_path):
         return False, str(e)
     except Exception as e:
         return False, str(e)
+
 
 def main():
     """Check syntax for key files."""
@@ -130,7 +132,7 @@ def main():
 
     print("Checking syntax for key files...")
     print("=" * 60)
-    
+
     errors = []
     for file_path in files_to_check:
         if os.path.exists(file_path):
@@ -144,9 +146,11 @@ def main():
             print(f"? {file_path} (not found)")
 
     print("\n" + "=" * 60)
-    print(f"Total files checked: {len([f for f in files_to_check if os.path.exists(f)])}")
+    print(
+        f"Total files checked: {len([f for f in files_to_check if os.path.exists(f)])}"
+    )
     print(f"Syntax errors found: {len(errors)}")
-    
+
     if errors:
         print("\nFiles with syntax errors:")
         for file_path, error in errors:
@@ -156,5 +160,6 @@ def main():
         print("\nAll files have valid syntax!")
         return 0
 
+
 if __name__ == "__main__":
-    sys.exit(main()) 
+    sys.exit(main())

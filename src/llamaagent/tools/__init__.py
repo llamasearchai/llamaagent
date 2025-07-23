@@ -28,25 +28,25 @@ from .python_repl import PythonREPLTool
 
 class ToolManager:
     """Basic tool manager for managing tool instances and execution."""
-    
+
     def __init__(self) -> None:
         """Initialize the tool manager."""
         self.tools: dict[str, BaseTool] = {}
         self.logger = logging.getLogger(__name__ + ".ToolManager")
-        
+
     def register_tool(self, tool: BaseTool) -> None:
         """Register a tool."""
         self.tools[tool.name] = tool
         self.logger.info(f"Registered tool: {tool.name}")
-    
+
     def get_tool(self, name: str) -> Optional[BaseTool]:
         """Get a tool by name."""
         return self.tools.get(name)
-    
+
     def list_tools(self) -> List[str]:
         """List all registered tool names."""
         return list(self.tools.keys())
-    
+
     async def cleanup(self) -> None:
         """Cleanup tool manager resources."""
         self.tools.clear()
@@ -73,14 +73,9 @@ ToolResult = None
 ToolSecurityLevel = None
 
 try:
-    from .tool_registry import (  # type: ignore
-        Tool as ToolRegistryTool,
-        ToolCategory,
-        ToolExecutionContext,
-        ToolParameter,
-        ToolResult,
-        ToolSecurityLevel,
-    )
+    from .tool_registry import Tool as ToolRegistryTool  # type: ignore
+    from .tool_registry import (ToolCategory, ToolExecutionContext,
+                                ToolParameter, ToolResult, ToolSecurityLevel)
 except (ImportError, SyntaxError) as e:
     logger.debug(f"Failed to import tool_registry: {e}")
     # Ensure variables remain None if import fails
@@ -102,9 +97,7 @@ except (ImportError, SyntaxError):
 PluginFramework = None
 
 try:
-    from .plugin_framework import (  # type: ignore
-        PluginFramework,
-    )
+    from .plugin_framework import PluginFramework  # type: ignore
 except (ImportError, SyntaxError) as e:
     logger.debug(f"Failed to import plugin_framework: {e}")
     # Ensure variables remain None if import fails
@@ -168,30 +161,25 @@ def get_all_tools() -> List[BaseTool]:
 __all__ = [
     # Core classes
     'BaseTool',
-    'Tool', 
+    'Tool',
     'ToolRegistry',
     'ToolManager',
-    
     # Built-in tools
     'CalculatorTool',
     'PythonREPLTool',
-    
     # Registry system (when available)
     'ToolLoader',
     'RegistryToolMetadata',
     'create_loader',
     'get_registry',
-    
     # Tool registry classes (when available)
     'ToolRegistryTool',
     'ToolParameter',
-    'ToolResult', 
+    'ToolResult',
     'ToolCategory',
     'ToolSecurityLevel',
     'ToolExecutionContext',
-    
     # Dynamic loading (when available)
-    
     # Helper functions
     'get_all_tools',
     'create_tool_from_function',

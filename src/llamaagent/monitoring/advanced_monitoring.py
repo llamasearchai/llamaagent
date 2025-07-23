@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class AlertSeverity(Enum):
     """Alert severity levels"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -39,6 +40,7 @@ class AlertSeverity(Enum):
 
 class AlertChannel(Enum):
     """Alert notification channels"""
+
     LOG = "log"
     EMAIL = "email"
     SLACK = "slack"
@@ -48,6 +50,7 @@ class AlertChannel(Enum):
 @dataclass
 class AlertRule:
     """Alert rule configuration"""
+
     metric_name: str
     condition: str
     threshold: float
@@ -60,6 +63,7 @@ class AlertRule:
 @dataclass
 class HealthStatus:
     """Health check status"""
+
     component_name: str
     healthy: bool
     message: str
@@ -97,49 +101,49 @@ class AdvancedMonitoringSystem:
                 condition="greater_than",
                 threshold=0.05,
                 severity=AlertSeverity.WARNING,
-                channels=[AlertChannel.LOG]
+                channels=[AlertChannel.LOG],
             ),
             AlertRule(
                 metric_name="response_time_p95",
                 condition="greater_than",
                 threshold=1000,  # milliseconds
                 severity=AlertSeverity.WARNING,
-                channels=[AlertChannel.LOG]
+                channels=[AlertChannel.LOG],
             ),
             AlertRule(
                 metric_name="memory_usage_percent",
                 condition="greater_than",
                 threshold=90,
                 severity=AlertSeverity.ERROR,
-                channels=[AlertChannel.LOG, AlertChannel.EMAIL]
-            )
+                channels=[AlertChannel.LOG, AlertChannel.EMAIL],
+            ),
         ]
-        
+
         for rule in default_rules:
             self.alert_rules[rule.metric_name] = rule
 
-    async def record_metric(self, metric_name: str, value: float, tags: Optional[Dict[str, str]] = None):
+    async def record_metric(
+        self, metric_name: str, value: float, tags: Optional[Dict[str, str]] = None
+    ):
         """Record a metric value"""
         timestamp = datetime.now()
-        self.metrics_data[metric_name].append({
-            "timestamp": timestamp,
-            "value": value,
-            "tags": tags or {}
-        })
+        self.metrics_data[metric_name].append(
+            {"timestamp": timestamp, "value": value, "tags": tags or {}}
+        )
 
     async def check_health(self, component_name: str) -> HealthStatus:
         """Check health of a component"""
         # This is a placeholder - implement actual health checks
         healthy = True
         message = "Component is healthy"
-        
+
         status = HealthStatus(
             component_name=component_name,
             healthy=healthy,
             message=message,
-            last_check=datetime.now()
+            last_check=datetime.now(),
         )
-        
+
         self.health_status[component_name] = status
         return status
 
@@ -149,21 +153,23 @@ class AdvancedMonitoringSystem:
         unhealthy_components = [
             name for name, status in self.health_status.items() if not status.healthy
         ]
-        
+
         return {
             "healthy": all_healthy,
             "timestamp": datetime.now().isoformat(),
             "total_components": len(self.health_status),
-            "healthy_components": sum(1 for s in self.health_status.values() if s.healthy),
+            "healthy_components": sum(
+                1 for s in self.health_status.values() if s.healthy
+            ),
             "unhealthy_components": unhealthy_components,
             "component_status": {
                 name: {
                     "healthy": status.healthy,
                     "message": status.message,
-                    "last_check": status.last_check.isoformat()
+                    "last_check": status.last_check.isoformat(),
                 }
                 for name, status in self.health_status.items()
-            }
+            },
         }
 
     async def _health_check_loop(self):
@@ -174,7 +180,7 @@ class AdvancedMonitoringSystem:
                 components = ["api", "database", "cache", "queue"]
                 for component in components:
                     await self.check_health(component)
-                
+
                 await asyncio.sleep(30)  # Check every 30 seconds
             except Exception as e:
                 self.logger.error(f"Health check error: {e}")
@@ -186,7 +192,7 @@ class AdvancedMonitoringSystem:
             try:
                 for rule_name, rule in self.alert_rules.items():
                     await self._evaluate_alert_rule(rule)
-                
+
                 await asyncio.sleep(10)  # Evaluate every 10 seconds
             except Exception as e:
                 self.logger.error(f"Alert evaluation error: {e}")
@@ -201,7 +207,7 @@ class AdvancedMonitoringSystem:
         # Get data within evaluation window
         cutoff_time = datetime.now() - timedelta(seconds=rule.evaluation_window)
         recent_data = [d for d in metric_data if d["timestamp"] > cutoff_time]
-        
+
         if not recent_data:
             return
 
@@ -225,7 +231,7 @@ class AdvancedMonitoringSystem:
 
         # Handle alert state
         alert_key = f"{rule.metric_name}_{rule.condition}_{rule.threshold}"
-        
+
         if threshold_exceeded:
             if alert_key not in self.active_alerts:
                 # New alert
@@ -243,7 +249,7 @@ class AdvancedMonitoringSystem:
             f"Alert: {rule.metric_name} is {metric_value:.2f} "
             f"(threshold: {rule.threshold}, condition: {rule.condition})"
         )
-        
+
         for channel in rule.channels:
             if channel == AlertChannel.LOG:
                 if rule.severity == AlertSeverity.CRITICAL:
@@ -254,10 +260,12 @@ class AdvancedMonitoringSystem:
                     self.logger.warning(alert_message)
                 else:
                     self.logger.info(alert_message)
-            
+
             # Implement other channels (email, slack, webhook) as needed
 
-    def get_metrics_summary(self, metric_name: str, window_seconds: int = 300) -> Dict[str, float]:
+    def get_metrics_summary(
+        self, metric_name: str, window_seconds: int = 300
+    ) -> Dict[str, float]:
         """Get summary statistics for a metric"""
         metric_data = self.metrics_data.get(metric_name, deque())
         if not metric_data:
@@ -265,7 +273,7 @@ class AdvancedMonitoringSystem:
 
         cutoff_time = datetime.now() - timedelta(seconds=window_seconds)
         recent_data = [d["value"] for d in metric_data if d["timestamp"] > cutoff_time]
-        
+
         if not recent_data:
             return {}
 
@@ -275,6 +283,10 @@ class AdvancedMonitoringSystem:
             "min": min(recent_data),
             "max": max(recent_data),
             "p50": statistics.median(recent_data),
-            "p95": statistics.quantiles(recent_data, n=20)[18] if len(recent_data) > 20 else max(recent_data),
-            "p99": statistics.quantiles(recent_data, n=100)[98] if len(recent_data) > 100 else max(recent_data)
+            "p95": statistics.quantiles(recent_data, n=20)[18]
+            if len(recent_data) > 20
+            else max(recent_data),
+            "p99": statistics.quantiles(recent_data, n=100)[98]
+            if len(recent_data) > 100
+            else max(recent_data),
         }

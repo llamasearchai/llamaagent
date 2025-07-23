@@ -7,7 +7,9 @@ from llamaagent.tools import ToolRegistry, get_all_tools
 
 async def performance_test():
     """Test LlamaAgent performance on M3 Max."""
-    config = AgentConfig(name="M3MaxAgent", spree_enabled=True, max_iterations=15, temperature=0.7)
+    config = AgentConfig(
+        name="M3MaxAgent", spree_enabled=True, max_iterations=15, temperature=0.7
+    )
 
     registry = ToolRegistry()
     for tool in get_all_tools():

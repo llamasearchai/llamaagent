@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-import os
 import ast
+import os
 import sys
 
 errors = []
 for root, dirs, files in os.walk('.'):
     # Skip hidden directories and __pycache__
     dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
-    
+
     for file in files:
         if file.endswith('.py'):
             filepath = os.path.join(root, file)

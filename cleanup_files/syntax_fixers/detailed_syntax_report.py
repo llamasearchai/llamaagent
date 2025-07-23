@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import os
 import ast
+import os
 import sys
 from pathlib import Path
+
 
 def check_syntax_detailed(file_path):
     """Check if a Python file has valid syntax and return detailed error info."""
@@ -21,21 +22,22 @@ def check_syntax_detailed(file_path):
             for i in range(start, end):
                 prefix = ">>> " if i == e.lineno - 1 else "    "
                 context.append(f"{prefix}{i+1}: {lines[i] if i < len(lines) else ''}")
-        
+
         error_info = {
             'line': e.lineno,
             'msg': e.msg,
             'text': e.text,
             'offset': e.offset,
-            'context': '\n'.join(context)
+            'context': '\n'.join(context),
         }
         return False, error_info, None
     except Exception as e:
         return False, None, str(e)
 
+
 def main():
     src_dir = Path('src')
-    
+
     # Get files with syntax errors from previous check
     error_files = [
         'src/llamaagent/agents/multimodal_reasoning.py',
@@ -79,19 +81,19 @@ def main():
         'src/llamaagent/routing/metrics.py',
         'src/llamaagent/routing/provider_registry.py',
         'src/llamaagent/routing/strategies.py',
-        'src/llamaagent/routing/task_analyzer.py'
+        'src/llamaagent/routing/task_analyzer.py',
     ]
-    
+
     print("DETAILED PYTHON SYNTAX ERROR REPORT")
     print("=" * 80)
     print(f"Found {len(error_files)} files with syntax errors\n")
-    
+
     for i, file_path in enumerate(error_files[:10], 1):  # Show first 10 in detail
         print(f"\n{i}. {file_path}")
         print("-" * 80)
-        
+
         is_valid, error_info, other_error = check_syntax_detailed(file_path)
-        
+
         if error_info:
             print(f"   Line {error_info['line']}: {error_info['msg']}")
             if error_info['text']:
@@ -101,12 +103,13 @@ def main():
             print(f"\n   Context:\n{error_info['context']}")
         elif other_error:
             print(f"   Error: {other_error}")
-        
+
     print("\n" + "=" * 80)
     print("Note: Showing detailed errors for first 10 files only.")
     print("Full list of files with syntax errors:")
     for file_path in error_files:
         print(f"  - {file_path}")
+
 
 if __name__ == "__main__":
     main()

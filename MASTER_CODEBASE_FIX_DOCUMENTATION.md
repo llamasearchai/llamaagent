@@ -86,7 +86,7 @@ if not response:
 # Added type annotations for JSON parsing:
 # Before:
 for violation_data in violations_data:
-    
+
 # After:
 for item in violations_data:
     if isinstance(item, dict):

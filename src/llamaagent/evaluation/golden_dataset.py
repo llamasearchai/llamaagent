@@ -22,7 +22,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 class DatasetType(str, Enum):
     """Types of evaluation datasets"""
-    
+
     REASONING = "reasoning"
     CONVERSATION = "conversation"
     MULTIMODAL = "multimodal"
@@ -36,7 +36,7 @@ class DatasetType(str, Enum):
 
 class DifficultyLevel(str, Enum):
     """Difficulty levels for evaluation tasks"""
-    
+
     TRIVIAL = "trivial"
     EASY = "easy"
     MEDIUM = "medium"
@@ -47,7 +47,7 @@ class DifficultyLevel(str, Enum):
 @dataclass
 class DatasetSample:
     """Single sample in a golden dataset"""
-    
+
     id: str
     input: Union[str, Dict[str, Any]]
     expected_output: Union[str, Dict[str, Any]]
@@ -71,7 +71,7 @@ class DatasetSample:
                 data.get("created_at", datetime.now(timezone.utc).isoformat())
             ),
         )
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -89,7 +89,7 @@ class DatasetSample:
 @dataclass
 class DatasetMetrics:
     """Metrics for dataset quality and characteristics"""
-    
+
     total_samples: int
     difficulty_distribution: Dict[str, int]
     tag_distribution: Dict[str, int]
@@ -98,7 +98,7 @@ class DatasetMetrics:
     completeness_score: float
     consistency_score: float
     overall_quality: float
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -116,7 +116,7 @@ class DatasetMetrics:
 @dataclass
 class DataQualityReport:
     """Comprehensive dataset quality report"""
-    
+
     dataset_name: str
     metrics: DatasetMetrics
     issues: List[Dict[str, Any]]
@@ -135,7 +135,7 @@ class DataQualityReport:
 
 class GoldenDatasetManager:
     """Manages creation, validation, and storage of golden datasets"""
-    
+
     def __init__(self, storage_path: str = "./datasets"):
         """Initialize dataset manager"""
         self.storage_path = Path(storage_path)
@@ -143,7 +143,7 @@ class GoldenDatasetManager:
         # In-memory dataset storage
         self.datasets: Dict[str, List[DatasetSample]] = {}
         self.dataset_metadata: Dict[str, Dict[str, Any]] = {}
-    
+
     async def create_dataset(
         self,
         dataset_name: str,
@@ -154,7 +154,7 @@ class GoldenDatasetManager:
     ) -> None:
         """Create a new dataset"""
         config = config or {}
-        
+
         self.datasets[dataset_name] = []
         self.dataset_metadata[dataset_name] = {
             "name": dataset_name,
@@ -164,7 +164,7 @@ class GoldenDatasetManager:
             "created_at": datetime.now(timezone.utc).isoformat(),
             "config": config
         }
-        
+
         logger.info(f"Created dataset: {dataset_name}")
     async def add_sample(
         self,
@@ -193,15 +193,15 @@ class GoldenDatasetManager:
         self.datasets[dataset_name].append(sample)
         logger.debug(f"Added sample {sample_id} to dataset {dataset_name}")
         return sample_id
-    
+
     def _generate_sample_id(self, dataset_name: str, index: int) -> str:
         """Generate unique sample ID"""
         return f"{dataset_name}_{index:06d}_{int(datetime.now().timestamp()}"
-    
+
     async def load_dataset(self, dataset_name: str) -> None:
         """Load dataset from storage"""
         dataset_path = self.storage_path / f"{dataset_name}.json"
-        
+
         if not dataset_path.exists():
             raise FileNotFoundError(f"Dataset file not found: {dataset_path}")
         with open(dataset_path, "r", encoding="utf-8") as f:
@@ -214,11 +214,11 @@ class GoldenDatasetManager:
         self.datasets[dataset_name] = samples
         self.dataset_metadata[dataset_name] = data.get("metadata", {})
         logger.info(f"Loaded dataset {dataset_name} with {len(samples)} samples")
-    
+
     async def save_dataset(self, dataset_name: str) -> None:
         """Save dataset to storage"""
         dataset_path = self.storage_path / f"{dataset_name}.json"
-        
+
         export_data = await self.export_dataset(dataset_name)
         with open(dataset_path, "w", encoding="utf-8") as f:
             json.dump(export_data, f, indent=2)
@@ -233,7 +233,7 @@ class GoldenDatasetManager:
         if dataset_name not in self.datasets:
             raise ValueError(f"Dataset '{dataset_name}' does not exist")
         samples = self.datasets[dataset_name]
-        
+
         # Apply filters if specified
         if filter_config:
             samples = self._filter_samples(samples, filter_config)
@@ -243,32 +243,32 @@ class GoldenDatasetManager:
             "exported_at": datetime.now(timezone.utc).isoformat(),
             "total_samples": len(samples)
         }
-        
+
         return export_data
-    
+
     def _filter_samples(
         self, samples: List[DatasetSample], filter_config: Dict[str, Any]
     ) -> List[DatasetSample]:
         """Filter samples based on configuration"""
         filtered = samples
-        
+
         # Filter by difficulty
         if "difficulty" in filter_config:
             target_difficulty = filter_config["difficulty"]
             filtered = [s for s in filtered if s.difficulty.value == target_difficulty]
-        
+
         # Filter by tags
         if "tags" in filter_config:
             required_tags = set(filter_config["tags"])
             filtered = [s for s in filtered if required_tags.issubset(set(s.tags)]
-        
+
         # Filter by quality score
         if "min_quality" in filter_config:
             min_quality = filter_config["min_quality"]
             filtered = [s for s in filtered if s.quality_score >= min_quality]
-        
+
         return filtered
-    
+
     async def get_dataset_stats(self, dataset_name: str) -> Dict[str, Any]:
         """Get comprehensive dataset statistics"""
         if dataset_name not in self.datasets:
@@ -281,7 +281,7 @@ class GoldenDatasetManager:
             "metrics": metrics.to_dict(),
             "metadata": self.dataset_metadata.get(dataset_name, {})
         }
-    
+
     async def _calculate_dataset_metrics(self, samples: List[DatasetSample]) -> DatasetMetrics:
         """Calculate comprehensive dataset metrics"""
         if not samples:
@@ -301,13 +301,13 @@ class GoldenDatasetManager:
         difficulty_dist = defaultdict(int)
         for sample in samples:
             difficulty_dist[sample.difficulty.value] += 1
-        
+
         # Tag distribution
         tag_dist = defaultdict(int)
         for sample in samples:
             for tag in sample.tags:
                 tag_dist[tag] += 1
-        
+
         # Quality score statistics
         quality_scores = [sample.quality_score for sample in samples]
         quality_stats = {
@@ -317,7 +317,7 @@ class GoldenDatasetManager:
             "max": np.max(quality_scores),
             "median": np.median(quality_scores)
         }
-        
+
         # Calculate diversity score
         diversity_score = await self._calculate_diversity_score(samples)
         # Calculate completeness score
@@ -326,7 +326,7 @@ class GoldenDatasetManager:
         consistency_score = await self._calculate_consistency_score(samples)
         # Overall quality
         overall_quality = (diversity_score + completeness_score + consistency_score) / 3
-        
+
         return DatasetMetrics(
             total_samples=total_samples,
             difficulty_distribution=dict(difficulty_dist),
@@ -337,16 +337,16 @@ class GoldenDatasetManager:
             consistency_score=consistency_score,
             overall_quality=overall_quality
         )
-    
+
     async def _calculate_diversity_score(self, samples: List[DatasetSample]) -> float:
         """Calculate diversity score based on input/output variety"""
         if len(samples) < 2:
             return 1.0
-        
+
         # Simple diversity metric based on unique inputs/outputs
         unique_inputs = set()
         unique_outputs = set()
-        
+
         for sample in samples:
             input_str = str(sample.input) if isinstance(sample.input, (str, int, float) else str(sample.input)
             output_str = str(sample.expected_output) if isinstance(sample.expected_output, (str, int, float) else str(sample.expected_output)
@@ -355,12 +355,12 @@ class GoldenDatasetManager:
         input_diversity = len(unique_inputs) / len(samples)
         output_diversity = len(unique_outputs) / len(samples)
         return (input_diversity + output_diversity) / 2
-    
+
     async def _calculate_completeness_score(self, samples: List[DatasetSample]) -> float:
         """Calculate completeness score based on required fields"""
         if not samples:
             return 0.0
-        
+
         complete_samples = 0
         for sample in samples:
             # Check if sample has all required fields
@@ -369,20 +369,20 @@ class GoldenDatasetManager:
             has_metadata = bool(sample.metadata)
             if has_input and has_output and has_metadata:
                 complete_samples += 1
-        
+
         return complete_samples / len(samples)
     async def _calculate_consistency_score(self, samples: List[DatasetSample]) -> float:
         """Calculate consistency score based on format and structure"""
         if len(samples) < 2:
             return 1.0
-        
+
         # Check input type consistency
         input_types = [type(sample.input).__name__ for sample in samples]
         type_consistency = len(set(input_types) / len(input_types)
         # Check structure consistency for dict inputs
         dict_inputs = [sample.input for sample in samples if isinstance(sample.input, dict)]
         structure_consistency = 1.0
-        
+
         if dict_inputs:
             key_sets = [set(d.keys() for d in dict_inputs]
             if key_sets:
@@ -390,7 +390,7 @@ class GoldenDatasetManager:
                 avg_keys = np.mean([len(keys) for keys in key_sets])
                 structure_consistency = len(common_keys) / max(1, avg_keys)
         return (type_consistency + structure_consistency) / 2
-    
+
     async def validate_dataset(self, dataset_name: str) -> DataQualityReport:
         """Comprehensive dataset validation"""
         if dataset_name not in self.datasets:
@@ -398,7 +398,7 @@ class GoldenDatasetManager:
         samples = self.datasets[dataset_name]
         issues: List[Dict[str, Any]] = []
         recommendations: List[str] = []
-        
+
         # Calculate metrics
         metrics = await self._calculate_dataset_metrics(samples)
         # Quality checks
@@ -411,7 +411,7 @@ class GoldenDatasetManager:
             recommendations.append()
                 "Add more samples to improve statistical significance"
             )
-        
+
         if metrics.diversity_score < 0.7:
             issues.append({
                 "type": "diversity",
@@ -452,15 +452,15 @@ class GoldenDatasetManager:
             raise ValueError(f"Dataset '{dataset_name}' does not exist")
         config = generation_config or {}
         samples = self.datasets[dataset_name]
-        
+
         if not samples:
             logger.warning(f"No existing samples in {dataset_name} for pattern analysis")
             return []
-        
+
         # Analyze existing patterns
         patterns = await self._analyze_dataset_patterns(samples)
         generated_ids: List[str] = []
-        
+
         for i in range(count):
             try:
                 # Generate a new sample based on patterns
@@ -476,17 +476,17 @@ class GoldenDatasetManager:
                     new_sample.get("tags", []),
                     DifficultyLevel(new_sample.get("difficulty", DifficultyLevel.MEDIUM.value)
                 )
-                
+
                 generated_ids.append(sample_id)
             except Exception as e:
                 logger.error(f"Failed to generate sample {i}: {e}")
                 continue
-        
+
         logger.info(
             f"Generated {len(generated_ids)} synthetic samples for {dataset_name}"
         )
         return generated_ids
-    
+
     async def _analyze_dataset_patterns(self, samples: List[DatasetSample]) -> Dict[str, Any]:
         """Analyze patterns in existing dataset for synthetic generation"""
         patterns = {
@@ -496,7 +496,7 @@ class GoldenDatasetManager:
             "tag_patterns": defaultdict(int),
             "structure_patterns": {}
         }
-        
+
         for sample in samples:
             # Analyze input patterns
             if isinstance(sample.input, str):
@@ -511,7 +511,7 @@ class GoldenDatasetManager:
                     "keys": list(sample.input.keys(),
                     "structure": type(sample.input).__name__
                 })
-            
+
             # Analyze output patterns
             if isinstance(sample.expected_output, str):
                 patterns["output_patterns"].append({
@@ -525,14 +525,14 @@ class GoldenDatasetManager:
                     "keys": list(sample.expected_output.keys(),
                     "structure": type(sample.expected_output).__name__
                 })
-            
+
             # Difficulty and tag patterns
             patterns["difficulty_patterns"][sample.difficulty.value] += 1
             for tag in sample.tags:
                 patterns["tag_patterns"][tag] += 1
-        
+
         return patterns
-    
+
     async def _generate_sample_from_patterns(
         self,
         dataset_name: str,
@@ -542,12 +542,12 @@ class GoldenDatasetManager:
         """Generate a new sample based on existing patterns"""
         # This would typically use an LLM to generate new samples
         # For now, we'll create a simplified template-based approach
-        
+
         # Select difficulty level
         difficulty_levels = list(patterns["difficulty_patterns"].keys()
         if not difficulty_levels:
             difficulty_levels = ["medium"]
-        
+
         difficulty = random.choice(difficulty_levels)
         # Select tags
         available_tags = list(patterns["tag_patterns"].keys())
@@ -556,7 +556,7 @@ class GoldenDatasetManager:
             if available_tags
             else []
         )
-        
+
         # Generate sample (simplified - would use LLM in practice)
         sample = {
             "input": f"Sample input for {dataset_name} with difficulty {difficulty}",
@@ -570,5 +570,5 @@ class GoldenDatasetManager:
             "difficulty": difficulty,
             "quality_score": 0.8  # Slightly lower for synthetic samples
         }
-        
+
         return sample

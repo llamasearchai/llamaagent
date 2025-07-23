@@ -20,7 +20,8 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Awaitable, Callable, Deque, Dict, List, Optional, Set, Type
+from typing import (Any, Awaitable, Callable, Deque, Dict, List, Optional, Set,
+                    Type)
 
 import jwt
 from fastapi import FastAPI, HTTPException, Request, Response

@@ -8,6 +8,7 @@ Author: Nik Jois <nikjois@llamasearch.ai>
 
 # Suppress SSL warnings that occur with certain Python/SSL configurations
 import warnings
+
 warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
 
 import asyncio

@@ -92,7 +92,7 @@ class LearningSession:
     metadata: Dict[str, Any] = field(default_factory=dict)
 class DataCollectionAgent:
     """Agent for collecting training data from multiple environments."""
-    
+
     def __init__(self):
         self.collected_examples: List[TrainingExample] = []
         self.collection_stats: Dict[str, Any] = {
@@ -100,24 +100,24 @@ class DataCollectionAgent:
             "environments_covered": set(),
             "quality_distribution": {"high": 0, "medium": 0, "low": 0}
         }
-    
+
     async def collect_from_code_repositories(self, repo_paths: List[str]) -> List[TrainingExample]:
         """Collect training data from code repositories."""
         examples: List[TrainingExample] = []
-        
+
         for repo_path in repo_paths:
             try:
                 repo_dir = Path(repo_path)
                 if not repo_dir.exists():
                     continue
-                
+
                 # Collect Python files
                 py_files = list(repo_dir.rglob("*.py"))
                 for py_file in py_files[:10]:  # Limit for demo
                     try:
                         with open(py_file, 'r', encoding='utf-8') as f:
                             content = f.read()
-                        
+
                         if len(content) > 100:  # Skip very small files
                             example = TrainingExample(
                                 input_data=f"Analyze this Python code:\n{content[:500]}...",
@@ -135,11 +135,11 @@ class DataCollectionAgent:
         self.collection_stats["total_collected"] += len(examples)
         self.collection_stats["environments_covered"].add(DataEnvironment.CODE_REPOSITORY)
         return examples
-    
+
     async def collect_from_web_interactions(self, urls: List[str]) -> List[TrainingExample]:
         """Collect training data from web interactions."""
         examples: List[TrainingExample] = []
-        
+
         # Simulate web interaction tasks
         web_tasks = [
             ("Navigate to documentation", "Successfully accessed documentation"),
@@ -147,7 +147,7 @@ class DataCollectionAgent:
             ("Extract key information", "Extracted important details"),
             ("Summarize content", "Created concise summary")
         ]
-        
+
         for url in urls[:5]:  # Limit for demo
             for task, expected in web_tasks:
                 example = TrainingExample(
@@ -162,11 +162,11 @@ class DataCollectionAgent:
         self.collection_stats["total_collected"] += len(examples)
         self.collection_stats["environments_covered"].add(DataEnvironment.WEB_BROWSER)
         return examples
-    
+
     async def collect_from_computer_interactions(self) -> List[TrainingExample]:
         """Collect training data from computer desktop interactions."""
         examples: List[TrainingExample] = []
-        
+
         # Simulate computer interaction tasks
         computer_tasks = [
             ("Open a text editor and create a new document", "Successfully created new document"),
@@ -174,7 +174,7 @@ class DataCollectionAgent:
             ("Use command line tools for system tasks", "Executed commands successfully"),
             ("Manage application windows and workspaces", "Organized workspace effectively")
         ]
-        
+
         for task, expected in computer_tasks:
             example = TrainingExample(
                 input_data=f"Computer task: {task}",
@@ -192,14 +192,14 @@ class DataCollectionAgent:
 
 class SupervisedFineTuningEngine:
     """Engine for supervised fine-tuning of agent models."""
-    
+
     def __init__(self):
         self.training_history: List[LearningSession] = []
         self.model_checkpoints: Dict[str, Any] = {}
-    
+
     async def train_model(self, training_data: List[TrainingExample], epochs: int = 3) -> LearningSession:
         """Perform supervised fine-tuning."""
-        
+
         session_id = f"sft_{int(time.time())}"
         session = LearningSession(
             session_id=session_id,
@@ -209,14 +209,14 @@ class SupervisedFineTuningEngine:
             training_examples=training_data
         )
         start_time = time.time()
-        
+
         try:
             # Simulate fine-tuning process
             logger.info(f"Starting SFT with {len(training_data)} examples")
-            
+
             # Record baseline performance
             session.performance_before = await self._evaluate_model()
-            
+
             # Simulate training epochs
             for epoch in range(epochs):
                 logger.info(f"Training epoch {epoch + 1}/{epochs}")
@@ -227,12 +227,12 @@ class SupervisedFineTuningEngine:
                     await self._process_training_batch(batch)
                 # Simulate validation
                 await asyncio.sleep(0.1)  # Simulate processing time
-            
+
             # Record final performance
             session.performance_after = await self._evaluate_model()
             session.duration = time.time() - start_time
             session.success = True
-            
+
             logger.info(f"SFT completed in {session.duration:.2f}s")
         except Exception as e:
             logger.error(f"SFT failed: {e}")
@@ -241,7 +241,7 @@ class SupervisedFineTuningEngine:
         finally:
             self.training_history.append(session)
         return session
-    
+
     async def _process_training_batch(self, batch: List[TrainingExample]) -> None:
         """Process a batch of training examples."""
         # Simulate batch processing
@@ -259,7 +259,7 @@ class SupervisedFineTuningEngine:
             precision = random.uniform(0.65, 0.9)
             recall = random.uniform(0.6, 0.88)
         f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-        
+
         return PerformanceMetrics(
             accuracy=accuracy,
             precision=precision,
@@ -272,15 +272,15 @@ class SupervisedFineTuningEngine:
         )
 class ReinforcementLearningEngine:
     """Engine for reinforcement learning and RLHF."""
-    
+
     def __init__(self):
         self.reward_model = RewardModel()
         self.policy_optimizer = PolicyOptimizer()
         self.training_history: List[LearningSession] = []
-    
+
     async def train_with_feedback(self, interactions: List[Dict[str, Any]], num_iterations: int = 5) -> LearningSession:
         """Train using reinforcement learning from human feedback."""
-        
+
         session_id = f"rlhf_{int(time.time()}"
         session = LearningSession(
             session_id=session_id,
@@ -290,10 +290,10 @@ class ReinforcementLearningEngine:
             training_examples=[]
         )
         start_time = time.time()
-        
+
         try:
             logger.info(f"Starting RLHF with {len(interactions)} feedback examples")
-            
+
             # Train reward model
             await self.reward_model.train(interactions)
             # Policy optimization
@@ -301,17 +301,17 @@ class ReinforcementLearningEngine:
                 logger.info(f"RLHF iteration {iteration + 1}/{num_iterations}")
                 # Generate responses
                 responses = await self._generate_responses()
-                
+
                 # Get rewards from reward model
                 rewards = await self.reward_model.score_responses(responses)
                 # Update policy
                 await self.policy_optimizer.update(responses, rewards)
                 await asyncio.sleep(0.1)  # Simulate processing time
-            
+
             session.performance_after = await self._evaluate_rl_performance()
             session.duration = time.time() - start_time
             session.success = True
-            
+
             logger.info(f"RLHF completed in {session.duration:.2f}s")
         except Exception as e:
             logger.error(f"RLHF failed: {e}")
@@ -320,12 +320,12 @@ class ReinforcementLearningEngine:
         finally:
             self.training_history.append(session)
         return session
-    
+
     async def _generate_responses(self) -> List[str]:
         """Generate responses for policy optimization."""
         # Simulate response generation
         return [f"Response {i}" for i in range(10)]
-    
+
     async def _evaluate_rl_performance(self) -> PerformanceMetrics:
         """Evaluate reinforcement learning performance."""
         # Simulate RL evaluation
@@ -342,12 +342,12 @@ class ReinforcementLearningEngine:
         )
 class RewardModel:
     """Reward model for RLHF training."""
-    
+
     async def train(self, interactions: List[Dict[str, Any]]) -> None:
         """Train the reward model on human feedback."""
         logger.info(f"Training reward model with {len(interactions)} interactions")
         await asyncio.sleep(0.2)  # Simulate training
-    
+
     async def score_responses(self, responses: List[str]) -> List[float]:
         """Score responses using the reward model."""
         # Simulate scoring
@@ -360,7 +360,7 @@ class RewardModel:
 
 class PolicyOptimizer:
     """Policy optimizer for RL training."""
-    
+
     async def update(self, responses: List[str], rewards: List[float]) -> None:
         """Update policy based on responses and rewards."""
         logger.info(f"Updating policy with {len(responses)} responses")
@@ -369,11 +369,11 @@ class PolicyOptimizer:
 
 class PerformanceTracker:
     """Tracks performance metrics over time."""
-    
+
     def __init__(self):
         self.metrics_history: List[PerformanceMetrics] = []
         self.baseline_metrics: Optional[PerformanceMetrics] = None
-    
+
     async def record_metrics(self, metrics: PerformanceMetrics) -> None:
         """Record performance metrics."""
         # Calculate improvement rate
@@ -382,18 +382,18 @@ class PerformanceTracker:
                 metrics.improvement_rate = (
                     metrics.accuracy - self.baseline_metrics.accuracy
                 ) / self.baseline_metrics.accuracy
-        
+
         self.metrics_history.append(metrics)
         if not self.baseline_metrics:
             self.baseline_metrics = metrics
-    
+
     def get_improvement_trends(self) -> Dict[str, float]:
         """Get improvement trends over time."""
         if len(self.metrics_history) < 2:
             return {}
-        
+
         recent_metrics = self.metrics_history[-5:]  # Last 5 measurements
-        
+
         if np:
             avg_accuracy = np.mean([m.accuracy for m in recent_metrics])
             avg_completion_rate = np.mean([m.task_completion_rate for m in recent_metrics])
@@ -412,28 +412,28 @@ class PerformanceTracker:
 
 class AdaptiveLearningSystem:
     """Main adaptive learning system coordinating all components."""
-    
+
     def __init__(self):
         self.data_collector = DataCollectionAgent()
         self.sft_engine = SupervisedFineTuningEngine()
         self.rl_engine = ReinforcementLearningEngine()
         self.performance_tracker = PerformanceTracker()
         self.learning_pipeline_active = False
-    
+
     async def run_comprehensive_learning(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Run comprehensive learning pipeline with multi-environment data collection."""
-        
+
         if self.learning_pipeline_active:
             raise RuntimeError("Learning pipeline already active")
         self.learning_pipeline_active = True
         pipeline_start = time.time()
-        
+
         try:
             logger.info("Starting comprehensive adaptive learning pipeline")
             # Phase 1: Multi-environment data collection
             logger.info("Phase 1: Multi-environment data collection")
             all_examples: List[TrainingExample] = []
-            
+
             # Collect from different environments
             if config.get("collect_code_data", True):
                 repo_paths = config.get("repo_paths", [])
@@ -451,12 +451,12 @@ class AdaptiveLearningSystem:
             # Phase 2: Data filtering and quality assessment
             logger.info("Phase 2: Data filtering and quality assessment")
             high_quality_examples = [ex for ex in all_examples if ex.quality_score >= 0.8]
-            
+
             # Phase 3: Supervised fine-tuning
             if config.get("enable_sft", True) and high_quality_examples:
                 logger.info("Phase 3: Supervised fine-tuning")
                 sft_session = await self.sft_engine.train_model(
-                    high_quality_examples, 
+                    high_quality_examples,
                     epochs=config.get("sft_epochs", 3)
                 )
                 if sft_session.performance_after:
@@ -474,9 +474,9 @@ class AdaptiveLearningSystem:
             # Phase 5: Performance analysis and insights
             logger.info("Phase 5: Performance analysis and insights")
             insights = await self.get_learning_insights()
-            
+
             total_time = time.time() - pipeline_start
-            
+
             return {
                 "success": True,
                 "total_examples_collected": len(all_examples),
@@ -486,7 +486,7 @@ class AdaptiveLearningSystem:
                 "insights": insights,
                 "collection_stats": self.data_collector.collection_stats
             }
-            
+
         except Exception as e:
             logger.error(f"Learning pipeline failed: {e}")
             return {
@@ -494,14 +494,14 @@ class AdaptiveLearningSystem:
                 "error": str(e),
                 "total_time": time.time() - pipeline_start
             }
-        
+
         finally:
             self.learning_pipeline_active = False
-    
+
     async def get_learning_insights(self) -> Dict[str, Any]:
         """Get insights from learning history and performance trends."""
         trends = self.performance_tracker.get_improvement_trends()
-        
+
         insights = {
             "performance_trends": trends,
             "total_learning_sessions": len(self.sft_engine.training_history) + len(self.rl_engine.training_history),
@@ -512,9 +512,9 @@ class AdaptiveLearningSystem:
                 "Monitor performance trends for optimal learning strategies"
             ]
         }
-        
+
         return insights
-    
+
     def get_system_status(self) -> Dict[str, Any]:
         """Get current system status."""
         return {

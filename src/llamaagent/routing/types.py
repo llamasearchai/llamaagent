@@ -44,4 +44,4 @@ class RoutingConfig:
     timeout: float = 30.0
     cost_threshold: Optional[float] = None
     quality_threshold: Optional[float] = None
-    load_balance_weights: Dict[str, float] = field(default_factory=dict) 
+    load_balance_weights: Dict[str, float] = field(default_factory=dict)

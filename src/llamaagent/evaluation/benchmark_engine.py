@@ -30,7 +30,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 class BenchmarkType(str, Enum):
     """Types of benchmarks"""
-    
+
     ACCURACY = "accuracy"
     LATENCY = "latency"
     THROUGHPUT = "throughput"
@@ -43,7 +43,7 @@ class BenchmarkType(str, Enum):
 
 class MetricType(str, Enum):
     """Types of metrics to collect"""
-    
+
     ACCURACY_SCORE = "accuracy_score"
     F1_SCORE = "f1_score"
     BLEU_SCORE = "bleu_score"
@@ -59,7 +59,7 @@ class MetricType(str, Enum):
 @dataclass
 class BenchmarkTask:
     """Individual benchmark task"""
-    
+
     id: str
     name: str
     description: str
@@ -71,7 +71,7 @@ class BenchmarkTask:
 @dataclass
 class TaskResult:
     """Result of a single benchmark task"""
-    
+
     task_id: str
     success: bool
     actual_output: str = ""
@@ -82,7 +82,7 @@ class TaskResult:
 @dataclass
 class BenchmarkResult:
     """Complete benchmark execution result"""
-    
+
     benchmark_id: str
     benchmark_name: str
     model_name: str
@@ -102,7 +102,7 @@ class BenchmarkResult:
     def execution_time(self) -> float:
         """Total execution time in seconds"""
         return (self.completed_at - self.started_at).total_seconds()
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
@@ -125,7 +125,7 @@ class BenchmarkResult:
 @dataclass
 class BenchmarkSuite:
     """Collection of related benchmarks"""
-    
+
     suite_id: str
     name: str
     description: str
@@ -134,7 +134,7 @@ class BenchmarkSuite:
     metadata: Dict[str, Any] = field(default_factory=dict)
 class BenchmarkEngine:
     """Advanced benchmark execution engine"""
-    
+
     def __init__(
         self,
         dataset_manager: Optional[Any] = None,
@@ -145,14 +145,14 @@ class BenchmarkEngine:
             self.dataset_manager = GoldenDatasetManager()
         else:
             self.dataset_manager = dataset_manager
-            
+
         self.results_path = results_path or Path("./benchmark_results")
         self.results_path.mkdir(parents=True, exist_ok=True)
         # Registry
         self.benchmark_registry: Dict[str, List[BenchmarkTask]] = {}
         self.suite_registry: Dict[str, BenchmarkSuite] = {}
         self.model_registry: Dict[str, Callable[..., Any]] = {}
-        
+
         # Metrics calculators
         self.metric_calculators: Dict[MetricType, Callable[..., Any]] = {
             MetricType.ACCURACY_SCORE: self._calculate_accuracy,
@@ -160,10 +160,10 @@ class BenchmarkEngine:
             MetricType.BLEU_SCORE: self._calculate_bleu_score,
             MetricType.ROUGE_SCORE: self._calculate_rouge_score,
         }
-        
+
         # Results cache
         self.results_cache: Dict[str, BenchmarkResult] = {}
-    
+
     def register_model(self, model_name: str, model_function: Callable[..., Any]) -> None:
         """Register a model for benchmarking"""
         self.model_registry[model_name] = model_function
@@ -174,7 +174,7 @@ class BenchmarkEngine:
         """Register a new benchmark"""
         self.benchmark_registry[benchmark_id] = tasks
         logger.info(f"Registered benchmark: {benchmark_id} with {len(tasks)} tasks")
-    
+
     async def create_benchmark_from_dataset(
         self,
         benchmark_id: str,
@@ -194,7 +194,7 @@ class BenchmarkEngine:
         samples = self.dataset_manager.datasets[dataset_name]
         if sample_limit:
             samples = samples[:sample_limit]
-        
+
         tasks: List[BenchmarkTask] = []
         for sample in samples:
             task = BenchmarkTask(
@@ -221,13 +221,13 @@ class BenchmarkEngine:
         tasks = self.benchmark_registry[benchmark_id]
         model_function = self.model_registry[model_name]
         config = config or {}
-        
+
         logger.info(f"Starting benchmark {benchmark_id} for model {model_name}")
         started_at = datetime.now(timezone.utc)
         task_results: List[TaskResult] = []
         successful_tasks = 0
         failed_tasks = 0
-        
+
         # Execute tasks
         for task in tasks:
             try:
@@ -237,7 +237,7 @@ class BenchmarkEngine:
                     successful_tasks += 1
                 else:
                     failed_tasks += 1
-                    
+
             except Exception as e:
                 logger.error(f"Task {task.id} failed with error: {e}")
                 failed_result = TaskResult(
@@ -248,7 +248,7 @@ class BenchmarkEngine:
                 )
                 task_results.append(failed_result)
                 failed_tasks += 1
-        
+
         completed_at = datetime.now(timezone.utc)
         # Calculate overall metrics
         overall_metrics = await self._calculate_overall_metrics(task_results)
@@ -268,7 +268,7 @@ class BenchmarkEngine:
             overall_metrics=overall_metrics,
             summary_stats=summary_stats
         )
-        
+
         # Cache and save result
         self.results_cache[result.benchmark_id] = result
         await self._save_result(result)
@@ -276,7 +276,7 @@ class BenchmarkEngine:
             f"Completed benchmark {benchmark_id}: {successful_tasks}/{len(tasks)} tasks successful"
         )
         return result
-    
+
     async def run_benchmark_suite(
         self, suite_id: str, model_name: str, config: Optional[Dict[str, Any]] = None
     ) -> Dict[str, BenchmarkResult]:
@@ -285,11 +285,11 @@ class BenchmarkEngine:
             raise ValueError(f"Benchmark suite {suite_id} not found")
         suite = self.suite_registry[suite_id]
         results: Dict[str, BenchmarkResult] = {}
-        
+
         logger.info(
             f"Running benchmark suite {suite_id} with {len(suite.benchmarks)} benchmarks"
         )
-        
+
         for benchmark_id in suite.benchmarks:
             try:
                 result = await self.run_benchmark(benchmark_id, model_name, config)
@@ -297,15 +297,15 @@ class BenchmarkEngine:
             except Exception as e:
                 logger.error(f"Failed to run benchmark {benchmark_id}: {e}")
                 continue
-        
+
         return results
-    
+
     async def compare_models(
         self, benchmark_id: str, model_names: List[str], config: Optional[Dict[str, Any]] = None
     ) -> Dict[str, BenchmarkResult]:
         """Compare multiple models on the same benchmark"""
         results: Dict[str, BenchmarkResult] = {}
-        
+
         for model_name in model_names:
             try:
                 result = await self.run_benchmark(benchmark_id, model_name, config)
@@ -313,9 +313,9 @@ class BenchmarkEngine:
             except Exception as e:
                 logger.error(f"Failed to benchmark model {model_name}: {e}")
                 continue
-        
+
         return results
-    
+
     async def get_benchmark_history(
         self,
         benchmark_id: Optional[str] = None,
@@ -325,7 +325,7 @@ class BenchmarkEngine:
         """Get benchmark execution history"""
         # Load results from storage
         all_results: List[Dict[str, Any]] = []
-        
+
         for result_file in self.results_path.glob("*.json"):
             try:
                 with open(result_file, "r") as f:
@@ -335,31 +335,31 @@ class BenchmarkEngine:
                     continue
                 if model_name and data.get("model_name") != model_name:
                     continue
-                
+
                 all_results.append(data)
             except Exception as e:
                 logger.warning(f"Failed to load result file {result_file}: {e}")
                 continue
-        
+
         # Sort by timestamp and limit
         all_results.sort(key=lambda x: x.get("started_at", ""), reverse=True)
         return all_results[:limit]
-    
+
     async def _execute_task(
         self, task: BenchmarkTask, model_function: Callable[..., Any], config: Dict[str, Any]
     ) -> TaskResult:
         """Execute a single benchmark task"""
         start_time = time.time()
-        
+
         try:
             # Execute model with timeout
             actual_output = await asyncio.wait_for(
                 model_function(task.input_data, **config),
                 timeout=task.timeout_seconds
             )
-            
+
             execution_time = time.time() - start_time
-            
+
             # Calculate metrics
             metrics: Dict[str, float] = {}
             for metric_type in task.metrics_to_collect:
@@ -373,7 +373,7 @@ class BenchmarkEngine:
                         logger.warning(f"Failed to calculate {metric_type.value}: {e}")
             # Add execution time
             metrics["execution_time"] = execution_time
-            
+
             return TaskResult(
                 task_id=task.id,
                 success=True,
@@ -382,7 +382,7 @@ class BenchmarkEngine:
                 metrics=metrics,
                 metadata=task.metadata
             )
-            
+
         except asyncio.TimeoutError:
             return TaskResult(
                 task_id=task.id,
@@ -397,18 +397,18 @@ class BenchmarkEngine:
                 error_message=str(e),
                 execution_time=time.time() - start_time
             )
-    
+
     async def _calculate_overall_metrics(
         self, task_results: List[TaskResult]
     ) -> Dict[str, Any]:
         """Calculate overall metrics from task results"""
         if not task_results:
             return {}
-        
+
         successful_results = [r for r in task_results if r.success]
-        
+
         overall_metrics: Dict[str, Any] = {}
-        
+
         # Success rate
         overall_metrics["success_rate"] = len(successful_results) / len(task_results)
         # Average execution time
@@ -431,24 +431,24 @@ class BenchmarkEngine:
                     overall_metrics[f"std_{metric_key}"] = (
                         statistics.stdev(values) if len(values) > 1 else 0.0
                     )
-        
+
         return overall_metrics
-    
+
     async def _generate_summary_stats(
         self, task_results: List[TaskResult]
     ) -> Dict[str, Any]:
         """Generate comprehensive summary statistics"""
         if not task_results:
             return {}
-        
+
         successful_results = [r for r in task_results if r.success]
-        
+
         stats = {
             "total_tasks": len(task_results),
             "successful_tasks": len(successful_results),
             "failed_tasks": len(task_results) - len(successful_results),
         }
-        
+
         if successful_results:
             execution_times = [r.execution_time for r in successful_results]
             stats["execution_time_stats"] = {
@@ -464,7 +464,7 @@ class BenchmarkEngine:
                 "p95": np.percentile(execution_times, 95),
                 "p99": np.percentile(execution_times, 99),
             }
-            
+
             # Error analysis
             error_messages = [
                 r.error_message
@@ -474,74 +474,74 @@ class BenchmarkEngine:
             error_counts = defaultdict(int)
             for error in error_messages:
                 error_counts[error] += 1
-            
+
             stats["error_analysis"] = dict(error_counts)
         return stats
-    
+
     async def _calculate_accuracy(self, actual: Any, expected: Any) -> float:
         """Calculate accuracy score"""
         if isinstance(actual, str) and isinstance(expected, str):
             return 1.0 if actual.strip().lower() == expected.strip().lower() else 0.0
         return 1.0 if actual == expected else 0.0
-    
+
     async def _calculate_f1_score(self, actual: Any, expected: Any) -> float:
         """Calculate F1 score for text comparison"""
         if isinstance(actual, str) and isinstance(expected, str):
             actual_tokens = set(actual.lower().split())
             expected_tokens = set(expected.lower().split())
-            
+
             if not expected_tokens:
                 return 1.0 if not actual_tokens else 0.0
-            
+
             intersection = actual_tokens & expected_tokens
             precision = len(intersection) / len(actual_tokens) if actual_tokens else 0
             recall = len(intersection) / len(expected_tokens)
             if precision + recall == 0:
                 return 0.0
-            
+
             return 2 * (precision * recall) / (precision + recall)
-        
+
         return 0.0
-    
+
     async def _calculate_bleu_score(self, actual: Any, expected: Any) -> float:
         """Calculate BLEU score (simplified version)"""
         if not isinstance(actual, str) or not isinstance(expected, str):
             return 0.0
-        
+
         actual_words = actual.lower().split()
         expected_words = expected.lower().split()
-        
+
         if not expected_words:
             return 1.0 if not actual_words else 0.0
-        
+
         # Simplified BLEU calculation (1-gram precision)
         matches = sum(1 for word in actual_words if word in expected_words)
         precision = matches / len(actual_words) if actual_words else 0
-        
+
         # Apply brevity penalty
         brevity_penalty = min(1.0, len(actual_words) / len(expected_words)
         return precision * brevity_penalty
-    
+
     async def _calculate_rouge_score(self, actual: Any, expected: Any) -> float:
         """Calculate ROUGE score (simplified version)"""
         if not isinstance(actual, str) or not isinstance(expected, str):
             return 0.0
-        
+
         actual_words = set(actual.lower().split()
         expected_words = set(expected.lower().split()
-        
+
         if not expected_words:
             return 1.0 if not actual_words else 0.0
-        
+
         intersection = actual_words & expected_words
         return len(intersection) / len(expected_words)
     async def _save_result(self, result: BenchmarkResult) -> None:
         """Save benchmark result to storage"""
         result_file = self.results_path / f"{result.benchmark_id}.json"
-        
+
         with open(result_file, "w") as f:
             json.dump(result.to_dict(), f, indent=2)
-    
+
     def create_suite(
         self,
         suite_id: str,

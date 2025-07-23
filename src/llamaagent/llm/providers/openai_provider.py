@@ -7,17 +7,17 @@ from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
-# Import the base provider
-from .base_provider import BaseLLMProvider
-
 # Use relative import to avoid circular imports
 from ...types import LLMMessage, LLMResponse
+# Import the base provider
+from .base_provider import BaseLLMProvider
 
 # Try to import optional dependencies
 _openai_module = None
 _openai_status = {"available": False}
 try:
     import openai
+
     _openai_module = openai
     _openai_status["available"] = True
 except ImportError:
@@ -40,7 +40,7 @@ class OpenAIProvider(BaseLLMProvider):
         super().__init__(model=model, **kwargs)
         self.api_key = api_key
         self.model = model
-        
+
         # Check if OpenAI is available when using real implementation
         if not _OPENAI_AVAILABLE:
             logger.warning("OpenAI library not installed. Using mock implementation.")
@@ -56,7 +56,7 @@ class OpenAIProvider(BaseLLMProvider):
         """Complete a chat conversation."""
         # Placeholder implementation for now
         content = f"OpenAI provider response (mock)"
-        
+
         return LLMResponse(
             content=content,
             model=model or self.model,

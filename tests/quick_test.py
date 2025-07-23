@@ -70,7 +70,9 @@ async def test_math_problems(agent):
         results.append(
             {
                 "task": task,
-                "response": response.content[:200] + "..." if len(response.content) > 200 else response.content,
+                "response": response.content[:200] + "..."
+                if len(response.content) > 200
+                else response.content,
                 "success": response.success,
                 "time": response.execution_time,
             }
@@ -95,7 +97,12 @@ async def test_code_generation(agent):
         response = await agent.execute(task)
         has_function = "def " in response.content
         results.append(
-            {"task": task, "has_function": has_function, "success": response.success, "time": response.execution_time}
+            {
+                "task": task,
+                "has_function": has_function,
+                "success": response.success,
+                "time": response.execution_time,
+            }
         )
 
     return results
@@ -110,7 +117,10 @@ async def compare_configurations():
         tools.register(tool)
 
     configs = [
-        ("Vanilla", AgentConfig(name="Vanilla", role=AgentRole.GENERALIST, spree_enabled=False)),
+        (
+            "Vanilla",
+            AgentConfig(name="Vanilla", role=AgentRole.GENERALIST, spree_enabled=False),
+        ),
         ("SPRE", AgentConfig(name="SPRE", role=AgentRole.PLANNER, spree_enabled=True)),
     ]
 
@@ -195,7 +205,10 @@ async def main():
         },
         "configuration_comparison": comparison,
         "datasets_tested": [
-            {"name": "GAIA", "url": "https://huggingface.co/datasets/gaia-benchmark/GAIA"},
+            {
+                "name": "GAIA",
+                "url": "https://huggingface.co/datasets/gaia-benchmark/GAIA",
+            },
             {"name": "Custom Math", "description": "Mathematical reasoning tasks"},
             {"name": "Custom Code", "description": "Code generation tasks"},
         ],
@@ -223,7 +236,9 @@ async def main():
 
     print("\nConfiguration Comparison:")
     for config_name, config_data in comparison.items():
-        print(f"  {config_name}: {config_data['avg_time']:.2f}s avg, {config_data['total_tokens']} tokens")
+        print(
+            f"  {config_name}: {config_data['avg_time']:.2f}s avg, {config_data['total_tokens']} tokens"
+        )
 
     print("\nDatasets tested:")
     for dataset in final_report["datasets_tested"]:

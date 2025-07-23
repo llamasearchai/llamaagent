@@ -28,17 +28,15 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 
 import uvicorn
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
+from fastapi import (FastAPI, File, Form, HTTPException, Request, UploadFile,
+                     status)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from ..integration.openai_comprehensive import (
-    BudgetExceededError,
-    OpenAIComprehensiveIntegration,
-    OpenAIModelType,
-    create_comprehensive_openai_integration,
-)
+    BudgetExceededError, OpenAIComprehensiveIntegration, OpenAIModelType,
+    create_comprehensive_openai_integration)
 from ..tools.openai_tools import OPENAI_TOOLS, create_openai_tool
 
 # Configure logging
@@ -176,9 +174,7 @@ app.add_middleware(
 
 # Error handlers
 @app.exception_handler(BudgetExceededError)
-async def budget_exceeded_handler(
-    request: Request, exc: BudgetExceededError
-) -> Any:
+async def budget_exceeded_handler(request: Request, exc: BudgetExceededError) -> Any:
     return HTTPException(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         detail=f"Budget exceeded: {str(exc)}",
@@ -320,7 +316,11 @@ async def chat_completions(request: ChatCompletionRequest) -> APIResponse:
         else:
             # Handle AsyncGenerator case - collect first response
             async for chunk in response:
-                return APIResponse(success=True, data=chunk, usage=chunk.get("usage") if isinstance(chunk, dict) else None)
+                return APIResponse(
+                    success=True,
+                    data=chunk,
+                    usage=chunk.get("usage") if isinstance(chunk, dict) else None,
+                )
             # If no chunks, return empty response
             return APIResponse(success=True, data={}, usage=None)
 

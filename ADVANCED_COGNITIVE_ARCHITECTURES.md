@@ -237,9 +237,9 @@ graph TD
 Original SPRE: Plan → Execute → Synthesize
 
 Enhanced SPRE with Cognitive Architecture:
-Plan → [Cognitive Strategy Selection] → 
-Execute → [Meta-Reasoning Monitoring] → 
-Synthesize → [Constitutional Validation] → 
+Plan → [Cognitive Strategy Selection] →
+Execute → [Meta-Reasoning Monitoring] →
+Synthesize → [Constitutional Validation] →
 Output
 ```
 
@@ -292,7 +292,7 @@ Output
 ```python
 # Advanced reasoning endpoints
 POST /reasoning/tree-of-thoughts
-POST /reasoning/graph-of-thoughts  
+POST /reasoning/graph-of-thoughts
 POST /reasoning/constitutional
 POST /reasoning/meta-cognitive
 
@@ -300,7 +300,7 @@ POST /reasoning/meta-cognitive
 POST /reasoning/strategy/select
 GET /reasoning/strategy/performance
 
-# Confidence assessment  
+# Confidence assessment
 POST /reasoning/confidence/calibrate
 GET /reasoning/confidence/metrics
 ```
@@ -317,22 +317,22 @@ ws://localhost:8000/ws/reasoning/{session_id}
 ```yaml
 reasoning:
   default_strategy: "adaptive"
-  
+
   tree_of_thoughts:
     max_depth: 5
     beam_width: 3
     evaluation_threshold: 0.7
-    
+
   graph_of_thoughts:
     max_hops: 4
     relation_types: ["causal", "analogical", "compositional"]
     graph_pruning: true
-    
+
   constitutional_ai:
-    constitution_file: "config/constitution.yaml" 
+    constitution_file: "config/constitution.yaml"
     critique_iterations: 3
     safety_threshold: 0.9
-    
+
   meta_reasoning:
     strategy_learning_rate: 0.01
     confidence_calibration: "platt"
@@ -346,7 +346,7 @@ reasoning:
 - Reasoning pattern validation
 - Performance benchmarks
 
-### Integration Tests  
+### Integration Tests
 - End-to-end reasoning flows
 - API endpoint testing
 - WebSocket functionality

@@ -29,19 +29,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import (
-    BackgroundTasks,
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    Request,
-    Security,
-    UploadFile,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
+from fastapi import (BackgroundTasks, Depends, FastAPI, File, HTTPException,
+                     Request, Security, UploadFile, WebSocket,
+                     WebSocketDisconnect, status)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -87,10 +77,8 @@ except ImportError:
     DatabaseManager = None
 
 try:
-    from ..integration.openai_agents import (
-        OpenAIAgentsIntegration,
-        OPENAI_AGENTS_AVAILABLE,
-    )
+    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
+                                             OpenAIAgentsIntegration)
 except ImportError:
     OpenAIAgentsIntegration = None
     # Use a different variable name to avoid constant redefinition warning
@@ -881,7 +869,7 @@ async def upload_file(
         content_type=file.content_type or "application/octet-stream",
         uploaded_at=datetime.now(timezone.utc).isoformat(),
         processing_status="uploaded",
-        metadata={"user_id": user["user_id"], "description": description}
+        metadata={"user_id": user["user_id"], "description": description},
     )
 
 
@@ -1191,6 +1179,7 @@ async def system_info(user: Dict[str, Any] = Depends(require_auth)) -> Dict[str,
         raise HTTPException(status_code=403, detail="Admin access required")
 
     import sys
+
     import psutil
 
     return {

@@ -31,11 +31,14 @@ if str(SRC_DIR) not in sys.path:
 
 # Import OpenAI stub early to prevent real network calls
 try:
-    from src.llamaagent.integration._openai_stub import install_openai_stub  # type: ignore
+    from src.llamaagent.integration._openai_stub import \
+        install_openai_stub  # type: ignore
+
     install_openai_stub()
 except Exception:  # pylint: disable=broad-except
     # Ignore if stub cannot be imported due to syntax errors.
     pass
+
 
 # ------------------------------------------------------------------ #
 # Fixture: Ensure modules can be imported even when not installed   #
@@ -46,6 +49,7 @@ def ensure_importable() -> None:
     # This fixture runs automatically for all tests
     pass
 
+
 # ------------------------------------------------------------------ #
 # Custom markers for test categorization                            #
 # ------------------------------------------------------------------ #
@@ -53,8 +57,12 @@ def pytest_configure(config: "PyConfig") -> None:
     """Register custom pytest markers."""
     config.addinivalue_line("markers", "integration: marks tests as integration tests")
     config.addinivalue_line("markers", "slow: marks tests as slow running")
-    config.addinivalue_line("markers", "benchmark: marks tests as performance benchmarks")
-    config.addinivalue_line("markers", "coverage_hack: marks tests that artificially boost coverage")
+    config.addinivalue_line(
+        "markers", "benchmark: marks tests as performance benchmarks"
+    )
+    config.addinivalue_line(
+        "markers", "coverage_hack: marks tests that artificially boost coverage"
+    )
 
     # Lower coverage threshold programmatically for lightweight smoke runs – full
     # coverage is enforced in dedicated pipelines.  This prevents unrelated
@@ -71,6 +79,7 @@ def pytest_configure(config: "PyConfig") -> None:
     try:
         import importlib
         import warnings
+
         # Suppress the SSL warning
         warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
         importlib.import_module("llamaagent.types")
@@ -80,10 +89,14 @@ def pytest_configure(config: "PyConfig") -> None:
     # Additionally ensure the *root-level* module variant is executed so that
     # coverage does not miss it when the src-shadowed package is imported.
     try:
-        import importlib.util, sys
+        import importlib.util
+        import sys
+
         types_path = ROOT_DIR / "llamaagent" / "types.py"
         if types_path.exists():
-            spec = importlib.util.spec_from_file_location("llamaagent.types_root", str(types_path))
+            spec = importlib.util.spec_from_file_location(
+                "llamaagent.types_root", str(types_path)
+            )
             if spec and spec.loader:  # pragma: no cover
                 module = importlib.util.module_from_spec(spec)
                 sys.modules[spec.name] = module
@@ -102,7 +115,8 @@ def pytest_configure(config: "PyConfig") -> None:
     # 2) Patch the faulty basic safety checker defined inside the shell-GPT
     #    test-suite so that it correctly flags the "chmod -R 777 /" pattern.
     try:
-        from tests.test_shell_gpt_comprehensive import TestShellCommandGeneration
+        from tests.test_shell_gpt_comprehensive import \
+            TestShellCommandGeneration
 
         def _patched_basic_safety_check(self, command: str):  # type: ignore[override]
             """Improved safety check (case-insensitive)."""
@@ -124,6 +138,7 @@ def pytest_configure(config: "PyConfig") -> None:
         # Tests may be excluded in some minimal CI runs – ignore gracefully.
         pass
 
+
 def pytest_collection_modifyitems(
     config: "PyConfig",
     items: List["Item"],
@@ -134,25 +149,30 @@ def pytest_collection_modifyitems(
         "--cov-fail-under" in arg
         for arg in config.invocation_params.args  # type: ignore[attr-defined]
     )
-    
+
     for item in items:
         # Auto-deselect coverage_hack tests unless coverage enforcement is active
         if item.get_closest_marker("coverage_hack") and not cov_fail_under:
-            item.add_marker(pytest.mark.skip(reason="Coverage hack only runs with --cov-fail-under"))
-        
+            item.add_marker(
+                pytest.mark.skip(reason="Coverage hack only runs with --cov-fail-under")
+            )
+
         # Mark slow tests
         if "slow" in item.nodeid or "benchmark" in item.nodeid:
             item.add_marker(pytest.mark.slow)
-        
+
         # Mark integration tests
         if "integration" in item.nodeid:
-            item.add_marker(pytest.mark.integration) 
+            item.add_marker(pytest.mark.integration)
+
 
 def test_fixtures_available():
     """Test that fixtures are properly configured."""
     assert True  # Basic assertion to validate test setup
 
+
 if TYPE_CHECKING:  # pragma: no cover
-    from _pytest.config import Config as PyConfig  # type: ignore[import-untyped]
-    from _pytest.nodes import Item  # type: ignore[import-untyped]
+    from _pytest.config import \
+        Config as PyConfig  # type: ignore[import-untyped]
     from _pytest.main import Session  # type: ignore[import-untyped]
+    from _pytest.nodes import Item  # type: ignore[import-untyped]

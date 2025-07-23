@@ -159,7 +159,7 @@ agent:
   name: "ProductionAgent"
   max_iterations: 10
   timeout: 300
-  
+
 llm:
   provider: "openai"
   model: "gpt-4"
@@ -169,7 +169,7 @@ llm:
 tools:
   enabled: true
   timeout: 30
-  
+
 memory:
   enabled: true
   type: "vector"
@@ -347,12 +347,12 @@ async def main():
     config = AgentConfig(name="BasicAgent")
     provider = MockProvider(model_name="test-model")
     agent = ReactAgent(config=config, llm_provider=provider)
-    
+
     task = TaskInput(
         id="example-1",
         task="Explain quantum computing in simple terms"
     )
-    
+
     result = await agent.arun(task)
     print(f"Agent Response: {result.content}")
 
@@ -371,18 +371,18 @@ from llamaagent.orchestration.adaptive_orchestra import AdaptiveOrchestra
 async def main():
     spawner = AgentSpawner()
     orchestra = AdaptiveOrchestra()
-    
+
     # Spawn multiple specialized agents
     research_agent = await spawner.spawn_agent("researcher")
     analysis_agent = await spawner.spawn_agent("analyst")
     writer_agent = await spawner.spawn_agent("writer")
-    
+
     # Orchestrate collaborative task
     result = await orchestra.execute_collaborative_task(
         task="Write a comprehensive report on AI safety",
         agents=[research_agent, analysis_agent, writer_agent]
     )
-    
+
     print(f"Collaborative Result: {result}")
 
 if __name__ == "__main__":
