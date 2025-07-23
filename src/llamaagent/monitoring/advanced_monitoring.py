@@ -13,18 +13,13 @@ This module implements comprehensive monitoring, with:
 """
 
 import asyncio
-import json
 import logging
-import smtplib
 import statistics
-import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from email.mime.multipart import MimeMultipart
-from email.mime.text import MIMEText
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -283,10 +278,14 @@ class AdvancedMonitoringSystem:
             "min": min(recent_data),
             "max": max(recent_data),
             "p50": statistics.median(recent_data),
-            "p95": statistics.quantiles(recent_data, n=20)[18]
-            if len(recent_data) > 20
-            else max(recent_data),
-            "p99": statistics.quantiles(recent_data, n=100)[98]
-            if len(recent_data) > 100
-            else max(recent_data),
+            "p95": (
+                statistics.quantiles(recent_data, n=20)[18]
+                if len(recent_data) > 20
+                else max(recent_data)
+            ),
+            "p99": (
+                statistics.quantiles(recent_data, n=100)[98]
+                if len(recent_data) > 100
+                else max(recent_data)
+            ),
         }

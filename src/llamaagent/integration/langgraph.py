@@ -108,9 +108,9 @@ class LangGraphAgent(BaseAgent):
 
         # Convert to AgentResponse
         return AgentResponse(
-            content=output.result.data.get("response", "")
-            if output.result.data
-            else "",
+            content=(
+                output.result.data.get("response", "") if output.result.data else ""
+            ),
             success=output.result.success,
             metadata=output.result.metadata or {},
         )

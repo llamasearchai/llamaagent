@@ -175,15 +175,15 @@ class OpenAIProvider(BaseLLMProvider):
             return LLMResponse(
                 content=response.choices[0].message.content or "",
                 usage={
-                    "prompt_tokens": response.usage.prompt_tokens
-                    if response.usage
-                    else 0,
-                    "completion_tokens": response.usage.completion_tokens
-                    if response.usage
-                    else 0,
-                    "total_tokens": response.usage.total_tokens
-                    if response.usage
-                    else 0,
+                    "prompt_tokens": (
+                        response.usage.prompt_tokens if response.usage else 0
+                    ),
+                    "completion_tokens": (
+                        response.usage.completion_tokens if response.usage else 0
+                    ),
+                    "total_tokens": (
+                        response.usage.total_tokens if response.usage else 0
+                    ),
                 },
                 model=response.model,
                 provider="openai",

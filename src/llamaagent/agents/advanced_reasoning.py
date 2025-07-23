@@ -180,16 +180,16 @@ class AdvancedReasoningAgent(Agent):
         """Decompose a complex problem into sub-problems."""
         prompt = f"""
         Decompose this problem into smaller, manageable sub-problems:
-        
+
         Problem: {query}
         Context: {json.dumps(context) if context else "None"}
-        
+
         Provide a structured decomposition with:
         1. Main objective
         2. Sub-problems (numbered list)
         3. Dependencies between sub-problems
         4. Required information/tools for each sub-problem
-        
+
         Format as JSON.
         """
 
@@ -227,18 +227,18 @@ class AdvancedReasoningAgent(Agent):
             # Generate thought for sub-problem
             prompt = f"""
             Think step-by-step about this sub-problem:
-            
+
             Sub-problem: {sub_problem}
             Previous thoughts: {[t.content for t in thoughts[-3:]]}
             Current context: {json.dumps(current_context)}
-            
+
             Provide:
             1. Your reasoning process
             2. Key insights
             3. Confidence level (0-1)
             4. Any assumptions made
             5. Next steps needed
-            
+
             Think deeply and show your work.
             """
 
@@ -557,12 +557,12 @@ class AdvancedReasoningAgent(Agent):
 
         prompt = f"""
         Synthesize a final answer based on this reasoning process:
-        
+
         Recent thoughts:
         {thought_summary}
-        
+
         Verification results: {len([v for v in verification_steps if v["passed"]])} passed out of {len(verification_steps)}
-        
+
         Provide a clear, concise answer that:
         1. Directly addresses the original question
         2. Incorporates key insights from the reasoning
@@ -703,9 +703,11 @@ class AdvancedReasoningAgent(Agent):
 
         return ThoughtNode(
             content=response.content,
-            confidence=sum(t.confidence for t in sub_thoughts) / len(sub_thoughts)
-            if sub_thoughts
-            else 0.7,
+            confidence=(
+                sum(t.confidence for t in sub_thoughts) / len(sub_thoughts)
+                if sub_thoughts
+                else 0.7
+            ),
             reasoning_type="combined",
         )
 

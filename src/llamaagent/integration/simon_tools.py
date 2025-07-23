@@ -21,7 +21,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..tools.base import Tool, ToolResult
+from ..tools.base import Tool
 
 logger = logging.getLogger(__name__)
 
@@ -257,9 +257,11 @@ class DockerExecutionTool(Tool):
                     image,
                     "sh",
                     "-c",
-                    f"cd / && python /code.{language}"
-                    if language == "python"
-                    else f"cd / && cat /code.{language}",
+                    (
+                        f"cd / && python /code.{language}"
+                        if language == "python"
+                        else f"cd / && cat /code.{language}"
+                    ),
                 ]
 
                 result = subprocess.run(

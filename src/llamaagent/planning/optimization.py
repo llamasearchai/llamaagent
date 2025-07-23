@@ -210,9 +210,9 @@ class PlanOptimizer:
             "total_duration": total_duration,
             "critical_path_duration": critical_path_seconds,
             "total_cost": total_cost,
-            "quality_score": sum(quality_scores) / len(quality_scores)
-            if quality_scores
-            else 0.5,
+            "quality_score": (
+                sum(quality_scores) / len(quality_scores) if quality_scores else 0.5
+            ),
             "risk_score": sum(risk_scores) / len(risk_scores) if risk_scores else 0.5,
             "task_count": len(plan.tasks),
         }

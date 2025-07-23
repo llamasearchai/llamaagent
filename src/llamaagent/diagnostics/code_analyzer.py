@@ -192,13 +192,15 @@ class CodeAnalyzer:
         # Check for long lines
         for line_no, line in enumerate(lines, 1):
             if len(line) > 120:
-                issues.append({
-                    "type": "long_line",
-                    "message": f"Line too long ({len(line)} > 120 characters)",
-                    "line": line_no,
-                    "severity": "LOW",
-                    "length": len(line),
-                })
+                issues.append(
+                    {
+                        "type": "long_line",
+                        "message": f"Line too long ({len(line)} > 120 characters)",
+                        "line": line_no,
+                        "severity": "LOW",
+                        "length": len(line),
+                    }
+                )
 
         # Check for missing docstrings
         for node in ast.walk(tree):

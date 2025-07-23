@@ -116,15 +116,15 @@ class ShellCommandGenerator:
             "remove directory": "rmdir",
             "find file": "find" if self.os_info["system"] != "Windows" else "dir /s",
             "disk usage": "df -h" if self.os_info["system"] != "Windows" else "dir",
-            "process list": "ps aux"
-            if self.os_info["system"] != "Windows"
-            else "tasklist",
-            "network info": "ifconfig"
-            if self.os_info["system"] != "Windows"
-            else "ipconfig",
-            "system info": "uname -a"
-            if self.os_info["system"] != "Windows"
-            else "systeminfo",
+            "process list": (
+                "ps aux" if self.os_info["system"] != "Windows" else "tasklist"
+            ),
+            "network info": (
+                "ifconfig" if self.os_info["system"] != "Windows" else "ipconfig"
+            ),
+            "system info": (
+                "uname -a" if self.os_info["system"] != "Windows" else "systeminfo"
+            ),
         }
 
         # Find matching pattern

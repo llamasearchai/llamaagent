@@ -220,12 +220,16 @@ class TracingManager:
             # Configure exporters
             if self.jaeger_endpoint:
                 jaeger_exporter = JaegerExporter(
-                    agent_host_name=self.jaeger_endpoint.split(":")[0]
-                    if ":" in self.jaeger_endpoint
-                    else self.jaeger_endpoint,
-                    agent_port=int(self.jaeger_endpoint.split(":")[1])
-                    if ":" in self.jaeger_endpoint
-                    else 6831,
+                    agent_host_name=(
+                        self.jaeger_endpoint.split(":")[0]
+                        if ":" in self.jaeger_endpoint
+                        else self.jaeger_endpoint
+                    ),
+                    agent_port=(
+                        int(self.jaeger_endpoint.split(":")[1])
+                        if ":" in self.jaeger_endpoint
+                        else 6831
+                    ),
                 )
                 provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))  # type: ignore
 

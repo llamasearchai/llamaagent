@@ -59,9 +59,9 @@ class CachedResponse:
             },
             "prompt_hash": self.prompt_hash,
             "prompt_text": self.prompt_text,
-            "embedding": self.embedding.tolist()
-            if self.embedding is not None
-            else None,
+            "embedding": (
+                self.embedding.tolist() if self.embedding is not None else None
+            ),
             "timestamp": self.timestamp,
             "hit_count": self.hit_count,
             "cost_saved": self.cost_saved,
@@ -336,8 +336,6 @@ class LLMCache:
                 return result
 
             def sync_wrapper(*args, **kwargs):
-                import asyncio
-
                 # Generate cache key
                 cache_key = key_generator(func.__name__, *args, **kwargs)
 

@@ -55,7 +55,7 @@ class OpenAIProvider(BaseLLMProvider):
     ) -> LLMResponse:
         """Complete a chat conversation."""
         # Placeholder implementation for now
-        content = f"OpenAI provider response (mock)"
+        content = "OpenAI provider response (mock)"
 
         return LLMResponse(
             content=content,

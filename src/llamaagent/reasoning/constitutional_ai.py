@@ -155,9 +155,7 @@ class CritiqueSystem:
         if not llm_provider:
             raise ValueError("LLM provider cannot be null")
 
-        if not hasattr(llm_provider, 'complete') or not callable(
-            getattr(llm_provider, 'complete')
-        ):
+        if not hasattr(llm_provider, 'complete') or not callable(llm_provider.complete):
             raise ValueError("LLM provider must implement async complete() method")
 
         self.llm_provider = llm_provider
@@ -288,9 +286,7 @@ class ResponseRevisor:
         if not llm_provider:
             raise ValueError("LLM provider cannot be null")
 
-        if not hasattr(llm_provider, 'complete') or not callable(
-            getattr(llm_provider, 'complete')
-        ):
+        if not hasattr(llm_provider, 'complete') or not callable(llm_provider.complete):
             raise ValueError("LLM provider must implement async complete() method")
 
         self.llm_provider = llm_provider
@@ -393,9 +389,7 @@ class ConstitutionalAgent:
         if not llm_provider:
             raise ValueError("LLM provider cannot be null")
 
-        if not hasattr(llm_provider, 'complete') or not callable(
-            getattr(llm_provider, 'complete')
-        ):
+        if not hasattr(llm_provider, 'complete') or not callable(llm_provider.complete):
             raise ValueError("LLM provider must implement async complete() method")
 
         # Validate numeric parameters

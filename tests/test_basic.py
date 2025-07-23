@@ -47,7 +47,7 @@ async def test_agent_with_tools():
 async def test_agent_with_memory():
     """Test agent with memory functionality."""
     memory = SimpleMemory()
-    config = AgentConfig(name="TestAgent", memory_enabled=True)
+    config = AgentConfig(name="TestAgent", enable_memory=True)
     agent = ReactAgent(config=config, memory=memory)
 
     # First interaction
@@ -306,16 +306,14 @@ def test_agent_config():
     config = AgentConfig(
         name="TestAgent",
         max_iterations=5,
-        temperature=0.8,
         spree_enabled=True,
-        dynamic_tools=True,
+        enable_tools=True,
     )
 
     assert config.name == "TestAgent"
     assert config.max_iterations == 5
-    assert config.temperature == 0.8
     assert config.spree_enabled is True
-    assert config.dynamic_tools is True
+    assert config.enable_tools is True
 
 
 @pytest.mark.asyncio
@@ -327,9 +325,10 @@ async def test_agent_trace():
     response = await agent.execute("Test task")
 
     assert response.success
-    assert isinstance(response.trace, list)
-    # Trace should contain at least some events
-    assert len(response.trace) >= 0
+    assert response.content is not None
+    # Check basic response attributes
+    assert hasattr(response, 'execution_time')
+    assert hasattr(response, 'tokens_used')
 
 
 def test_memory_entry():

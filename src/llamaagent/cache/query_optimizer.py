@@ -513,7 +513,7 @@ class QueryOptimizer:
             results = await asyncio.gather(*[executor(q) for q in queries])
 
             # Set results on futures
-            for future, result in zip(futures, results):
+            for future, result in zip(futures, results, strict=False):
                 if not future.done():
                     future.set_result(result)
         except Exception as e:
@@ -574,9 +574,9 @@ class QueryOptimizer:
         return {
             "total_queries": total_queries,
             "successful_queries": successful_queries,
-            "success_rate": successful_queries / total_queries
-            if total_queries > 0
-            else 0,
+            "success_rate": (
+                successful_queries / total_queries if total_queries > 0 else 0
+            ),
             "cache_hits": cache_hits,
             "cache_hit_rate": cache_hits / total_queries if total_queries > 0 else 0,
             "total_time_ms": total_time,

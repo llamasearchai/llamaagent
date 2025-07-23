@@ -3,16 +3,16 @@
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
-__version__ = "0.2.0"
-__version_info__ = (0, 2, 0)
+__version__ = "0.2.1"
+__version_info__ = (0, 2, 1)
 
 # Version components
 MAJOR = 0
 MINOR = 2
-PATCH = 0
+PATCH = 1
 
 # Build metadata
-BUILD_DATE = "2025-01-15"
+BUILD_DATE = "2025-01-23"
 BUILD_COMMIT = "current"
 BUILD_BRANCH = "main"
 

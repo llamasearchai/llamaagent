@@ -312,9 +312,11 @@ class DistributedOrchestrator:
             # Determine number of agents needed
             num_agents = min(
                 len(suitable_agents),
-                1
-                if AgentCapability.MULTIMODAL not in task.required_capabilities
-                else 3,
+                (
+                    1
+                    if AgentCapability.MULTIMODAL not in task.required_capabilities
+                    else 3
+                ),
             )
 
             # Select agents
@@ -513,12 +515,12 @@ class DistributedOrchestrator:
                 "status": workflow.status.value,
                 "created_at": workflow.created_at.isoformat(),
                 "updated_at": workflow.updated_at.isoformat(),
-                "started_at": workflow.started_at.isoformat()
-                if workflow.started_at
-                else None,
-                "completed_at": workflow.completed_at.isoformat()
-                if workflow.completed_at
-                else None,
+                "started_at": (
+                    workflow.started_at.isoformat() if workflow.started_at else None
+                ),
+                "completed_at": (
+                    workflow.completed_at.isoformat() if workflow.completed_at else None
+                ),
                 "task_count": len(workflow.tasks),
                 "tasks": {
                     task_id: {
@@ -529,12 +531,12 @@ class DistributedOrchestrator:
                         "assigned_agents": task.assigned_agents,
                         "created_at": task.created_at.isoformat(),
                         "updated_at": task.updated_at.isoformat(),
-                        "started_at": task.started_at.isoformat()
-                        if task.started_at
-                        else None,
-                        "completed_at": task.completed_at.isoformat()
-                        if task.completed_at
-                        else None,
+                        "started_at": (
+                            task.started_at.isoformat() if task.started_at else None
+                        ),
+                        "completed_at": (
+                            task.completed_at.isoformat() if task.completed_at else None
+                        ),
                         "retry_count": task.retry_count,
                         "error": task.error,
                         "result": task.result,
@@ -558,12 +560,12 @@ class DistributedOrchestrator:
                 "status": workflow.status.value,
                 "created_at": workflow.created_at.isoformat(),
                 "updated_at": workflow.updated_at.isoformat(),
-                "started_at": workflow.started_at.isoformat()
-                if workflow.started_at
-                else None,
-                "completed_at": workflow.completed_at.isoformat()
-                if workflow.completed_at
-                else None,
+                "started_at": (
+                    workflow.started_at.isoformat() if workflow.started_at else None
+                ),
+                "completed_at": (
+                    workflow.completed_at.isoformat() if workflow.completed_at else None
+                ),
                 "task_count": len(workflow.tasks),
                 "progress_percentage": (
                     sum(
@@ -585,9 +587,9 @@ class DistributedOrchestrator:
                         "assigned_agents": task.assigned_agents,
                         "created_at": task.created_at.isoformat(),
                         "updated_at": task.updated_at.isoformat(),
-                        "deadline": task.deadline.isoformat()
-                        if task.deadline
-                        else None,
+                        "deadline": (
+                            task.deadline.isoformat() if task.deadline else None
+                        ),
                         "retry_count": task.retry_count,
                         "error": task.error,
                         "result": task.result,

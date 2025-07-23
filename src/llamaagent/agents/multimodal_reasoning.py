@@ -172,7 +172,7 @@ class AdvancedMultimodalAgent(BaseAgent):
         # Then analyze images with text context
         if input_data.images and vision_available:
             visual_prompt = (
-                f"Based on the text analysis, now analyze the provided images"
+                "Based on the text analysis, now analyze the provided images"
             )
             visual_result = await self._analyze_images(input_data.images)
             results.append(visual_result)

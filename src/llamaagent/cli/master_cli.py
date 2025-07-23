@@ -115,9 +115,11 @@ class LlamaAgentCLI:
         provider_idx = (
             IntPrompt.ask(
                 "Select provider",
-                default=providers.index(self.config["default_provider"]) + 1
-                if self.config["default_provider"] in providers
-                else 1,
+                default=(
+                    providers.index(self.config["default_provider"]) + 1
+                    if self.config["default_provider"] in providers
+                    else 1
+                ),
             )
             - 1
         )

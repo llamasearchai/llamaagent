@@ -586,9 +586,9 @@ class SprePlayer:
                 "turn_id": i,
                 "speaker": "user" if i % 2 == 0 else "assistant",
                 "text": f"Turn {i}: Discussion about {topic}",
-                "intent": "information_seeking"
-                if i % 2 == 0
-                else "informative_response",
+                "intent": (
+                    "information_seeking" if i % 2 == 0 else "informative_response"
+                ),
             }
             conversation["turns"].append(turn)
         return conversation
@@ -792,12 +792,12 @@ class SprePlayer:
             "player_id": self.player_id,
             "role": self.role.value,
             "sessions_played": len(self.performance_history),
-            "average_score": np.mean(self.performance_history)
-            if self.performance_history
-            else 0.0,
-            "best_score": max(self.performance_history)
-            if self.performance_history
-            else 0.0,
+            "average_score": (
+                np.mean(self.performance_history) if self.performance_history else 0.0
+            ),
+            "best_score": (
+                max(self.performance_history) if self.performance_history else 0.0
+            ),
             "latest_score": self.last_session_score,
             "improvement_rate": self.improvement_rate,
         }

@@ -53,15 +53,15 @@ class ExecutionReport:
             "plan_id": self.plan_id,
             "start_time": self.start_time.isoformat(),
             "end_time": self.end_time.isoformat() if self.end_time else None,
-            "total_duration": self.total_duration.total_seconds()
-            if self.total_duration
-            else None,
+            "total_duration": (
+                self.total_duration.total_seconds() if self.total_duration else None
+            ),
             "task_count": self.task_count,
             "success_count": self.success_count,
             "failure_count": self.failure_count,
-            "success_rate": self.success_count / self.task_count
-            if self.task_count > 0
-            else 0.0,
+            "success_rate": (
+                self.success_count / self.task_count if self.task_count > 0 else 0.0
+            ),
             "task_details": self.task_details,
             "errors": self.errors,
             "warnings": self.warnings,
@@ -362,16 +362,16 @@ class ExecutionMonitor:
         return {
             "total_executions": total_executions,
             "total_tasks": total_tasks,
-            "overall_success_rate": total_success / total_tasks
-            if total_tasks > 0
-            else 0,
+            "overall_success_rate": (
+                total_success / total_tasks if total_tasks > 0 else 0
+            ),
             "total_failures": total_failures,
             "average_execution_duration": avg_duration,
             "active_executions": len(self.active_executions),
             "active_alerts": len(self.alert_manager.get_active_alerts()),
-            "last_execution": self.execution_history[-1].to_dict()
-            if self.execution_history
-            else None,
+            "last_execution": (
+                self.execution_history[-1].to_dict() if self.execution_history else None
+            ),
         }
 
     def _default_alert_handler(self, alert_type: str, alert_data: Dict[str, Any]):

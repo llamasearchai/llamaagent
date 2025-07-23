@@ -12,7 +12,7 @@ from .gdt import (ConversationDataGenerator, DataType, GDTDataset,
 
 __all__ = [
     "DataType",
-    "ValidationStatus", 
+    "ValidationStatus",
     "GDTItem",
     "GDTDataset",
     "GDTGenerator",
@@ -20,4 +20,4 @@ __all__ = [
     "GDTTransformer",
     "TextDataGenerator",
     "ConversationDataGenerator",
-] 
+]

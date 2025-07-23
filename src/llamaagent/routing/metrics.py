@@ -374,9 +374,9 @@ class PerformanceTracker:
 
         perf = provider.task_type_performance[task_type]
         return {
-            "success_rate": perf["successful"] / perf["total"]
-            if perf["total"] > 0
-            else 0.0,
+            "success_rate": (
+                perf["successful"] / perf["total"] if perf["total"] > 0 else 0.0
+            ),
             "avg_latency": perf["avg_latency"],
             "total_requests": perf["total"],
         }
@@ -432,9 +432,9 @@ class PerformanceTracker:
                 pid: cost / total_cost if total_cost > 0 else 0.0
                 for pid, cost in provider_costs.items()
             },
-            "avg_cost_per_request": total_cost / len(relevant_records)
-            if relevant_records
-            else 0.0,
+            "avg_cost_per_request": (
+                total_cost / len(relevant_records) if relevant_records else 0.0
+            ),
         }
 
     def get_error_analysis(self) -> Dict[str, Any]:

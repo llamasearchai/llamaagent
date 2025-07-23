@@ -253,9 +253,11 @@ class RateLimiter:
             "window_seconds": rule.window_seconds,
             "current_count": current_count,
             "remaining": max(0, rule.requests - current_count),
-            "retry_after": self.get_retry_after(rule_name, identifier)
-            if current_count >= rule.requests
-            else 0,
+            "retry_after": (
+                self.get_retry_after(rule_name, identifier)
+                if current_count >= rule.requests
+                else 0
+            ),
         }
 
     def cleanup_expired(self, max_age_seconds: int = 3600) -> None:

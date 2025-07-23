@@ -132,7 +132,7 @@ class StrategyPerformance:
 
         sum_x = sum(x)
         sum_y = sum(y)
-        sum_xy = sum(xi * yi for xi, yi in zip(x, y))
+        sum_xy = sum(xi * yi for xi, yi in zip(x, y, strict=False))
         sum_x2 = sum(xi * xi for xi in x)
 
         slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
@@ -633,7 +633,7 @@ Consider:
         ece = 0.0
         total_samples = len(self.calibration_data)
 
-        for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+        for bin_lower, bin_upper in zip(bin_lowers, bin_uppers, strict=False):
             in_bin = [
                 (conf, success)
                 for conf, success in self.calibration_data
@@ -878,10 +878,13 @@ class MetaCognitiveAgent:
         trend_analysis: Dict[str, Dict[str, Any]] = {
             strategy: {
                 "average_confidence": statistics.mean(confidences),
-                "confidence_trend": "improving"
-                if len(confidences) > 5
-                and statistics.mean(confidences[-5:]) > statistics.mean(confidences[:5])
-                else "stable",
+                "confidence_trend": (
+                    "improving"
+                    if len(confidences) > 5
+                    and statistics.mean(confidences[-5:])
+                    > statistics.mean(confidences[:5])
+                    else "stable"
+                ),
             }
             for strategy, confidences in strategy_trends.items()
             if len(confidences) >= 3

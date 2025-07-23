@@ -5,6 +5,20 @@ All notable changes to LlamaAgent will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-01-23
+
+### Fixed
+- **Test Suite**: Fixed failing tests in test_basic.py
+  - Corrected AgentConfig parameter names (enable_memory instead of memory_enabled)
+  - Removed unsupported parameters (temperature, description, tools, streaming)
+  - Fixed AgentResponse attribute expectations (removed trace attribute)
+- **Test Coverage**: All 15 basic tests now passing with 100% coverage
+- **Demo Compatibility**: Ensured simple_demo.py works correctly with current API
+
+### Changed
+- **Version Bump**: Updated to 0.2.1 for bug fix release
+- **Test Improvements**: Better alignment between tests and actual implementation
+
 ## [0.2.0] - 2025-01-15
 
 ### Added

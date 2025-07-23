@@ -287,9 +287,11 @@ Ready to chat!
                 task_input = {
                     "task": user_input,
                     "context": {
-                        "conversation_history": self.conversation_history[-10:]
-                        if len(self.conversation_history) > 10
-                        else self.conversation_history,
+                        "conversation_history": (
+                            self.conversation_history[-10:]
+                            if len(self.conversation_history) > 10
+                            else self.conversation_history
+                        ),
                         "spree_enabled": self.spree_enabled,
                         "debug": self.debug,
                     },

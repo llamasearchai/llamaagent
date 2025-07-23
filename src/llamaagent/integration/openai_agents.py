@@ -354,9 +354,11 @@ class OpenAIAgentAdapter:
         for name, assistant in self.assistants.items():
             agents.append(
                 {
-                    "id": assistant.id
-                    if hasattr(assistant, "id")
-                    else f"assistant_{name}",
+                    "id": (
+                        assistant.id
+                        if hasattr(assistant, "id")
+                        else f"assistant_{name}"
+                    ),
                     "name": name,
                     "type": "assistant",
                     "model": getattr(assistant, "model", self.config.model),
@@ -417,10 +419,10 @@ class OpenAIAgentAdapter:
             "session_cost": self.budget_tracker.session_cost,
             "budget_limit": self.config.budget_limit,
             "remaining_budget": (
-                self.config.budget_limit - self.budget_tracker.total_cost
-            )
-            if self.config.budget_limit
-            else None,
+                (self.config.budget_limit - self.budget_tracker.total_cost)
+                if self.config.budget_limit
+                else None
+            ),
             "request_count": self.budget_tracker.request_count,
             "token_usage": self.budget_tracker.token_usage.copy(),
             "daily_usage": self.budget_tracker.daily_usage.copy(),

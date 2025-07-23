@@ -106,9 +106,11 @@ class AdvancedReasoningAgent(BaseAgent):
             task_result = TaskResult(
                 success=True,
                 result=response,
-                model=self.config.llm_provider.model
-                if self.config.llm_provider
-                else "unknown",
+                model=(
+                    self.config.llm_provider.model
+                    if self.config.llm_provider
+                    else "unknown"
+                ),
                 metadata={"reasoning_steps": len(self.reasoning_history)},
             )
 
@@ -251,9 +253,11 @@ Based on my reflection, here's my improved response:
             [
                 LLMMessage(
                     role="user",
-                    content=task_input.prompt
-                    if hasattr(task_input, 'prompt')
-                    else str(task_input.data),
+                    content=(
+                        task_input.prompt
+                        if hasattr(task_input, 'prompt')
+                        else str(task_input.data)
+                    ),
                 )
             ]
         )
@@ -377,11 +381,13 @@ Now, synthesize these perspectives into a comprehensive, balanced response:
             "avg_confidence": sum(step.confidence for step in self.reasoning_history)
             / len(self.reasoning_history),
             "duration_seconds": (
-                self.reasoning_history[-1].timestamp
-                - self.reasoning_history[0].timestamp
-            ).total_seconds()
-            if len(self.reasoning_history) > 1
-            else 0,
+                (
+                    self.reasoning_history[-1].timestamp
+                    - self.reasoning_history[0].timestamp
+                ).total_seconds()
+                if len(self.reasoning_history) > 1
+                else 0
+            ),
             "steps": [step.__dict__ for step in self.reasoning_history],
         }
 

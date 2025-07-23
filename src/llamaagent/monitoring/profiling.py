@@ -260,9 +260,9 @@ class Profiler:
         result = ProfileResult(
             name=name,
             duration_seconds=end_time - start_time,
-            cpu_time_seconds=sum(stats_dict.values(), key=lambda x: x[3])
-            if stats_dict
-            else 0,
+            cpu_time_seconds=(
+                sum(stats_dict.values(), key=lambda x: x[3]) if stats_dict else 0
+            ),
             memory_start_mb=memory_start,
             memory_peak_mb=memory_peak,
             memory_end_mb=memory_end,

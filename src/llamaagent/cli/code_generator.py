@@ -95,9 +95,11 @@ class CodeGenerator:
         # Create metadata
         metadata = {
             "generation_time": time.time() - start_time,
-            "model": self.provider.model_name
-            if hasattr(self.provider, 'model_name')
-            else "unknown",
+            "model": (
+                self.provider.model_name
+                if hasattr(self.provider, 'model_name')
+                else "unknown"
+            ),
             "prompt_tokens": len(system_prompt.split()) + len(user_prompt.split()),
             "style": request.style,
             "framework": request.framework,

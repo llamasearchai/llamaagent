@@ -12,7 +12,7 @@ from .metrics import PerformanceTracker, RoutingMetrics
 from .provider_registry import ProviderRegistry
 from .strategies import RoutingStrategy
 from .task_analyzer import TaskAnalyzer, TaskCharacteristics
-from .types import RoutingConfig, RoutingDecision, RoutingMode
+from .types import RoutingConfig, RoutingDecision
 
 logger = logging.getLogger(__name__)
 
