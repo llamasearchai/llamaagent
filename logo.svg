@@ -1,28 +1,97 @@
-<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <!-- Forward-pointing llama hooves -->
-  <g fill="black">
-    <!-- Left hoof -->
-    <path d="M90 60
-             C80 45, 65 40, 55 55
-             C40 75, 60 115, 90 120
-             C100 122, 110 110, 105 95
-             C100 80, 95 70, 90 60Z"/>
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="190" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2"/>
 
-    <!-- Right hoof, rotated slightly outward to imply “pointing” -->
-    <path d="M130 65
-             C140 50, 155 45, 165 60
-             C180 80, 160 120, 130 125
-             C120 126, 115 115, 120 100
-             C125 85, 128 75, 130 65Z"/>
+  <!-- Stylized Llama Head -->
+  <g transform="translate(200, 140)">
+    <!-- Main head shape -->
+    <path d="M-40 20
+             C-40 0, -30 -20, -10 -25
+             L10 -25
+             C30 -20, 40 0, 40 20
+             C40 50, 30 70, 15 75
+             L-15 75
+             C-30 70, -40 50, -40 20Z"
+          fill="#6366f1"
+          opacity="0.9"/>
+
+    <!-- Snout -->
+    <path d="M-15 45
+             C-15 35, -10 30, 0 30
+             C10 30, 15 35, 15 45
+             C15 55, 10 60, 0 60
+             C-10 60, -15 55, -15 45Z"
+          fill="#4f46e5"/>
+
+    <!-- Ears -->
+    <path d="M-25 -20
+             C-25 -35, -20 -40, -15 -35
+             L-10 -25
+             C-15 -30, -20 -30, -25 -20Z"
+          fill="#6366f1"/>
+    <path d="M25 -20
+             C25 -35, 20 -40, 15 -35
+             L10 -25
+             C15 -30, 20 -30, 25 -20Z"
+          fill="#6366f1"/>
+
+    <!-- Eyes -->
+    <circle cx="-15" cy="10" r="5" fill="#1e293b"/>
+    <circle cx="15" cy="10" r="5" fill="#1e293b"/>
+    <circle cx="-14" cy="8" r="2" fill="white"/>
+    <circle cx="16" cy="8" r="2" fill="white"/>
+
+    <!-- Neural network connections -->
+    <g opacity="0.3">
+      <line x1="-40" y1="20" x2="-60" y2="10" stroke="#6366f1" stroke-width="2"/>
+      <line x1="-40" y1="20" x2="-55" y2="30" stroke="#6366f1" stroke-width="2"/>
+      <line x1="40" y1="20" x2="60" y2="10" stroke="#6366f1" stroke-width="2"/>
+      <line x1="40" y1="20" x2="55" y2="30" stroke="#6366f1" stroke-width="2"/>
+      <circle cx="-60" cy="10" r="3" fill="#6366f1"/>
+      <circle cx="-55" cy="30" r="3" fill="#6366f1"/>
+      <circle cx="60" cy="10" r="3" fill="#6366f1"/>
+      <circle cx="55" cy="30" r="3" fill="#6366f1"/>
+    </g>
+  </g>
+
+  <!-- AI Circuit Pattern -->
+  <g opacity="0.2">
+    <path d="M100 200 L100 250 L150 250" stroke="#6366f1" stroke-width="2" fill="none"/>
+    <path d="M300 200 L300 250 L250 250" stroke="#6366f1" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="200" r="4" fill="#6366f1"/>
+    <circle cx="300" cy="200" r="4" fill="#6366f1"/>
+    <circle cx="150" cy="250" r="4" fill="#6366f1"/>
+    <circle cx="250" cy="250" r="4" fill="#6366f1"/>
   </g>
 
   <!-- Wordmark -->
-  <text x="50%" y="215" text-anchor="middle"
-        font-family="sans-serif"
-        font-size="18"
-        font-weight="300"
-        letter-spacing="2"
-        fill="black">
+  <text x="200" y="290" text-anchor="middle"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="42"
+        font-weight="600"
+        fill="#1e293b">
     llamaagent
   </text>
+
+  <!-- Tagline -->
+  <text x="200" y="320" text-anchor="middle"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="16"
+        font-weight="400"
+        fill="#64748b"
+        letter-spacing="1">
+    INTELLIGENT AUTOMATION
+  </text>
+
+  <!-- Version badge -->
+  <g transform="translate(200, 350)">
+    <rect x="-30" y="-10" width="60" height="20" rx="10" fill="#6366f1" opacity="0.1"/>
+    <text x="0" y="4" text-anchor="middle"
+          font-family="system-ui, -apple-system, sans-serif"
+          font-size="12"
+          font-weight="500"
+          fill="#6366f1">
+      v0.2.3
+    </text>
+  </g>
 </svg>

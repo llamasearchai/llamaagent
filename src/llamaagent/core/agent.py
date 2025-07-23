@@ -63,6 +63,15 @@ except ImportError:
     tracing_available = False
     tracer = None
 
+# Optional imports for system monitoring
+try:
+    import psutil
+
+    psutil_available = True
+except ImportError:
+    psutil = None
+    psutil_available = False
+
 # Setup logging
 logger = logging.getLogger(__name__)
 
@@ -322,7 +331,11 @@ class Agent(ABC):
     ) -> Optional[AgentMessage]:
         """Handle collaboration requests."""
         collaboration_data = message.content
-        result = await self.collaborate(collaboration_data)
+        try:
+            result = await self.collaborate(collaboration_data)
+        except Exception as e:
+            self.logger.error(f"Collaboration failed: {e}")
+            result = {"error": str(e), "status": "failed"}
 
         response = AgentMessage(
             sender_id=self.agent_id,
@@ -370,13 +383,13 @@ class Agent(ABC):
 
     def _get_memory_usage(self) -> float:
         """Get memory usage in MB."""
-        try:
-            import psutil
-
-            process = psutil.Process()
-            return process.memory_info().rss / 1024 / 1024
-        except ImportError:
-            return 0.0
+        if psutil_available and psutil:
+            try:
+                process = psutil.Process()
+                return process.memory_info().rss / 1024 / 1024
+            except Exception:
+                return 0.0
+        return 0.0
 
     async def collaborate(self, collaboration_data: Dict[str, Any]) -> Any:
         """Collaborate with other agents on complex tasks."""
