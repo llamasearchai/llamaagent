@@ -85,6 +85,8 @@ class Problem:
     priority: int = 0  # 1-10, higher is more urgent
     estimated_fix_time: str = ""
     tags: List[str] = field(default_factory=list)
+
+
 @dataclass
 class DiagnosticReport:
     """Complete diagnostic report for the system."""
@@ -365,6 +367,7 @@ class MasterDiagnostics:
                     priority=6,
                     estimated_fix_time="1 minute",
                 )
+
     def _analyze_python_code(self) -> None:
         """Analyze all Python files for syntax and import errors."""
         print("Analyzing Python code...")
@@ -374,6 +377,7 @@ class MasterDiagnostics:
                 continue
 
             self._analyze_python_file(py_file)
+
     def _analyze_python_file(self, file_path: Path) -> None:
         """Analyze a single Python file for issues."""
         try:
@@ -519,6 +523,7 @@ class MasterDiagnostics:
                         )
         except Exception as e:
             logger.error(f"Error: {e}")
+
     def _analyze_configuration_files(self) -> None:
         """Analyze configuration files for issues."""
         print("Analyzing  Analyzing configuration files...")
@@ -538,6 +543,7 @@ class MasterDiagnostics:
             file_path = self.project_root / config_file
             if file_path.exists():
                 self._analyze_config_file(file_path)
+
     def _analyze_config_file(self, file_path: Path) -> None:
         """Analyze a configuration file."""
         try:
@@ -706,6 +712,7 @@ class MasterDiagnostics:
                         )
             except Exception as e:
                 logger.error(f"Error: {e}")
+
     def _analyze_performance(self) -> None:
         """Analyze performance issues."""
         print("Analyzing performance...")
@@ -747,6 +754,7 @@ class MasterDiagnostics:
                         )
             except Exception as e:
                 logger.error(f"Error: {e}")
+
     def _analyze_deployment(self) -> None:
         """Analyze deployment configuration."""
         print("Analyzing deployment configuration...")
@@ -791,6 +799,7 @@ class MasterDiagnostics:
         """Add a problem to the list."""
         problem = Problem(**kwargs)
         self.problems.append(problem)
+
     def _generate_report(
         self, system_info: Dict[str, Any], analysis_duration: float
     ) -> DiagnosticReport:
@@ -850,12 +859,12 @@ class MasterDiagnostics:
         )
         high_count = sum(1 for p in self.problems if p.severity == ProblemSeverity.HIGH)
         if critical_count > 0:
-            recommendations.append()
+            recommendations.append(
                 f"URGENT URGENT: Fix {critical_count} critical issues immediately - system may not function"
             )
 
         if high_count > 0:
-            recommendations.append()
+            recommendations.append(
                 f"WARNING:  HIGH PRIORITY: Address {high_count} high-priority issues to prevent major problems"
             )
 
@@ -867,28 +876,32 @@ class MasterDiagnostics:
             )
 
         if category_counts.get(ProblemCategory.SYNTAX_ERROR, 0) > 0:
-            recommendations.append()
+            recommendations.append(
                 "Fix Fix syntax errors first - they prevent code execution"
             )
 
         if category_counts.get(ProblemCategory.IMPORT_ERROR, 0) > 0:
-            recommendations.append()
+            recommendations.append(
                 "Analyzing Resolve import errors by installing missing dependencies"
             )
 
         if category_counts.get(ProblemCategory.SECURITY_VULNERABILITY, 0) > 0:
-            recommendations.append()
+            recommendations.append(
                 "Analyzing Address security vulnerabilities to protect against attacks"
             )
 
         if category_counts.get(ProblemCategory.TESTING, 0) > 0:
-            recommendations.append("Analyzing Improve test coverage to catch bugs early")
+            recommendations.append(
+                "Analyzing Improve test coverage to catch bugs early"
+            )
         if category_counts.get(ProblemCategory.DOCUMENTATION, 0) > 0:
-            recommendations.append("Analyzing Add documentation to improve maintainability")
-        recommendations.append()
+            recommendations.append(
+                "Analyzing Add documentation to improve maintainability"
+            )
+        recommendations.append(
             "Focus Focus on high-priority issues first for maximum impact"
         )
-        recommendations.append()
+        recommendations.append(
             "TIME:  Estimated total fix time: " + self._calculate_total_fix_time()
         )
 
@@ -903,10 +916,10 @@ class MasterDiagnostics:
                 # Parse time estimates like "5 minutes", "1 hour", "30 minutes"
                 time_str = problem.estimated_fix_time.lower()
                 if "hour" in time_str:
-                    hours = int(re.search(r"(\d+)", time_str).group(1)
+                    hours = int(re.search(r"(\d+)", time_str).group(1))
                     total_minutes += hours * 60
                 elif "minute" in time_str:
-                    minutes = int(re.search(r"(\d+)", time_str).group(1)
+                    minutes = int(re.search(r"(\d+)", time_str).group(1))
                     total_minutes += minutes
 
         if total_minutes < 60:
@@ -925,8 +938,9 @@ class MasterDiagnostics:
         output_path = self.project_root / filename
 
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(self._format_report_as_text(report)
+            f.write(self._format_report_as_text(report))
         return str(output_path)
+
     def _format_report_as_text(self, report: DiagnosticReport) -> str:
         """Format the diagnostic report as a comprehensive text document."""
         lines = []
@@ -944,27 +958,27 @@ class MasterDiagnostics:
         lines.append("EXECUTIVE SUMMARY")
         lines.append("-" * 50)
         lines.append(f"Total Issues Found: {report.total_problems}")
-        lines.append()
+        lines.append(
             f"Critical Issues: {report.problems_by_severity.get(ProblemSeverity.CRITICAL, 0)}"
         )
-        lines.append()
+        lines.append(
             f"High Priority Issues: {report.problems_by_severity.get(ProblemSeverity.HIGH, 0)}"
         )
-        lines.append()
+        lines.append(
             f"Medium Priority Issues: {report.problems_by_severity.get(ProblemSeverity.MEDIUM, 0)}"
         )
-        lines.append()
+        lines.append(
             f"Low Priority Issues: {report.problems_by_severity.get(ProblemSeverity.LOW, 0)}"
         )
         lines.append("")
         # System Information
         lines.append("SYSTEM INFORMATION")
         lines.append("-" * 50)
-        lines.append()
+        lines.append(
             f"Python Version: {report.system_info.get('python_version', 'Unknown')}"
         )
         lines.append(f"Platform: {report.system_info.get('platform', 'Unknown')}")
-        lines.append()
+        lines.append(
             f"Project Root: {report.system_info.get('project_root', 'Unknown')}"
         )
         lines.append("")
@@ -989,7 +1003,7 @@ class MasterDiagnostics:
                 continue
 
             lines.append("")
-            lines.append()
+            lines.append(
                 f"{severity.value} PRIORITY ISSUES ({len(severity_problems)} issues)"
             )
             lines.append("=" * 60)
@@ -1009,7 +1023,7 @@ class MasterDiagnostics:
                 if problem.code_snippet:
                     lines.append(f"   Code Snippet: {problem.code_snippet}")
                 if problem.related_files:
-                    lines.append()
+                    lines.append(
                         f"   Related Files: {', '.join(problem.related_files)}"
                     )
                 lines.append("   " + "-" * 60)
@@ -1033,6 +1047,8 @@ class MasterDiagnostics:
         lines.append("END OF DIAGNOSTIC REPORT")
         lines.append("=" * 80)
         return "\n".join(lines)
+
+
 def main():
     """Main function to run comprehensive diagnostics."""
     diagnostics = MasterDiagnostics()
@@ -1050,7 +1066,9 @@ def main():
     critical_count = report.problems_by_severity.get(ProblemSeverity.CRITICAL, 0)
     high_count = report.problems_by_severity.get(ProblemSeverity.HIGH, 0)
     if critical_count > 0:
-        print(f"URGENT URGENT: {critical_count} critical issues need immediate attention!")
+        print(
+            f"URGENT URGENT: {critical_count} critical issues need immediate attention!"
+        )
     if high_count > 0:
         print(f"WARNING:  WARNING: {high_count} high-priority issues found!")
     return output_file

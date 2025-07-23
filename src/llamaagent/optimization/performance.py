@@ -24,8 +24,11 @@ import numpy as np
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
 class OptimizationStrategy(Enum):
     """Performance optimization strategies."""
+
     ASYNC_PARALLEL = "async_parallel"
     BATCH_PROCESSING = "batch_processing"
     LAZY_LOADING = "lazy_loading"
@@ -36,6 +39,7 @@ class OptimizationStrategy(Enum):
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for optimization."""
+
     execution_time: float = 0.0
     memory_usage: float = 0.0
     throughput: float = 0.0
@@ -51,6 +55,7 @@ class PerformanceMetrics:
 @dataclass
 class OptimizationConfig:
     """Configuration for performance optimization."""
+
     strategy: OptimizationStrategy = OptimizationStrategy.ASYNC_PARALLEL
     max_workers: int = 4
     batch_size: int = 10
@@ -98,6 +103,7 @@ class ResourceMonitor:
                 break
             except Exception as e:
                 logger.error(f"Error in resource monitoring: {e}")
+
     async def _collect_metrics(self) -> None:
         """Collect resource metrics."""
         try:
@@ -128,16 +134,25 @@ class ResourceMonitor:
 
         return {
             "cpu_usage": self.cpu_usage_history[-1] if self.cpu_usage_history else 0.0,
-            "memory_usage": self.memory_usage_history[-1] if self.memory_usage_history else 0.0,
-            "avg_cpu_usage": sum(self.cpu_usage_history) / len(self.cpu_usage_history) if self.cpu_usage_history else 0.0,
-            "avg_memory_usage": sum(self.memory_usage_history) / len(self.memory_usage_history) if self.memory_usage_history else 0.0
+            "memory_usage": self.memory_usage_history[-1]
+            if self.memory_usage_history
+            else 0.0,
+            "avg_cpu_usage": sum(self.cpu_usage_history) / len(self.cpu_usage_history)
+            if self.cpu_usage_history
+            else 0.0,
+            "avg_memory_usage": sum(self.memory_usage_history)
+            / len(self.memory_usage_history)
+            if self.memory_usage_history
+            else 0.0,
         }
 
 
 class ResourcePool:
     """Generic resource pool for object reuse."""
 
-    def __init__(self, factory: Callable[[], Any], max_size: int = 10, timeout: float = 30.0):
+    def __init__(
+        self, factory: Callable[[], Any], max_size: int = 10, timeout: float = 30.0
+    ):
         self.factory = factory
         self.max_size = max_size
         self.timeout = timeout
@@ -161,9 +176,11 @@ class ResourcePool:
 
             # Wait for resource to become available
             return self._pool.get(timeout=self.timeout)
+
     def release(self, resource: Any) -> None:
         """Release resource back to pool."""
         self._pool.put(resource)
+
     @asynccontextmanager
     async def get_resource(self):
         """Async context manager for resource acquisition."""
@@ -172,6 +189,8 @@ class ResourcePool:
             yield resource
         finally:
             await asyncio.to_thread(self.release, resource)
+
+
 class LazyLoader:
     """Lazy loading implementation for deferred resource loading."""
 
@@ -279,11 +298,7 @@ class AsyncParallelizer:
         self.ordered = True
 
     async def map(
-        self,
-        func: Callable,
-        items: List[Any],
-        ordered: bool = True,
-        **kwargs
+        self, func: Callable, items: List[Any], ordered: bool = True, **kwargs
     ) -> List[Any]:
         """Map function over items with parallelization."""
         self.ordered = ordered
@@ -291,13 +306,12 @@ class AsyncParallelizer:
             return await self._ordered_map(func, items, **kwargs)
         else:
             return await self._unordered_map(func, items, **kwargs)
+
     async def _ordered_map(
-        self,
-        func: Callable,
-        items: List[Any],
-        **kwargs
+        self, func: Callable, items: List[Any], **kwargs
     ) -> List[Any]:
         """Map maintaining order."""
+
         async def process_with_index(idx: int, item: Any) -> tuple:
             async with self._semaphore:
                 result = await self._execute_func(func, item, **kwargs)
@@ -305,7 +319,7 @@ class AsyncParallelizer:
 
         # Create tasks
         tasks = [
-            asyncio.create_task(process_with_index(idx, item)
+            asyncio.create_task(process_with_index(idx, item))
             for idx, item in enumerate(items)
         ]
 
@@ -316,29 +330,25 @@ class AsyncParallelizer:
         return [result for _, result in sorted_results]
 
     async def _unordered_map(
-        self,
-        func: Callable,
-        items: List[Any],
-        **kwargs
+        self, func: Callable, items: List[Any], **kwargs
     ) -> List[Any]:
         """Map without maintaining order (faster)."""
+
         async def process_item(item: Any) -> Any:
             async with self._semaphore:
                 return await self._execute_func(func, item, **kwargs)
-        tasks = [
-            asyncio.create_task(process_item(item)
-            for item in items
-        ]
+
+        tasks = [asyncio.create_task(process_item(item)) for item in items]
 
         return await asyncio.gather(*tasks)
-    async def _execute_func(
-        self,
-        func: Callable,
-        item: Any,
-        **kwargs
-    ) -> Any:
+
+    async def _execute_func(self, func: Callable, item: Any, **kwargs) -> Any:
         """Execute function with timeout."""
-        coro = func(item, **kwargs) if asyncio.iscoroutinefunction(func) else asyncio.to_thread(func, item, **kwargs)
+        coro = (
+            func(item, **kwargs)
+            if asyncio.iscoroutinefunction(func)
+            else asyncio.to_thread(func, item, **kwargs)
+        )
         if self.timeout:
             return await asyncio.wait_for(coro, timeout=self.timeout)
         else:
@@ -351,9 +361,9 @@ class AdaptiveOptimizer:
     def __init__(self):
         self.strategies = list(OptimizationStrategy)
         self.strategy_weights = {strategy: 1.0 for strategy in self.strategies}
-        self.performance_history: Dict[OptimizationStrategy, List[PerformanceMetrics]] = {
-            strategy: [] for strategy in self.strategies
-        }
+        self.performance_history: Dict[
+            OptimizationStrategy, List[PerformanceMetrics]
+        ] = {strategy: [] for strategy in self.strategies}
         self.exploration_rate = 0.1
 
     def select_strategy(self, context: Dict[str, Any]) -> OptimizationStrategy:
@@ -364,26 +374,28 @@ class AdaptiveOptimizer:
             return np.random.choice(self.strategies)
         else:
             # Exploit: weighted selection based on performance
-            weights = list(self.strategy_weights.values()
+            weights = list(self.strategy_weights.values())
             total_weight = sum(weights)
             probabilities = [w / total_weight for w in weights]
 
             return np.random.choice(self.strategies, p=probabilities)
+
     def update_performance(
-        self,
-        strategy: OptimizationStrategy,
-        metrics: PerformanceMetrics
+        self, strategy: OptimizationStrategy, metrics: PerformanceMetrics
     ) -> None:
         """Update performance metrics for a strategy."""
         self.performance_history[strategy].append(metrics)
         # Update weights based on performance
         recent_metrics = self.performance_history[strategy][-10:]  # Last 10 runs
         if recent_metrics:
-            avg_score = np.mean([
-                m.throughput * m.success_rate / max(m.execution_time, 0.01)
-                for m in recent_metrics
-            ])
+            avg_score = np.mean(
+                [
+                    m.throughput * m.success_rate / max(m.execution_time, 0.01)
+                    for m in recent_metrics
+                ]
+            )
             self.strategy_weights[strategy] = max(0.1, avg_score)
+
     def get_recommendations(self) -> Dict[str, Any]:
         """Get optimization recommendations."""
         recommendations = {}
@@ -393,10 +405,12 @@ class AdaptiveOptimizer:
             if metrics:
                 recent_metrics = metrics[-10:]
                 recommendations[strategy.value] = {
-                    "avg_execution_time": np.mean([m.execution_time for m in recent_metrics]),
+                    "avg_execution_time": np.mean(
+                        [m.execution_time for m in recent_metrics]
+                    ),
                     "avg_throughput": np.mean([m.throughput for m in recent_metrics]),
                     "success_rate": np.mean([m.success_rate for m in recent_metrics]),
-                    "weight": self.strategy_weights[strategy]
+                    "weight": self.strategy_weights[strategy],
                 }
 
         return recommendations
@@ -410,9 +424,7 @@ class PerformanceOptimizer:
     """
 
     def __init__(
-        self,
-        config: Optional[OptimizationConfig] = None,
-        enable_adaptive: bool = True
+        self, config: Optional[OptimizationConfig] = None, enable_adaptive: bool = True
     ):
         self.config = config or OptimizationConfig()
         self.max_workers = self.config.max_workers or (os.cpu_count() or 1) * 2
@@ -441,7 +453,7 @@ class PerformanceOptimizer:
         func: Callable,
         items: List[Any],
         strategy: Optional[OptimizationStrategy] = None,
-        **kwargs
+        **kwargs,
     ) -> List[Any]:
         """Optimize async execution of function over items."""
         # Ensure monitoring is started
@@ -453,7 +465,9 @@ class PerformanceOptimizer:
         if strategy is None and self.adaptive_optimizer:
             context = {
                 "item_count": len(items),
-                "function_name": func.__name__ if hasattr(func, '__name__') else str(func)
+                "function_name": func.__name__
+                if hasattr(func, '__name__')
+                else str(func),
             }
             strategy = self.adaptive_optimizer.select_strategy(context)
         strategy = strategy or OptimizationStrategy.ASYNC_PARALLEL
@@ -466,14 +480,14 @@ class PerformanceOptimizer:
                 # Create temporary batch processor
                 class TempBatchProcessor(BatchProcessor):
                     async def _process_batch(self, batch_items: List[Any]) -> List[Any]:
-                        return await asyncio.gather(*[
-                            func(item, **kwargs) for item in batch_items
-                        ])
+                        return await asyncio.gather(
+                            *[func(item, **kwargs) for item in batch_items]
+                        )
 
                 processor = TempBatchProcessor()
-                results = await asyncio.gather(*[
-                    processor.submit(item) for item in items
-                ])
+                results = await asyncio.gather(
+                    *[processor.submit(item) for item in items]
+                )
 
             else:
                 # Fallback to sequential
@@ -489,7 +503,7 @@ class PerformanceOptimizer:
             metrics = PerformanceMetrics(
                 execution_time=duration,
                 throughput=len(items) / duration if duration > 0 else 0,
-                success_rate=1.0  # Simplified
+                success_rate=1.0,  # Simplified
             )
 
             if self.adaptive_optimizer:
@@ -502,26 +516,16 @@ class PerformanceOptimizer:
             raise
 
     def optimize_cpu_bound(
-        self,
-        func: Callable,
-        items: List[Any],
-        **kwargs
+        self, func: Callable, items: List[Any], **kwargs
     ) -> List[Any]:
         """Optimize CPU-bound operations using process pool."""
         # Use process pool for heavy computation
-        futures = [
-            self.process_pool.submit(func, item, **kwargs)
-            for item in items
-        ]
+        futures = [self.process_pool.submit(func, item, **kwargs) for item in items]
 
         return [future.result() for future in concurrent.futures.as_completed(futures)]
 
     def create_resource_pool(
-        self,
-        name: str,
-        factory: Callable[[], Any],
-        max_size: int = 10,
-        **kwargs
+        self, name: str, factory: Callable[[], Any], max_size: int = 10, **kwargs
     ) -> ResourcePool:
         """Create a resource pool."""
         pool = ResourcePool(factory, max_size, **kwargs)
@@ -529,9 +533,7 @@ class PerformanceOptimizer:
         return pool
 
     def create_lazy_loader(
-        self,
-        name: str,
-        loader_func: Callable[[], Any]
+        self, name: str, loader_func: Callable[[], Any]
     ) -> LazyLoader:
         """Create a lazy loader."""
         loader = LazyLoader(loader_func)
@@ -539,10 +541,7 @@ class PerformanceOptimizer:
         return loader
 
     def create_batch_processor(
-        self,
-        name: str,
-        processor_class: type,
-        **kwargs
+        self, name: str, processor_class: type, **kwargs
     ) -> BatchProcessor:
         """Create a batch processor."""
         processor = processor_class(**kwargs)
@@ -554,7 +553,8 @@ class PerformanceOptimizer:
         if self.config.enable_monitoring and (
             self.monitoring_task is None or self.monitoring_task.done()
         ):
-            self.monitoring_task = asyncio.create_task(self._monitor_performance()
+            self.monitoring_task = asyncio.create_task(self._monitor_performance())
+
     async def _monitor_performance(self) -> None:
         """Monitor performance metrics."""
         while True:
@@ -565,10 +565,14 @@ class PerformanceOptimizer:
                 # Log performance stats
                 if self.metrics_history:
                     recent_metrics = self.metrics_history[-10:]
-                    avg_execution_time = np.mean([m.execution_time for m in recent_metrics])
+                    avg_execution_time = np.mean(
+                        [m.execution_time for m in recent_metrics]
+                    )
                     avg_throughput = np.mean([m.throughput for m in recent_metrics])
-                    logger.info(f"Performance Stats - Avg Execution Time: {avg_execution_time:.2f}s, "
-                              f"Avg Throughput: {avg_throughput:.2f} items/s")
+                    logger.info(
+                        f"Performance Stats - Avg Execution Time: {avg_execution_time:.2f}s, "
+                        f"Avg Throughput: {avg_throughput:.2f} items/s"
+                    )
             except Exception as e:
                 logger.error(f"Performance monitoring error: {e}")
                 await asyncio.sleep(60)  # Wait longer on error
@@ -579,15 +583,17 @@ class PerformanceOptimizer:
             "total_optimizations": len(self.metrics_history),
             "resource_pools": len(self.resource_pools),
             "lazy_loaders": len(self.lazy_loaders),
-            "batch_processors": len(self.batch_processors)
+            "batch_processors": len(self.batch_processors),
         }
 
         if self.metrics_history:
             recent_metrics = self.metrics_history[-10:]
             stats["performance"] = {
-                "avg_execution_time": np.mean([m.execution_time for m in recent_metrics]),
+                "avg_execution_time": np.mean(
+                    [m.execution_time for m in recent_metrics]
+                ),
                 "avg_throughput": np.mean([m.throughput for m in recent_metrics]),
-                "avg_success_rate": np.mean([m.success_rate for m in recent_metrics])
+                "avg_success_rate": np.mean([m.success_rate for m in recent_metrics]),
             }
 
         if self.adaptive_optimizer:
@@ -624,19 +630,20 @@ async def optimize_parallel(
     func: Callable,
     items: List[Any],
     strategy: Optional[OptimizationStrategy] = None,
-    **kwargs
+    **kwargs,
 ) -> List[Any]:
     """Convenience function for parallel optimization."""
     optimizer = get_optimizer()
-    return await optimizer.optimize_async(
-        func, items, strategy=strategy, **kwargs
-    )
+    return await optimizer.optimize_async(func, items, strategy=strategy, **kwargs)
+
+
 # Decorator for automatic optimization
 def optimize(
     strategy: OptimizationStrategy = OptimizationStrategy.ASYNC_PARALLEL,
-    max_workers: int = 4
+    max_workers: int = 4,
 ):
     """Decorator for automatic function optimization."""
+
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
@@ -650,12 +657,15 @@ def optimize(
 
                 async def optimized_func(item):
                     return await func(item, *remaining_args, **kwargs)
+
                 return await optimizer.optimize_async(
                     optimized_func, items, strategy=strategy
                 )
             else:
                 return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -666,7 +676,7 @@ if __name__ == "__main__":
         return x * 2
 
     async def main():
-        items = list(range(100)
+        items = list(range(100))
         # Test optimization
         start_time = time.time()
         results = await optimize_parallel(example_function, items)
@@ -682,4 +692,5 @@ if __name__ == "__main__":
 
         results2 = await decorated_function(items)
         print(f"Decorated results: {results2[:10]}...")
-    asyncio.run(main()
+
+    asyncio.run(main())

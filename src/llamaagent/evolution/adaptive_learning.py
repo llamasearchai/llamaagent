@@ -25,8 +25,11 @@ except ImportError:
     np = None
 
 logger = logging.getLogger(__name__)
+
+
 class LearningStrategy(Enum):
     """Learning strategy types."""
+
     SUPERVISED_FINE_TUNING = "supervised_fine_tuning"
     REINFORCEMENT_LEARNING = "reinforcement_learning"
     SELF_SUPERVISED = "self_supervised"
@@ -36,6 +39,7 @@ class LearningStrategy(Enum):
 
 class DataEnvironment(Enum):
     """Data collection environments."""
+
     CODE_REPOSITORY = "code_repository"
     WEB_BROWSER = "web_browser"
     COMPUTER_DESKTOP = "computer_desktop"
@@ -46,6 +50,7 @@ class DataEnvironment(Enum):
 
 class TaskStatus(Enum):
     """Task execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -56,6 +61,7 @@ class TaskStatus(Enum):
 @dataclass
 class TrainingExample:
     """Individual training example with metadata."""
+
     input_data: str
     expected_output: str
     context: Optional[Dict[str, Any]] = None
@@ -64,9 +70,12 @@ class TrainingExample:
     feedback: Optional[str] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for tracking improvement."""
+
     accuracy: float = 0.0
     precision: float = 0.0
     recall: float = 0.0
@@ -77,9 +86,12 @@ class PerformanceMetrics:
     error_rate: float = 0.0
     improvement_rate: float = 0.0
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 @dataclass
 class LearningSession:
     """Individual learning session with specific objectives."""
+
     session_id: str
     strategy: LearningStrategy
     environment: DataEnvironment
@@ -90,6 +102,8 @@ class LearningSession:
     duration: float = 0.0
     success: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class DataCollectionAgent:
     """Agent for collecting training data from multiple environments."""
 
@@ -98,10 +112,12 @@ class DataCollectionAgent:
         self.collection_stats: Dict[str, Any] = {
             "total_collected": 0,
             "environments_covered": set(),
-            "quality_distribution": {"high": 0, "medium": 0, "low": 0}
+            "quality_distribution": {"high": 0, "medium": 0, "low": 0},
         }
 
-    async def collect_from_code_repositories(self, repo_paths: List[str]) -> List[TrainingExample]:
+    async def collect_from_code_repositories(
+        self, repo_paths: List[str]
+    ) -> List[TrainingExample]:
         """Collect training data from code repositories."""
         examples: List[TrainingExample] = []
 
@@ -122,9 +138,12 @@ class DataCollectionAgent:
                             example = TrainingExample(
                                 input_data=f"Analyze this Python code:\n{content[:500]}...",
                                 expected_output=f"Code analysis: {py_file.name}",
-                                context={"file_path": str(py_file), "file_type": "python"},
+                                context={
+                                    "file_path": str(py_file),
+                                    "file_type": "python",
+                                },
                                 environment=DataEnvironment.CODE_REPOSITORY,
-                                quality_score=0.8
+                                quality_score=0.8,
                             )
                             examples.append(example)
                     except Exception as e:
@@ -133,10 +152,14 @@ class DataCollectionAgent:
                 logger.error(f"Failed to process repository {repo_path}: {e}")
         self.collected_examples.extend(examples)
         self.collection_stats["total_collected"] += len(examples)
-        self.collection_stats["environments_covered"].add(DataEnvironment.CODE_REPOSITORY)
+        self.collection_stats["environments_covered"].add(
+            DataEnvironment.CODE_REPOSITORY
+        )
         return examples
 
-    async def collect_from_web_interactions(self, urls: List[str]) -> List[TrainingExample]:
+    async def collect_from_web_interactions(
+        self, urls: List[str]
+    ) -> List[TrainingExample]:
         """Collect training data from web interactions."""
         examples: List[TrainingExample] = []
 
@@ -145,7 +168,7 @@ class DataCollectionAgent:
             ("Navigate to documentation", "Successfully accessed documentation"),
             ("Search for information", "Found relevant search results"),
             ("Extract key information", "Extracted important details"),
-            ("Summarize content", "Created concise summary")
+            ("Summarize content", "Created concise summary"),
         ]
 
         for url in urls[:5]:  # Limit for demo
@@ -155,7 +178,7 @@ class DataCollectionAgent:
                     expected_output=expected,
                     context={"url": url, "task_type": "web_interaction"},
                     environment=DataEnvironment.WEB_BROWSER,
-                    quality_score=0.7
+                    quality_score=0.7,
                 )
                 examples.append(example)
         self.collected_examples.extend(examples)
@@ -169,10 +192,22 @@ class DataCollectionAgent:
 
         # Simulate computer interaction tasks
         computer_tasks = [
-            ("Open a text editor and create a new document", "Successfully created new document"),
-            ("Navigate file system to find specific files", "Located target files efficiently"),
-            ("Use command line tools for system tasks", "Executed commands successfully"),
-            ("Manage application windows and workspaces", "Organized workspace effectively")
+            (
+                "Open a text editor and create a new document",
+                "Successfully created new document",
+            ),
+            (
+                "Navigate file system to find specific files",
+                "Located target files efficiently",
+            ),
+            (
+                "Use command line tools for system tasks",
+                "Executed commands successfully",
+            ),
+            (
+                "Manage application windows and workspaces",
+                "Organized workspace effectively",
+            ),
         ]
 
         for task, expected in computer_tasks:
@@ -181,12 +216,14 @@ class DataCollectionAgent:
                 expected_output=expected,
                 context={"task_type": "computer_interaction"},
                 environment=DataEnvironment.COMPUTER_DESKTOP,
-                quality_score=0.8
+                quality_score=0.8,
             )
             examples.append(example)
         self.collected_examples.extend(examples)
         self.collection_stats["total_collected"] += len(examples)
-        self.collection_stats["environments_covered"].add(DataEnvironment.COMPUTER_DESKTOP)
+        self.collection_stats["environments_covered"].add(
+            DataEnvironment.COMPUTER_DESKTOP
+        )
         return examples
 
 
@@ -197,7 +234,9 @@ class SupervisedFineTuningEngine:
         self.training_history: List[LearningSession] = []
         self.model_checkpoints: Dict[str, Any] = {}
 
-    async def train_model(self, training_data: List[TrainingExample], epochs: int = 3) -> LearningSession:
+    async def train_model(
+        self, training_data: List[TrainingExample], epochs: int = 3
+    ) -> LearningSession:
         """Perform supervised fine-tuning."""
 
         session_id = f"sft_{int(time.time())}"
@@ -206,7 +245,7 @@ class SupervisedFineTuningEngine:
             strategy=LearningStrategy.SUPERVISED_FINE_TUNING,
             environment=DataEnvironment.CHAT_CONVERSATIONS,
             objective="Improve model performance through supervised fine-tuning",
-            training_examples=training_data
+            training_examples=training_data,
         )
         start_time = time.time()
 
@@ -223,7 +262,7 @@ class SupervisedFineTuningEngine:
                 # Simulate batch processing
                 batch_size = min(32, len(training_data))
                 for i in range(0, len(training_data), batch_size):
-                    batch = training_data[i:i + batch_size]
+                    batch = training_data[i : i + batch_size]
                     await self._process_training_batch(batch)
                 # Simulate validation
                 await asyncio.sleep(0.1)  # Simulate processing time
@@ -246,6 +285,7 @@ class SupervisedFineTuningEngine:
         """Process a batch of training examples."""
         # Simulate batch processing
         await asyncio.sleep(0.05)
+
     async def _evaluate_model(self) -> PerformanceMetrics:
         """Evaluate current model performance."""
         # Simulate model evaluation
@@ -255,10 +295,15 @@ class SupervisedFineTuningEngine:
             recall = np.random.uniform(0.6, 0.88)
         else:
             import random
+
             accuracy = random.uniform(0.7, 0.95)
             precision = random.uniform(0.65, 0.9)
             recall = random.uniform(0.6, 0.88)
-        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+        f1_score = (
+            2 * (precision * recall) / (precision + recall)
+            if (precision + recall) > 0
+            else 0
+        )
 
         return PerformanceMetrics(
             accuracy=accuracy,
@@ -268,8 +313,10 @@ class SupervisedFineTuningEngine:
             task_completion_rate=accuracy,
             average_response_time=1.2,
             user_satisfaction=accuracy * 0.9,
-            error_rate=1.0 - accuracy
+            error_rate=1.0 - accuracy,
         )
+
+
 class ReinforcementLearningEngine:
     """Engine for reinforcement learning and RLHF."""
 
@@ -278,16 +325,18 @@ class ReinforcementLearningEngine:
         self.policy_optimizer = PolicyOptimizer()
         self.training_history: List[LearningSession] = []
 
-    async def train_with_feedback(self, interactions: List[Dict[str, Any]], num_iterations: int = 5) -> LearningSession:
+    async def train_with_feedback(
+        self, interactions: List[Dict[str, Any]], num_iterations: int = 5
+    ) -> LearningSession:
         """Train using reinforcement learning from human feedback."""
 
-        session_id = f"rlhf_{int(time.time()}"
+        session_id = f"rlhf_{int(time.time())}"
         session = LearningSession(
             session_id=session_id,
             strategy=LearningStrategy.REINFORCEMENT_LEARNING,
             environment=DataEnvironment.CHAT_CONVERSATIONS,
             objective="Improve model behavior through human feedback",
-            training_examples=[]
+            training_examples=[],
         )
         start_time = time.time()
 
@@ -333,13 +382,16 @@ class ReinforcementLearningEngine:
             reward_score = np.random.uniform(0.6, 0.9)
         else:
             import random
+
             reward_score = random.uniform(0.6, 0.9)
         return PerformanceMetrics(
             accuracy=reward_score,
             task_completion_rate=reward_score,
             user_satisfaction=reward_score,
-            improvement_rate=0.1
+            improvement_rate=0.1,
         )
+
+
 class RewardModel:
     """Reward model for RLHF training."""
 
@@ -355,6 +407,7 @@ class RewardModel:
             return [np.random.uniform(0.3, 1.0) for _ in responses]
         else:
             import random
+
             return [random.uniform(0.3, 1.0) for _ in responses]
 
 
@@ -396,17 +449,23 @@ class PerformanceTracker:
 
         if np:
             avg_accuracy = np.mean([m.accuracy for m in recent_metrics])
-            avg_completion_rate = np.mean([m.task_completion_rate for m in recent_metrics])
+            avg_completion_rate = np.mean(
+                [m.task_completion_rate for m in recent_metrics]
+            )
             avg_satisfaction = np.mean([m.user_satisfaction for m in recent_metrics])
         else:
             avg_accuracy = sum(m.accuracy for m in recent_metrics) / len(recent_metrics)
-            avg_completion_rate = sum(m.task_completion_rate for m in recent_metrics) / len(recent_metrics)
-            avg_satisfaction = sum(m.user_satisfaction for m in recent_metrics) / len(recent_metrics)
+            avg_completion_rate = sum(
+                m.task_completion_rate for m in recent_metrics
+            ) / len(recent_metrics)
+            avg_satisfaction = sum(m.user_satisfaction for m in recent_metrics) / len(
+                recent_metrics
+            )
         return {
             "average_accuracy": float(avg_accuracy),
             "average_completion_rate": float(avg_completion_rate),
             "average_satisfaction": float(avg_satisfaction),
-            "total_sessions": len(self.metrics_history)
+            "total_sessions": len(self.metrics_history),
         }
 
 
@@ -420,7 +479,9 @@ class AdaptiveLearningSystem:
         self.performance_tracker = PerformanceTracker()
         self.learning_pipeline_active = False
 
-    async def run_comprehensive_learning(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_comprehensive_learning(
+        self, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Run comprehensive learning pipeline with multi-environment data collection."""
 
         if self.learning_pipeline_active:
@@ -438,39 +499,60 @@ class AdaptiveLearningSystem:
             if config.get("collect_code_data", True):
                 repo_paths = config.get("repo_paths", [])
                 if repo_paths:
-                    code_examples = await self.data_collector.collect_from_code_repositories(repo_paths)
+                    code_examples = (
+                        await self.data_collector.collect_from_code_repositories(
+                            repo_paths
+                        )
+                    )
                     all_examples.extend(code_examples)
             if config.get("collect_web_data", True):
                 urls = config.get("web_urls", [])
                 if urls:
-                    web_examples = await self.data_collector.collect_from_web_interactions(urls)
+                    web_examples = (
+                        await self.data_collector.collect_from_web_interactions(urls)
+                    )
                     all_examples.extend(web_examples)
             if config.get("collect_computer_data", True):
-                computer_examples = await self.data_collector.collect_from_computer_interactions()
+                computer_examples = (
+                    await self.data_collector.collect_from_computer_interactions()
+                )
                 all_examples.extend(computer_examples)
             # Phase 2: Data filtering and quality assessment
             logger.info("Phase 2: Data filtering and quality assessment")
-            high_quality_examples = [ex for ex in all_examples if ex.quality_score >= 0.8]
+            high_quality_examples = [
+                ex for ex in all_examples if ex.quality_score >= 0.8
+            ]
 
             # Phase 3: Supervised fine-tuning
             if config.get("enable_sft", True) and high_quality_examples:
                 logger.info("Phase 3: Supervised fine-tuning")
                 sft_session = await self.sft_engine.train_model(
-                    high_quality_examples,
-                    epochs=config.get("sft_epochs", 3)
+                    high_quality_examples, epochs=config.get("sft_epochs", 3)
                 )
                 if sft_session.performance_after:
-                    await self.performance_tracker.record_metrics(sft_session.performance_after)
+                    await self.performance_tracker.record_metrics(
+                        sft_session.performance_after
+                    )
             # Phase 4: Reinforcement learning (if enabled)
             if config.get("enable_rlhf", False):
                 logger.info("Phase 4: Reinforcement learning from human feedback")
                 mock_interactions = [
-                    {"prompt": "Plan a project", "response": "I'll help you plan", "reward": 0.8},
-                    {"prompt": "Write a Python function", "response": "def example():", "reward": 0.9}
+                    {
+                        "prompt": "Plan a project",
+                        "response": "I'll help you plan",
+                        "reward": 0.8,
+                    },
+                    {
+                        "prompt": "Write a Python function",
+                        "response": "def example():",
+                        "reward": 0.9,
+                    },
                 ]
                 rl_session = await self.rl_engine.train_with_feedback(mock_interactions)
                 if rl_session.performance_after:
-                    await self.performance_tracker.record_metrics(rl_session.performance_after)
+                    await self.performance_tracker.record_metrics(
+                        rl_session.performance_after
+                    )
             # Phase 5: Performance analysis and insights
             logger.info("Phase 5: Performance analysis and insights")
             insights = await self.get_learning_insights()
@@ -481,10 +563,12 @@ class AdaptiveLearningSystem:
                 "success": True,
                 "total_examples_collected": len(all_examples),
                 "high_quality_examples": len(high_quality_examples),
-                "environments_covered": len(self.data_collector.collection_stats["environments_covered"]),
+                "environments_covered": len(
+                    self.data_collector.collection_stats["environments_covered"]
+                ),
                 "total_time": total_time,
                 "insights": insights,
-                "collection_stats": self.data_collector.collection_stats
+                "collection_stats": self.data_collector.collection_stats,
             }
 
         except Exception as e:
@@ -492,7 +576,7 @@ class AdaptiveLearningSystem:
             return {
                 "success": False,
                 "error": str(e),
-                "total_time": time.time() - pipeline_start
+                "total_time": time.time() - pipeline_start,
             }
 
         finally:
@@ -504,13 +588,16 @@ class AdaptiveLearningSystem:
 
         insights = {
             "performance_trends": trends,
-            "total_learning_sessions": len(self.sft_engine.training_history) + len(self.rl_engine.training_history),
-            "data_collection_coverage": len(self.data_collector.collection_stats["environments_covered"]),
+            "total_learning_sessions": len(self.sft_engine.training_history)
+            + len(self.rl_engine.training_history),
+            "data_collection_coverage": len(
+                self.data_collector.collection_stats["environments_covered"]
+            ),
             "recommendations": [
                 "Continue collecting diverse training examples",
                 "Focus on high-quality data sources",
-                "Monitor performance trends for optimal learning strategies"
-            ]
+                "Monitor performance trends for optimal learning strategies",
+            ],
         }
 
         return insights
@@ -523,7 +610,8 @@ class AdaptiveLearningSystem:
             "performance_history_length": len(self.performance_tracker.metrics_history),
             "sft_sessions": len(self.sft_engine.training_history),
             "rl_sessions": len(self.rl_engine.training_history),
-            "baseline_established": self.performance_tracker.baseline_metrics is not None
+            "baseline_established": self.performance_tracker.baseline_metrics
+            is not None,
         }
 
 

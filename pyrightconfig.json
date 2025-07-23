@@ -6,6 +6,7 @@
   "stubPath": "typings",
   "reportMissingTypeStubs": "none",
   "reportMissingImports": false,
+  "reportMissingModuleSource": false,
   "reportUnknownMemberType": false,
   "reportUnknownArgumentType": false,
   "reportUnknownVariableType": false,

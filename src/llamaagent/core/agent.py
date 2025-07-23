@@ -69,15 +69,12 @@ try:
 
     psutil_available = True
 except ImportError:
-    psutil = None
     psutil_available = False
-
-# Setup logging
-logger = logging.getLogger(__name__)
+    psutil = None  # Ensure psutil is defined even when import fails
 
 
 class AgentState(Enum):
-    """Agent execution states."""
+    """Agent state enumeration."""
 
     IDLE = "idle"
     THINKING = "thinking"
@@ -331,20 +328,41 @@ class Agent(ABC):
     ) -> Optional[AgentMessage]:
         """Handle collaboration requests."""
         collaboration_data = message.content
-        try:
-            result = await self.collaborate(collaboration_data)
-        except Exception as e:
-            self.logger.error(f"Collaboration failed: {e}")
-            result = {"error": str(e), "status": "failed"}
 
-        response = AgentMessage(
-            sender_id=self.agent_id,
-            recipient_id=message.sender_id,
-            message_type="collaboration_response",
-            content={"result": result},
-            correlation_id=message.id,
-        )
-        return response
+        # Check if the agent has a 'collaborate' method, else return error response
+        if hasattr(self, "collaborate") and callable(getattr(self, "collaborate")):
+            try:
+                result = await self.collaborate(collaboration_data)
+                response = AgentMessage(
+                    sender_id=self.agent_id,
+                    recipient_id=message.sender_id,
+                    message_type="collaboration_response",
+                    content={"result": result},
+                    correlation_id=message.id,
+                )
+                return response
+            except Exception as e:
+                self.logger.error(f"Collaboration failed: {e}")
+                response = AgentMessage(
+                    sender_id=self.agent_id,
+                    recipient_id=message.sender_id,
+                    message_type="collaboration_response",
+                    content={"error": str(e), "status": "failed"},
+                    correlation_id=message.id,
+                )
+                return response
+        else:
+            self.logger.warning(
+                f"Agent {self.agent_id} does not have a 'collaborate' method."
+            )
+            response = AgentMessage(
+                sender_id=self.agent_id,
+                recipient_id=message.sender_id,
+                message_type="collaboration_response",
+                content={"error": "Collaboration not supported", "status": "failed"},
+                correlation_id=message.id,
+            )
+            return response
 
     async def _handle_context_update(
         self, message: AgentMessage
@@ -383,22 +401,22 @@ class Agent(ABC):
 
     def _get_memory_usage(self) -> float:
         """Get memory usage in MB."""
-        if psutil_available and psutil:
-            try:
+        try:
+            if psutil:
                 process = psutil.Process()
                 return process.memory_info().rss / 1024 / 1024
-            except Exception:
-                return 0.0
-        return 0.0
+            return 0.0
+        except Exception as e:
+            self.logger.warning(f"Failed to get memory usage: {e}")
+            return 0.0
 
-    async def collaborate(self, collaboration_data: Dict[str, Any]) -> Any:
+    async def collaborate(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Collaborate with other agents on complex tasks."""
-        task_type = collaboration_data.get("task_type")
-
+        task_type = data.get("task_type")
         if task_type == "reasoning_chain":
-            return await self._contribute_to_reasoning_chain(collaboration_data)
+            return await self._contribute_to_reasoning_chain(data)
         elif task_type == "parallel_execution":
-            return await self._execute_parallel_subtask(collaboration_data)
+            return await self._execute_parallel_subtask(data)
         else:
             return {"error": f"Unknown collaboration type: {task_type}"}
 

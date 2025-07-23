@@ -477,20 +477,28 @@ def generate_test_report():
             "passed": test_results["passed"],
             "failed": test_results["failed"],
             "skipped": test_results["skipped"],
-            "success_rate": (test_results["passed"] / test_results["total_tests"] * 100)
-            if test_results["total_tests"] > 0
-            else 0,
+            "success_rate": (
+                (test_results["passed"] / test_results["total_tests"] * 100)
+                if test_results["total_tests"] > 0
+                else 0
+            ),
         },
         "execution_time": {
-            "start_time": test_results["start_time"].isoformat()
-            if test_results["start_time"]
-            else None,
-            "end_time": test_results["end_time"].isoformat()
-            if test_results["end_time"]
-            else None,
-            "duration": str(test_results["end_time"] - test_results["start_time"])
-            if test_results["start_time"] and test_results["end_time"]
-            else None,
+            "start_time": (
+                test_results["start_time"].isoformat()
+                if test_results["start_time"]
+                else None
+            ),
+            "end_time": (
+                test_results["end_time"].isoformat()
+                if test_results["end_time"]
+                else None
+            ),
+            "duration": (
+                str(test_results["end_time"] - test_results["start_time"])
+                if test_results["start_time"] and test_results["end_time"]
+                else None
+            ),
         },
         "errors": test_results["errors"],
         "system_info": {

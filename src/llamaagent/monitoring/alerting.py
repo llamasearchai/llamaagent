@@ -18,19 +18,24 @@ from typing import Any, Callable, Dict, List, Optional
 # Optional imports
 try:
     import aiohttp
+
     AIOHTTP_AVAILABLE = True
 except ImportError:
     AIOHTTP_AVAILABLE = False
 
 try:
     from slack_sdk.webhook import WebhookClient
+
     SLACK_AVAILABLE = True
 except ImportError:
     SLACK_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
+
+
 class AlertSeverity(Enum):
     """Alert severity levels"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -39,6 +44,7 @@ class AlertSeverity(Enum):
 
 class AlertChannel(Enum):
     """Alert delivery channels"""
+
     LOG = "log"
     EMAIL = "email"
     SLACK = "slack"
@@ -49,6 +55,7 @@ class AlertChannel(Enum):
 @dataclass
 class Alert:
     """Alert definition"""
+
     id: str
     name: str
     severity: AlertSeverity
@@ -56,6 +63,7 @@ class Alert:
     details: Dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     tags: List[str] = field(default_factory=list)
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert alert to dictionary"""
         return {
@@ -65,13 +73,14 @@ class Alert:
             "message": self.message,
             "details": self.details,
             "timestamp": self.timestamp.isoformat(),
-            "tags": self.tags
+            "tags": self.tags,
         }
 
 
 @dataclass
 class AlertRule:
     """Alert rule definition"""
+
     name: str
     condition: Callable[[Dict[str, Any]], bool]
     severity: AlertSeverity
@@ -80,6 +89,8 @@ class AlertRule:
     cooldown_minutes: int = 5
     enabled: bool = True
     tags: List[str] = field(default_factory=list)
+
+
 @dataclass
 class ChannelConfig:
     """Configuration for alert channels"""
@@ -110,7 +121,7 @@ class AlertManager:
         self,
         channel_config: Optional[ChannelConfig] = None,
         rate_limit_per_hour: int = 100,
-        aggregate_window_minutes: int = 5
+        aggregate_window_minutes: int = 5,
     ) -> None:
         self.channel_config = channel_config or ChannelConfig()
         self.rate_limit_per_hour = rate_limit_per_hour
@@ -133,7 +144,7 @@ class AlertManager:
             AlertChannel.EMAIL: self._send_email_alert,
             AlertChannel.SLACK: self._send_slack_alert,
             AlertChannel.WEBHOOK: self._send_webhook_alert,
-            AlertChannel.PAGERDUTY: self._send_pagerduty_alert
+            AlertChannel.PAGERDUTY: self._send_pagerduty_alert,
         }
 
         # Start background aggregation task
@@ -143,6 +154,7 @@ class AlertManager:
         """Start the alert manager"""
         if self._aggregation_task is None:
             self._aggregation_task = asyncio.create_task(self._aggregation_loop())
+
     def stop(self) -> None:
         """Stop the alert manager"""
         if self._aggregation_task:
@@ -164,7 +176,7 @@ class AlertManager:
         severity: AlertSeverity,
         message: str,
         details: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
     ) -> None:
         """Trigger an alert"""
         # Create alert
@@ -174,7 +186,7 @@ class AlertManager:
             severity=severity,
             message=message,
             details=details or {},
-            tags=tags or []
+            tags=tags or [],
         )
 
         # For critical alerts, send immediately
@@ -192,10 +204,16 @@ class AlertManager:
         if key not in self.pending_alerts:
             self.pending_alerts[key] = []
         self.pending_alerts[key].append(alert)
+
     def _get_channels_for_severity(self, severity: AlertSeverity) -> List[AlertChannel]:
         """Get appropriate channels for alert severity"""
         if severity == AlertSeverity.CRITICAL:
-            return [AlertChannel.LOG, AlertChannel.EMAIL, AlertChannel.SLACK, AlertChannel.PAGERDUTY]
+            return [
+                AlertChannel.LOG,
+                AlertChannel.EMAIL,
+                AlertChannel.SLACK,
+                AlertChannel.PAGERDUTY,
+            ]
         elif severity == AlertSeverity.ERROR:
             return [AlertChannel.LOG, AlertChannel.EMAIL, AlertChannel.SLACK]
         elif severity == AlertSeverity.WARNING:
@@ -213,6 +231,7 @@ class AlertManager:
                 break
             except Exception as e:
                 logger.error(f"Error in aggregation loop: {e}")
+
     async def _process_pending_alerts(self) -> None:
         """Process pending alerts for aggregation"""
         if not self.pending_alerts:
@@ -267,8 +286,11 @@ class AlertManager:
             name=f"Aggregated: {alerts[0].name}",
             severity=max_severity,
             message=combined_message,
-            details={"aggregated_count": len(alerts), "original_alerts": [a.id for a in alerts]},
-            tags=list(all_tags)
+            details={
+                "aggregated_count": len(alerts),
+                "original_alerts": [a.id for a in alerts],
+            },
+            tags=list(all_tags),
         )
 
     async def _send_alert_to_channels(
@@ -282,13 +304,14 @@ class AlertManager:
                 tasks.append(asyncio.create_task(handler(alert)))
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+
     async def _send_log_alert(self, alert: Alert) -> None:
         """Send alert to logs"""
         log_method = {
             AlertSeverity.INFO: logger.info,
             AlertSeverity.WARNING: logger.warning,
             AlertSeverity.ERROR: logger.error,
-            AlertSeverity.CRITICAL: logger.critical
+            AlertSeverity.CRITICAL: logger.critical,
         }.get(alert.severity, logger.info)
         log_method(
             f"ALERT [{alert.severity.value.upper()}] {alert.name}: {alert.message}"
@@ -296,13 +319,15 @@ class AlertManager:
 
     async def _send_email_alert(self, alert: Alert) -> None:
         """Send alert via email"""
-        if not all([
-            self.channel_config.smtp_host,
-            self.channel_config.smtp_username,
-            self.channel_config.smtp_password,
-            self.channel_config.email_from,
-            self.channel_config.email_to
-        ]):
+        if not all(
+            [
+                self.channel_config.smtp_host,
+                self.channel_config.smtp_username,
+                self.channel_config.smtp_password,
+                self.channel_config.email_from,
+                self.channel_config.email_to,
+            ]
+        ):
             logger.warning("Email not configured")
             return
 
@@ -326,16 +351,21 @@ Details:
 Tags: {', '.join(alert.tags)}
 """
 
-            msg.attach(MIMEText(body, 'plain')
+            msg.attach(MIMEText(body, 'plain'))
             # Send email
-            server = smtplib.SMTP(self.channel_config.smtp_host, self.channel_config.smtp_port)
+            server = smtplib.SMTP(
+                self.channel_config.smtp_host, self.channel_config.smtp_port
+            )
             server.starttls()
-            server.login(self.channel_config.smtp_username, self.channel_config.smtp_password)
+            server.login(
+                self.channel_config.smtp_username, self.channel_config.smtp_password
+            )
             server.send_message(msg)
             server.quit()
 
         except Exception as e:
             logger.error(f"Failed to send email alert: {e}")
+
     async def _send_slack_alert(self, alert: Alert) -> None:
         """Send alert to Slack"""
         if not SLACK_AVAILABLE or not self.channel_config.slack_webhook_url:
@@ -349,30 +379,43 @@ Tags: {', '.join(alert.tags)}
                 AlertSeverity.INFO: "good",
                 AlertSeverity.WARNING: "warning",
                 AlertSeverity.ERROR: "danger",
-                AlertSeverity.CRITICAL: "danger"
+                AlertSeverity.CRITICAL: "danger",
             }.get(alert.severity, "good")
             payload = {
                 "text": f"Alert: {alert.name}",
-                "attachments": [{
-                    "color": color,
-                    "fields": [
-                        {"title": "Severity", "value": alert.severity.value.upper(), "short": True},
-                        {"title": "Time", "value": alert.timestamp.isoformat(), "short": True},
-                        {"title": "Message", "value": alert.message, "short": False}
-                    ]
-                }]
+                "attachments": [
+                    {
+                        "color": color,
+                        "fields": [
+                            {
+                                "title": "Severity",
+                                "value": alert.severity.value.upper(),
+                                "short": True,
+                            },
+                            {
+                                "title": "Time",
+                                "value": alert.timestamp.isoformat(),
+                                "short": True,
+                            },
+                            {
+                                "title": "Message",
+                                "value": alert.message,
+                                "short": False,
+                            },
+                        ],
+                    }
+                ],
             }
 
             if alert.tags:
-                payload["attachments"][0]["fields"].append({
-                    "title": "Tags",
-                    "value": ", ".join(alert.tags),
-                    "short": False
-                })
+                payload["attachments"][0]["fields"].append(
+                    {"title": "Tags", "value": ", ".join(alert.tags), "short": False}
+                )
 
             webhook.send(**payload)
         except Exception as e:
             logger.error(f"Failed to send Slack alert: {e}")
+
     async def _send_webhook_alert(self, alert: Alert) -> None:
         """Send alert to webhook"""
         if not AIOHTTP_AVAILABLE or not self.channel_config.webhook_url:
@@ -384,18 +427,16 @@ Tags: {', '.join(alert.tags)}
                 async with session.post(
                     self.channel_config.webhook_url,
                     json=alert.to_dict(),
-                    headers=self.channel_config.webhook_headers
+                    headers=self.channel_config.webhook_headers,
                 ) as response:
                     if response.status >= 400:
                         logger.error(f"Webhook alert failed: {response.status}")
         except Exception as e:
             logger.error(f"Failed to send webhook alert: {e}")
+
     async def _send_pagerduty_alert(self, alert: Alert) -> None:
         """Send alert to PagerDuty"""
-        if not all([
-            AIOHTTP_AVAILABLE,
-            self.channel_config.pagerduty_routing_key
-        ]):
+        if not all([AIOHTTP_AVAILABLE, self.channel_config.pagerduty_routing_key]):
             logger.warning("PagerDuty not configured")
             return
 
@@ -407,19 +448,19 @@ Tags: {', '.join(alert.tags)}
                     "summary": f"{alert.name}: {alert.message}",
                     "severity": alert.severity.value,
                     "source": "llamaagent",
-                    "custom_details": alert.details
-                }
+                    "custom_details": alert.details,
+                },
             }
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    "https://events.pagerduty.com/v2/enqueue",
-                    json=payload
+                    "https://events.pagerduty.com/v2/enqueue", json=payload
                 ) as response:
                     if response.status >= 400:
                         logger.error(f"PagerDuty alert failed: {response.status}")
         except Exception as e:
             logger.error(f"Failed to send PagerDuty alert: {e}")
+
     async def check_conditions(self, metrics: Dict[str, Any]) -> None:
         """Check alert conditions against metrics"""
         for rule_name, rule in self.alert_rules.items():
@@ -441,19 +482,23 @@ Tags: {', '.join(alert.tags)}
                         severity=rule.severity,
                         message=rule.message_template.format(**metrics),
                         details=metrics,
-                        tags=rule.tags
+                        tags=rule.tags,
                     )
 
                     await self.trigger_alert(
-                        alert.name, alert.severity, alert.message,
-                        alert.details, alert.tags
+                        alert.name,
+                        alert.severity,
+                        alert.message,
+                        alert.details,
+                        alert.tags,
                     )
                     # Set cooldown
-                    self.cooldown_until[rule_name] = datetime.now(timezone.utc) + timedelta(
-                        minutes=rule.cooldown_minutes
-                    )
+                    self.cooldown_until[rule_name] = datetime.now(
+                        timezone.utc
+                    ) + timedelta(minutes=rule.cooldown_minutes)
             except Exception as e:
                 logger.error(f"Error checking rule {rule_name}: {e}")
+
     def _check_rate_limit(self) -> bool:
         """Check if we're within rate limits"""
         now = datetime.now(timezone.utc)
@@ -491,7 +536,7 @@ async def send_alert(
     severity: AlertSeverity,
     message: str,
     details: Optional[Dict[str, Any]] = None,
-    tags: Optional[List[str]] = None
+    tags: Optional[List[str]] = None,
 ) -> None:
     """Send an alert using the global alert manager"""
     manager = get_alert_manager()

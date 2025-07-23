@@ -77,12 +77,16 @@ class TestRunner:
                 "skipped": skipped,
                 "total": passed + failed + skipped,
                 "success": result.returncode == 0,
-                "stdout": result.stdout[-2000:]
-                if len(result.stdout) > 2000
-                else result.stdout,
-                "stderr": result.stderr[-1000:]
-                if len(result.stderr) > 1000
-                else result.stderr,
+                "stdout": (
+                    result.stdout[-2000:]
+                    if len(result.stdout) > 2000
+                    else result.stdout
+                ),
+                "stderr": (
+                    result.stderr[-1000:]
+                    if len(result.stderr) > 1000
+                    else result.stderr
+                ),
             }
 
             print(f"Results: {passed} passed, {failed} failed, {skipped} skipped")

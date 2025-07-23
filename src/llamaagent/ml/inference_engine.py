@@ -30,6 +30,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 # Optional imports with fallbacks
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
@@ -37,6 +38,7 @@ except ImportError:
 
 try:
     import torch
+
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
@@ -44,6 +46,7 @@ except ImportError:
 
 try:
     import tensorflow as tf
+
     TENSORFLOW_AVAILABLE = True
 except ImportError:
     TENSORFLOW_AVAILABLE = False
@@ -51,6 +54,7 @@ except ImportError:
 
 try:
     import onnxruntime as ort
+
     ONNX_AVAILABLE = True
 except ImportError:
     ONNX_AVAILABLE = False
@@ -58,6 +62,7 @@ except ImportError:
 
 try:
     from transformers import AutoModel, AutoTokenizer
+
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
@@ -66,6 +71,7 @@ except ImportError:
 
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
@@ -73,23 +79,29 @@ except ImportError:
 
 try:
     from opentelemetry import trace
+
     tracer = trace.get_tracer(__name__)
 except ImportError:
     # Fallback tracer
     class NoOpTracer:
         def start_as_current_span(self, name: str):
             return self
+
         def __enter__(self):
             return self
+
         def __exit__(self, *args: Any):
             pass
+
         def set_attribute(self, key: str, value: Any):
             pass
+
     tracer = NoOpTracer()
 
 
 class ModelType(Enum):
     """Types of ML models supported"""
+
     TRANSFORMER = "transformer"
     SKLEARN = "sklearn"
     PYTORCH = "pytorch"
@@ -100,6 +112,7 @@ class ModelType(Enum):
 
 class InferenceMode(Enum):
     """Inference execution modes"""
+
     REALTIME = "realtime"
     BATCH = "batch"
     STREAMING = "streaming"
@@ -107,6 +120,7 @@ class InferenceMode(Enum):
 
 class ModelStatus(Enum):
     """Model loading and execution status"""
+
     LOADING = "loading"
     READY = "ready"
     ERROR = "error"
@@ -117,6 +131,7 @@ class ModelStatus(Enum):
 @dataclass
 class ModelConfig:
     """Model configuration and metadata"""
+
     model_id: str
     version: str
     model_type: ModelType
@@ -128,9 +143,12 @@ class ModelConfig:
     optimization_level: int = 0
     enable_caching: bool = True
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class InferenceRequest:
     """Inference request structure"""
+
     request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     model_id: str = ""
     version: Optional[str] = None
@@ -141,9 +159,12 @@ class InferenceRequest:
     timeout: float = 30.0
     callback: Optional[Callable[..., Any]] = None
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 @dataclass
 class InferenceResult:
     """Inference result structure"""
+
     request_id: str
     model_id: str
     version: str
@@ -154,6 +175,8 @@ class InferenceResult:
     metadata: Dict[str, Any] = field(default_factory=dict)
     error: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
+
+
 class ModelWrapper:
     """Wrapper for different model types"""
 
@@ -174,7 +197,9 @@ class ModelWrapper:
         logger.setLevel(logging.INFO)
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
         return logger
@@ -183,7 +208,9 @@ class ModelWrapper:
         """Load model based on configuration"""
         try:
             self.status = ModelStatus.LOADING
-            self.logger.info(f"Loading model {self.config.model_id}) v{self.config.version})")
+            self.logger.info(
+                f"Loading model {self.config.model_id}) v{self.config.version})"
+            )
 
             if self.config.model_type == ModelType.TRANSFORMER:
                 await self._load_transformer()
@@ -211,18 +238,23 @@ class ModelWrapper:
         """Load transformer model"""
         if not TRANSFORMERS_AVAILABLE:
             raise ImportError("Transformers library not available")
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.tokenizer_path or self.config.model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.config.tokenizer_path or self.config.model_path
+        )
         self.model = AutoModel.from_pretrained(self.config.model_path)
         if TORCH_AVAILABLE and self.config.device != "cpu":
             self.model = self.model.to(self.config.device)
         # Enable optimizations
         if self.config.optimization_level > 0 and hasattr(torch, 'compile'):
             self.model = torch.compile(self.model)
+
     async def _load_sklearn(self):
         """Load scikit-learn model"""
         import pickle
+
         with open(self.config.model_path, 'rb') as f:
             self.model = pickle.load(f)
+
     async def _load_pytorch(self):
         """Load PyTorch model"""
         if not TORCH_AVAILABLE:
@@ -235,11 +267,13 @@ class ModelWrapper:
         if not TENSORFLOW_AVAILABLE:
             raise ImportError("TensorFlow not available")
         self.model = tf.keras.models.load_model(self.config.model_path)
+
     async def _load_onnx(self):
         """Load ONNX model"""
         if not ONNX_AVAILABLE:
             raise ImportError("ONNX Runtime not available")
         self.model = ort.InferenceSession(self.config.model_path)
+
     async def predict(self, inputs: Any, parameters: Dict[str, Any] = None) -> Any:
         """Make predictions"""
         if self.status != ModelStatus.READY:
@@ -271,7 +305,9 @@ class ModelWrapper:
             self.logger.error(f"Prediction failed: {e})")
             raise
 
-    async def _predict_transformer(self, inputs: List[str], parameters: Dict[str, Any] = None) -> List[str]:
+    async def _predict_transformer(
+        self, inputs: List[str], parameters: Dict[str, Any] = None
+    ) -> List[str]:
         """Transformer model prediction"""
         if not TRANSFORMERS_AVAILABLE or not TORCH_AVAILABLE:
             raise ImportError("Required libraries not available")
@@ -281,7 +317,7 @@ class ModelWrapper:
             padding=True,
             truncation=True,
             max_length=self.config.max_sequence_length,
-            return_tensors="pt"
+            return_tensors="pt",
         )
         if self.config.device != "cpu":
             encoded = {k: v.to(self.config.device) for k, v in encoded.items()}
@@ -297,13 +333,18 @@ class ModelWrapper:
 
         return results
 
-    async def _predict_sklearn(self, inputs: Any, parameters: Dict[str, Any] = None) -> Any:
+    async def _predict_sklearn(
+        self, inputs: Any, parameters: Dict[str, Any] = None
+    ) -> Any:
         """Scikit-learn model prediction"""
         if hasattr(self.model, 'predict_proba'):
             return self.model.predict_proba(inputs)
         else:
             return self.model.predict(inputs)
-    async def _predict_pytorch(self, inputs: Any, parameters: Dict[str, Any] = None) -> Any:
+
+    async def _predict_pytorch(
+        self, inputs: Any, parameters: Dict[str, Any] = None
+    ) -> Any:
         """PyTorch model prediction"""
         if not TORCH_AVAILABLE:
             raise ImportError("PyTorch not available")
@@ -314,13 +355,19 @@ class ModelWrapper:
             outputs = self.model(inputs)
         return outputs.cpu().numpy() if NUMPY_AVAILABLE else outputs.tolist()
 
-    async def _predict_tensorflow(self, inputs: Any, parameters: Dict[str, Any] = None) -> Any:
+    async def _predict_tensorflow(
+        self, inputs: Any, parameters: Dict[str, Any] = None
+    ) -> Any:
         """TensorFlow model prediction"""
         return self.model.predict(inputs)
-    async def _predict_onnx(self, inputs: Any, parameters: Dict[str, Any] = None) -> Any:
+
+    async def _predict_onnx(
+        self, inputs: Any, parameters: Dict[str, Any] = None
+    ) -> Any:
         """ONNX model prediction"""
         input_name = self.model.get_inputs()[0].name
         return self.model.run(None, {input_name: inputs})
+
     def _update_performance_stats(self, processing_time: float):
         """Update performance statistics"""
         if 'latencies' not in self.performance_stats:
@@ -333,6 +380,8 @@ class ModelWrapper:
             self.performance_stats["p99_latency"] = np.percentile(latencies, 99)
         else:
             self.performance_stats["avg_latency"] = sum(latencies) / len(latencies)
+
+
 class BatchProcessor:
     """Batch processing for efficient inference"""
 
@@ -349,7 +398,9 @@ class BatchProcessor:
         logger.setLevel(logging.INFO)
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
         return logger
@@ -370,8 +421,8 @@ class BatchProcessor:
         if not self.pending_requests:
             return
 
-        batch = self.pending_requests[:self.max_batch_size]
-        self.pending_requests = self.pending_requests[self.max_batch_size:]
+        batch = self.pending_requests[: self.max_batch_size]
+        self.pending_requests = self.pending_requests[self.max_batch_size :]
 
         self.logger.info(f"Processing batch of {len(batch)}) requests")
 
@@ -382,7 +433,10 @@ class BatchProcessor:
         # Process each model batch
         for model_id, requests in model_batches.items():
             await self._process_model_batch(model_id, requests)
-    async def _process_model_batch(self, model_id: str, requests: List[InferenceRequest]):
+
+    async def _process_model_batch(
+        self, model_id: str, requests: List[InferenceRequest]
+    ):
         """Process batch for specific model"""
         results = []
 
@@ -405,7 +459,7 @@ class BatchProcessor:
                     model_id=model_id,
                     version=request.version or "1.0",
                     predictions=None,
-                    error=str(e)
+                    error=str(e),
                 )
                 results.append(error_result)
         # Return results to futures
@@ -413,9 +467,11 @@ class BatchProcessor:
             future = self.batch_futures.pop(result.request_id, None)
             if future and not future.done():
                 if result.error:
-                    future.set_exception(Exception(result.error)
+                    future.set_exception(Exception(result.error))
                 else:
                     future.set_result(result)
+
+
 class InferenceEngine:
     """Comprehensive ML inference engine"""
 
@@ -423,11 +479,11 @@ class InferenceEngine:
         self,
         redis_url: Optional[str] = None,
         enable_caching: bool = True,
-        max_workers: int = 4
+        max_workers: int = 4,
     ):
-        self.models: Dict[str, ModelWrapper] = {})
-        self.model_configs: Dict[str, ModelConfig] = {})
-        self.active_versions: Dict[str, str] = {})
+        self.models: Dict[str, ModelWrapper] = {}
+        self.model_configs: Dict[str, ModelConfig] = {}
+        self.active_versions: Dict[str, str] = {}
         self.model_versions: Dict[str, List[str]] = defaultdict(list)
         self.batch_processor = BatchProcessor()
         self.thread_pool = ThreadPoolExecutor(max_workers=max_workers)
@@ -449,7 +505,9 @@ class InferenceEngine:
         logger.setLevel(logging.INFO)
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
         return logger
@@ -504,11 +562,13 @@ class InferenceEngine:
                 await self._cache_result(request, result)
             return result
 
-    async def _process_realtime_request(self, request: InferenceRequest, model_key: str) -> InferenceResult:
+    async def _process_realtime_request(
+        self, request: InferenceRequest, model_key: str
+    ) -> InferenceResult:
         """Process real-time inference request"""
         wrapper = self.models.get(model_key)
         if not wrapper:
-            raise ValueError(f"Model {model_key}) not found")
+            raise ValueError(f"Model {model_key} not found")
 
         start_time = time.time()
 
@@ -522,7 +582,7 @@ class InferenceEngine:
                 version=request.version or self.active_versions[request.model_id],
                 predictions=predictions,
                 processing_time=processing_time,
-                metadata={"model_key": model_key})
+                metadata={"model_key": model_key},
             )
 
         except Exception as e:
@@ -532,10 +592,12 @@ class InferenceEngine:
                 version=request.version or self.active_versions[request.model_id],
                 predictions=None,
                 error=str(e),
-                processing_time=time.time() - start_time
+                processing_time=time.time() - start_time,
             )
 
-    async def _get_cached_result(self, request: InferenceRequest) -> Optional[InferenceResult]:
+    async def _get_cached_result(
+        self, request: InferenceRequest
+    ) -> Optional[InferenceResult]:
         """Get cached result if available"""
         if not self.redis_client:
             return None
@@ -566,13 +628,13 @@ class InferenceEngine:
                 "predictions": result.predictions,
                 "confidence_scores": result.confidence_scores,
                 "processing_time": result.processing_time,
-                "metadata": result.metadata
-            })
+                "metadata": result.metadata,
+            }
 
             # Cache for 1 hour
-            self.redis_client.setex(cache_key, 3600, json.dumps(cache_data)
+            self.redis_client.setex(cache_key, 3600, json.dumps(cache_data))
         except Exception as e:
-            self.logger.warning(f"Cache storage failed: {e})")
+            self.logger.warning(f"Cache storage failed: {e}")
 
     def _create_cache_key(self, request: InferenceRequest) -> str:
         """Create cache key for request"""
@@ -580,10 +642,10 @@ class InferenceEngine:
             "model_id": request.model_id,
             "version": request.version,
             "inputs": request.inputs,
-            "parameters": request.parameters
-        })
+            "parameters": request.parameters,
+        }
         key_string = json.dumps(key_data, sort_keys=True)
-        return f"inference:{hashlib.md5(key_string.encode().hexdigest())})"
+        return f"inference:{hashlib.md5(key_string.encode()).hexdigest()}"
 
     async def get_model_info(self, model_id: str) -> Dict[str, Any]:
         """Get information about a model"""
@@ -594,7 +656,7 @@ class InferenceEngine:
         model_key = f"{model_id}):{version})"
         wrapper = self.models.get(model_key)
         if not wrapper:
-            raise ValueError(f"Model {model_key}) not found")
+            raise ValueError(f"Model {model_key} not found")
 
         return {
             "model_id": model_id,
@@ -607,13 +669,15 @@ class InferenceEngine:
             "config": {
                 "model_type": wrapper.config.model_type.value,
                 "device": wrapper.config.device,
-                "max_batch_size": wrapper.config.max_batch_size
-            })
-        })
+                "max_batch_size": wrapper.config.max_batch_size,
+            },
+        }
 
     async def list_models(self) -> List[Dict[str, Any]]:
         """List all registered models"""
-        ready_models = [m for m in self.models.values() if m.status == ModelStatus.READY]
+        ready_models = [
+            m for m in self.models.values() if m.status == ModelStatus.READY
+        ]
 
         return [
             {
@@ -622,15 +686,17 @@ class InferenceEngine:
                 "status": model.status.value,
                 "model_type": model.config.model_type.value,
                 "usage_count": model.usage_count,
-                "last_used": model.last_used.isoformat() if model.last_used else None
-            })
+                "last_used": model.last_used.isoformat() if model.last_used else None,
+            }
             for model in ready_models
         ]
 
     async def get_stats(self) -> Dict[str, Any]:
         """Get overall engine statistics"""
-        total_requests = sum(model.usage_count for model in self.models.values()
-        active_models = len([m for m in self.models.values() if m.status == ModelStatus.READY])
+        total_requests = sum(model.usage_count for model in self.models.values())
+        active_models = len(
+            [m for m in self.models.values() if m.status == ModelStatus.READY]
+        )
 
         return {
             "total_models": len(self.models),
@@ -638,8 +704,8 @@ class InferenceEngine:
             "total_requests": total_requests,
             "model_versions": dict(self.model_versions),
             "cache_enabled": self.enable_caching,
-            "redis_connected": self.redis_client is not None
-        })
+            "redis_connected": self.redis_client is not None,
+        }
 
     async def shutdown(self):
         """Shutdown inference engine"""
@@ -651,6 +717,8 @@ class InferenceEngine:
         # Shutdown thread pool
         self.thread_pool.shutdown(wait=True)
         self.logger.info("Inference engine shutdown complete")
+
+
 # Export main classes
 __all__ = [
     "InferenceEngine",
@@ -661,5 +729,5 @@ __all__ = [
     "ModelStatus",
     "ModelConfig",
     "InferenceRequest",
-    "InferenceResult"
+    "InferenceResult",
 ]

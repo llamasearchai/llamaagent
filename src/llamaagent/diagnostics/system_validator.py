@@ -62,11 +62,13 @@ class SystemValidator:
             )
             result["score"] -= 50
         elif version_info.minor < 8:
-            result["issues"].append({
-                "severity": "HIGH",
-                "message": f"Python {version_info.major}.{version_info.minor} is outdated",
-                "fix": "Upgrade to Python 3.8 or higher",
-            })
+            result["issues"].append(
+                {
+                    "severity": "HIGH",
+                    "message": f"Python {version_info.major}.{version_info.minor} is outdated",
+                    "fix": "Upgrade to Python 3.8 or higher",
+                }
+            )
             result["score"] -= 30
 
         # Check virtual environment
@@ -124,7 +126,7 @@ class SystemValidator:
             }
 
             if disk.free < 1024 * 1024 * 1024:  # Less than 1GB free
-                result["issues"].append()
+                result["issues"].append(
                     {
                         "severity": "HIGH",
                         "message": f"Low disk space: {disk.free / (1024**3):.1f}GB free",
@@ -134,7 +136,7 @@ class SystemValidator:
                 result["score"] -= 30
 
         except ImportError:
-            result["issues"].append()
+            result["issues"].append(
                 {
                     "severity": "LOW",
                     "message": "psutil not available for detailed system info",
@@ -171,7 +173,7 @@ class SystemValidator:
                 }
 
                 if tool == "git":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "HIGH",
                             "message": f"Required tool {tool} not found",
@@ -180,7 +182,7 @@ class SystemValidator:
                     )
                     result["score"] -= 25
                 elif tool == "docker":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "MEDIUM",
                             "message": f"Tool {tool} not found (needed for deployment)",
@@ -189,7 +191,7 @@ class SystemValidator:
                     )
                     result["score"] -= 15
                 else:
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "LOW",
                             "message": f"Tool {tool} not found",
@@ -227,7 +229,7 @@ class SystemValidator:
 
                 # Check if file is empty
                 if file_path.stat().st_size == 0:
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"{filename} exists but is empty",
@@ -243,7 +245,7 @@ class SystemValidator:
                 }
 
                 if severity == "HIGH":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"Critical file {filename} is missing",
@@ -252,7 +254,7 @@ class SystemValidator:
                     )
                     result["score"] -= 25
                 elif severity == "MEDIUM":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"Important file {filename} is missing",
@@ -261,7 +263,7 @@ class SystemValidator:
                     )
                     result["score"] -= 15
                 else:
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"Optional file {filename} is missing",
@@ -300,7 +302,7 @@ class SystemValidator:
                 }
 
                 if severity == "MEDIUM":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"Environment variable {var_name} not set",
@@ -309,7 +311,7 @@ class SystemValidator:
                     )
                     result["score"] -= 15
                 elif severity == "LOW":
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": severity,
                             "message": f"Optional environment variable {var_name} not set",
@@ -341,7 +343,7 @@ class SystemValidator:
                 }
 
                 if not os.access(path, os.R_OK):
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "HIGH",
                             "message": f"Cannot read {path}",
@@ -351,7 +353,7 @@ class SystemValidator:
                     result["score"] -= 30
 
                 if path.is_dir() and not os.access(path, os.X_OK):
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "MEDIUM",
                             "message": f"Cannot execute/traverse {path}",
@@ -379,7 +381,7 @@ class SystemValidator:
 
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.settimeout(5)
-                result_code = sock.connect_ex(host, port)
+                result_code = sock.connect_ex((host, port))
                 sock.close()
 
                 if result_code == 0:
@@ -392,7 +394,7 @@ class SystemValidator:
                         "reachable": False,
                         "description": description,
                     }
-                    result["issues"].append()
+                    result["issues"].append(
                         {
                             "severity": "MEDIUM",
                             "message": f"Cannot reach {host}:{port} ({description})",
@@ -407,7 +409,7 @@ class SystemValidator:
                     "error": str(e),
                     "description": description,
                 }
-                result["issues"].append()
+                result["issues"].append(
                     {
                         "severity": "LOW",
                         "message": f"Network test failed for {host}: {str(e)}",
@@ -424,7 +426,7 @@ class SystemValidator:
 
         # Check Docker files
         docker_files = ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"]
-        has_docker = any(self.project_root / f).exists() for f in docker_files)
+        has_docker = any((self.project_root / f).exists() for f in docker_files)
 
         result["readiness_checks"]["docker_configuration"] = {
             "ready": has_docker,
@@ -432,7 +434,7 @@ class SystemValidator:
         }
 
         if not has_docker:
-            result["issues"].append()
+            result["issues"].append(
                 {
                     "severity": "MEDIUM",
                     "message": "No Docker configuration found",
@@ -443,7 +445,7 @@ class SystemValidator:
 
         # Check for environment configuration
         env_files = [".env.example", ".env.template", "config.example.yml"]
-        has_env_template = any(self.project_root / f).exists() for f in env_files)
+        has_env_template = any((self.project_root / f).exists() for f in env_files)
 
         result["readiness_checks"]["environment_template"] = {
             "ready": has_env_template,
@@ -451,7 +453,7 @@ class SystemValidator:
         }
 
         if not has_env_template:
-            result["issues"].append()
+            result["issues"].append(
                 {
                     "severity": "LOW",
                     "message": "No environment template found",
@@ -467,7 +469,7 @@ class SystemValidator:
             "Jenkinsfile",
             "azure-pipelines.yml",
         ]
-        has_ci = any(self.project_root / f).exists() for f in ci_files)
+        has_ci = any((self.project_root / f).exists() for f in ci_files)
 
         result["readiness_checks"]["ci_cd"] = {
             "ready": has_ci,
@@ -475,7 +477,7 @@ class SystemValidator:
         }
 
         if not has_ci:
-            result["issues"].append()
+            result["issues"].append(
                 {
                     "severity": "LOW",
                     "message": "No CI/CD configuration found",

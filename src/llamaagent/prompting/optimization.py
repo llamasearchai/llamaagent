@@ -29,6 +29,7 @@ class OptimizationMetrics:
     efficiency: float = 0.0  # Based on token usage
     cost: float = 0.0
     custom_metrics: Dict[str, float] = field(default_factory=dict)
+
     @property
     def overall_score(self) -> float:
         """Calculate overall optimization score"""
@@ -182,7 +183,7 @@ class GeneticOptimization(BaseOptimizationStrategy):
                             for c in self.population
                             if c.performance
                         ]
-                ),
+                    ),
                     "diversity": self._calculate_diversity(),
                 }
             )
@@ -315,6 +316,7 @@ Requirements:
             "\n\nEnsure accuracy and clarity.",
         ]
         return prompt + random.choice(constraints)
+
     def _extract_variables(self, template: str) -> List[str]:
         """Extract variable names from template"""
         import re
@@ -324,6 +326,7 @@ Requirements:
         # Match {variable} pattern
         variables.extend(re.findall(r"\{\s*(\w+)\s*\}", template))
         return list(set(variables))
+
     async def _evaluate_candidate(
         self,
         candidate: PromptCandidate,
@@ -373,7 +376,7 @@ Requirements:
                             if metric in scores:
                                 scores[metric].append(value)
                     else:
-                        scores["accuracy"].append(float(eval_result)
+                        scores["accuracy"].append(float(eval_result))
             except Exception as e:
                 print(f"Evaluation error: {e}")
                 continue
@@ -382,7 +385,7 @@ Requirements:
         if len(outputs) > 1:
             # Simple consistency metric based on output length variance
             lengths = [len(o) for o in outputs]
-            metrics.consistency = 1.0 - (np.std(lengths) / (np.mean(lengths) + 1)
+            metrics.consistency = 1.0 - (np.std(lengths) / (np.mean(lengths) + 1))
         else:
             metrics.consistency = 1.0
 
@@ -408,12 +411,13 @@ Requirements:
     def _tournament_selection(self, tournament_size: int = 3) -> PromptCandidate:
         """Tournament selection for genetic algorithm"""
         tournament = random.sample(
-            self.population, min(tournament_size, len(self.population)
+            self.population, min(tournament_size, len(self.population))
         )
         return max(
             tournament,
             key=lambda x: x.performance.overall_score if x.performance else 0,
         )
+
     async def _crossover(
         self, parent1: PromptCandidate, parent2: PromptCandidate
     ) -> PromptCandidate:
@@ -424,7 +428,7 @@ Requirements:
         # Random crossover point
         if sentences1 and sentences2:
             crossover_point = random.randint(
-                1, min(len(sentences1), len(sentences2) - 1
+                1, min(len(sentences1), len(sentences2)) - 1
             )
 
             # Create offspring
@@ -442,7 +446,7 @@ Requirements:
 
         return PromptCandidate(
             template=offspring_template,
-            variables=list(set(parent1.variables + parent2.variables),
+            variables=list(set(parent1.variables + parent2.variables)),
             parent_id=f"{parent1.id}+{parent2.id}",
         )
 
@@ -463,6 +467,7 @@ Requirements:
             parent_id=candidate.id,
             metadata={**candidate.metadata, "mutation": strategy.__name__},
         )
+
     async def _word_substitution(self, template: str) -> str:
         """Substitute words with synonyms"""
         substitutions = {
@@ -530,6 +535,7 @@ class PromptOptimizer:
             return GeneticOptimization(self.llm_provider)
         else:
             raise ValueError(f"Unknown strategy: {strategy_name}")
+
     async def optimize(
         self,
         prompt: Union[str, PromptTemplate],
@@ -566,7 +572,7 @@ class PromptOptimizer:
             prompt_str, test_cases, evaluator, config
         )
         # Record optimization results
-        self.optimization_history.append()
+        self.optimization_history.append(
             {
                 "timestamp": datetime.now().isoformat(),
                 "original_prompt": prompt_str,
@@ -602,8 +608,8 @@ class PromptOptimizer:
             accuracy = 0.8
         # Word overlap
         else:
-            output_words = set(output_lower.split()
-            expected_words = set(expected_lower.split()
+            output_words = set(output_lower.split())
+            expected_words = set(expected_lower.split())
             if output_words and expected_words:
                 overlap = len(output_words & expected_words) / len(expected_words)
                 accuracy = min(overlap, 0.7)
@@ -611,7 +617,7 @@ class PromptOptimizer:
                 accuracy = 0.0
 
         # Length-based relevance
-        length_ratio = min(len(output), len(expected) / max(len(output), len(expected)
+        length_ratio = min(len(output), len(expected)) / max(len(output), len(expected))
         relevance = length_ratio
 
         # Basic coherence check

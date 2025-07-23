@@ -1,0 +1,29 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    platform: linux/arm64
+    environment:
+      - POSTGRES_DB=llamaagent
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=vector
+      # Optimize for 127GB RAM
+      - POSTGRES_SHARED_BUFFERS=32GB
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=96GB
+      - POSTGRES_WORK_MEM=1GB
+      - POSTGRES_MAINTENANCE_WORK_MEM=4GB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    deploy:
+      resources:
+        limits:
+          memory: 40G
+        reservations:
+          memory: 20G
+
+volumes:
+  postgres_data:

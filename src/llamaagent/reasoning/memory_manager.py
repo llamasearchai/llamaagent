@@ -23,6 +23,7 @@ from typing import Any, Dict, List, Optional, Set
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
+
     sklearn_available = True
 except ImportError:
     TfidfVectorizer = None
@@ -31,6 +32,7 @@ except ImportError:
 
 try:
     import redis
+
     redis_available = True
 except ImportError:
     redis = None
@@ -40,8 +42,11 @@ SKLEARN_AVAILABLE = sklearn_available
 REDIS_AVAILABLE = redis_available
 
 logger = logging.getLogger(__name__)
+
+
 class MemoryType(Enum):
     """Types of memory supported by the system."""
+
     WORKING = "working"
     LONG_TERM = "long_term"
     EPISODIC = "episodic"
@@ -52,6 +57,7 @@ class MemoryType(Enum):
 @dataclass
 class MemoryItem:
     """Individual memory item with metadata."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     content: Any = None
     memory_type: MemoryType = MemoryType.WORKING
@@ -62,14 +68,17 @@ class MemoryItem:
     last_accessed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: Optional[datetime] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
     def __post_init__(self) -> None:
         """Set default expiration for working memory."""
         if self.memory_type == MemoryType.WORKING and self.expires_at is None:
             self.expires_at = self.created_at + timedelta(hours=1)
+
     def access(self) -> None:
         """Update access tracking."""
         self.access_count += 1
         self.last_accessed = datetime.now(timezone.utc)
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -82,7 +91,7 @@ class MemoryItem:
             "created_at": self.created_at.isoformat(),
             "last_accessed": self.last_accessed.isoformat(),
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
     @classmethod
@@ -97,8 +106,10 @@ class MemoryItem:
             access_count=data["access_count"],
             created_at=datetime.fromisoformat(data["created_at"]),
             last_accessed=datetime.fromisoformat(data["last_accessed"]),
-            expires_at=datetime.fromisoformat(data["expires_at"]) if data["expires_at"] else None,
-            metadata=data["metadata"]
+            expires_at=datetime.fromisoformat(data["expires_at"])
+            if data["expires_at"]
+            else None,
+            metadata=data["metadata"],
         )
 
 
@@ -110,7 +121,7 @@ class MemoryManager:
         redis_client: Any = None,
         max_working_memory: int = 1000,
         max_long_term_memory: int = 10000,
-        consolidation_threshold: int = 5
+        consolidation_threshold: int = 5,
     ):
         # Redis setup (optional)
         if REDIS_AVAILABLE and redis_client is not None:
@@ -152,7 +163,7 @@ class MemoryManager:
         tags: Optional[Set[str]] = None,
         importance: float = 0.5,
         expires_at: Optional[datetime] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Store item in memory."""
         memory_item = MemoryItem(
@@ -161,7 +172,7 @@ class MemoryManager:
             tags=tags or set(),
             importance=importance,
             expires_at=expires_at,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         # Store based on memory type
@@ -186,7 +197,7 @@ class MemoryManager:
             self.long_term_memory,
             self.episodic_memory,
             self.semantic_memory,
-            self.procedural_memory
+            self.procedural_memory,
         ]
 
         for store in stores:
@@ -214,7 +225,7 @@ class MemoryManager:
         memory_types: Optional[List[MemoryType]] = None,
         tags: Optional[Set[str]] = None,
         similarity_threshold: float = 0.3,
-        limit: int = 10
+        limit: int = 10,
     ) -> List[MemoryItem]:
         """Search memory using various criteria."""
         results = []
@@ -225,7 +236,7 @@ class MemoryManager:
             self.long_term_memory,
             self.episodic_memory,
             self.semantic_memory,
-            self.procedural_memory
+            self.procedural_memory,
         ]
 
         for store in stores:
@@ -247,6 +258,7 @@ class MemoryManager:
                 consolidation_candidates.append(item)
         for item in consolidation_candidates:
             await self._consolidate_item(item)
+
     async def cleanup_expired_memory(self) -> None:
         """Remove expired memory items."""
         current_time = datetime.now(timezone.utc)
@@ -258,6 +270,7 @@ class MemoryManager:
         for item_id in expired_ids:
             del self.working_memory[item_id]
             self.logger.debug(f"Expired working memory: {item_id}")
+
     async def get_memory_stats(self) -> Dict[str, Any]:
         """Get memory usage statistics."""
         return {
@@ -267,12 +280,12 @@ class MemoryManager:
             "semantic_memory_count": len(self.semantic_memory),
             "procedural_memory_count": len(self.procedural_memory),
             "semantic_concepts": len(self.semantic_network),
-            "redis_available": self.redis_client is not None
+            "redis_available": self.redis_client is not None,
         }
 
     async def get_related_concepts(self, concept: str) -> List[str]:
         """Get concepts related to the given concept."""
-        return list(self.semantic_network.get(concept, set())))
+        return list(self.semantic_network.get(concept, set()))
 
     # Private methods
 
@@ -283,38 +296,43 @@ class MemoryManager:
 
         self.working_memory[item.id] = item
         await self._persist_to_redis(item, "working")
+
     async def _store_long_term_memory(self, item: MemoryItem) -> None:
         """Store in long-term memory."""
         self.long_term_memory[item.id] = item
         await self._persist_to_redis(item, "long_term")
+
     async def _store_episodic_memory(self, item: MemoryItem) -> None:
         """Store episodic memory (experiences)."""
         item.metadata["temporal_context"] = {
             "timestamp": item.created_at.isoformat(),
-            "context_type": "episodic"
+            "context_type": "episodic",
         }
         self.episodic_memory[item.id] = item
         await self._persist_to_redis(item, "episodic")
+
     async def _store_semantic_memory(self, item: MemoryItem) -> None:
         """Store semantic memory (concepts and relationships)."""
         concepts = self._extract_concepts(item.content)
         for concept in concepts:
             if concept not in self.semantic_network:
                 self.semantic_network[concept] = set()
-            
+
             # Link related concepts
             for other_concept in concepts:
                 if concept != other_concept:
                     self.semantic_network[concept].add(other_concept)
         self.semantic_memory[item.id] = item
         await self._persist_to_redis(item, "semantic")
+
     async def _store_procedural_memory(self, item: MemoryItem) -> None:
         """Store procedural memory (skills and procedures)."""
         item.metadata["procedure_type"] = "skill"
         item.metadata["execution_count"] = 0
-        
+
         self.procedural_memory[item.id] = item
         await self._persist_to_redis(item, "procedural")
+
     async def _persist_to_redis(self, item: MemoryItem, category: str) -> None:
         """Persist memory item to Redis."""
         if not self.redis_client:
@@ -331,11 +349,12 @@ class MemoryManager:
                 "semantic": 86400 * 30,  # 30 days
                 "procedural": 86400 * 30,  # 30 days
             }
-            
+
             ttl = ttl_map.get(category, 86400)
             self.redis_client.setex(key, ttl, data)
         except Exception as e:
             self.logger.error(f"Redis persist error: {e}")
+
     async def _evict_working_memory(self) -> None:
         """Evict least important items from working memory."""
         items = list(self.working_memory.values())
@@ -353,26 +372,30 @@ class MemoryManager:
             await self._store_long_term_memory(item)
             if item.id in self.working_memory:
                 del self.working_memory[item.id]
-            
+
             self.logger.info(f"Consolidated memory to long-term: {item.id}")
+
     async def _check_consolidation(self, item: MemoryItem) -> None:
         """Check if item should be consolidated."""
-        if (item.memory_type == MemoryType.WORKING and 
-            item.access_count >= self.consolidation_threshold):
+        if (
+            item.memory_type == MemoryType.WORKING
+            and item.access_count >= self.consolidation_threshold
+        ):
             await self._consolidate_item(item)
+
     def _matches_criteria(
         self,
         item: MemoryItem,
         memory_types: Optional[List[MemoryType]] = None,
-        tags: Optional[Set[str]] = None
+        tags: Optional[Set[str]] = None,
     ) -> bool:
         """Check if item matches search criteria."""
         if memory_types and item.memory_type not in memory_types:
             return False
-        
+
         if tags and not tags.intersection(item.tags):
             return False
-        
+
         return True
 
     def _calculate_similarity(self, query: str, content: Any) -> float:
@@ -400,9 +423,28 @@ class MemoryManager:
             content = str(content)
         # Simple concept extraction - split on common delimiters
         words = content.lower().replace(',', ' ').replace('.', ' ').split()
-        
+
         # Filter out common words and short words
-        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were'}
+        stop_words = {
+            'the',
+            'a',
+            'an',
+            'and',
+            'or',
+            'but',
+            'in',
+            'on',
+            'at',
+            'to',
+            'for',
+            'of',
+            'with',
+            'by',
+            'is',
+            'are',
+            'was',
+            'were',
+        }
         concepts = [word for word in words if len(word) > 2 and word not in stop_words]
-        
+
         return list(set(concepts))  # Remove duplicates

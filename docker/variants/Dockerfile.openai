@@ -1,0 +1,99 @@
+# Multi-stage build for LlamaAgent with comprehensive OpenAI integration
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    ffmpeg \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create application directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+COPY requirements-openai.txt .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install -r requirements-openai.txt
+
+# Development stage
+FROM base as development
+
+# Install development dependencies
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt
+
+# Copy source code
+COPY . .
+
+# Install package in development mode
+RUN pip install -e .
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/temp /app/test_results
+
+# Set up proper permissions
+RUN chmod -R 755 /app
+
+# Expose ports
+EXPOSE 8000 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command
+CMD ["python", "-m", "llamaagent.api.openai_comprehensive_api"]
+
+# Production stage
+FROM base as production
+
+# Copy only necessary files
+COPY src/ /app/src/
+COPY setup.py /app/
+COPY pyproject.toml /app/
+COPY README.md /app/
+
+# Install package
+RUN pip install .
+
+# Create application user
+RUN groupadd -r llamaagent && useradd -r -g llamaagent llamaagent
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/temp && \
+    chown -R llamaagent:llamaagent /app
+
+# Switch to application user
+USER llamaagent
+
+# Expose ports
+EXPOSE 8000 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command
+CMD ["python", "-m", "llamaagent.api.openai_comprehensive_api"]
+
+# Testing stage
+FROM development as testing
+
+# Copy test files
+COPY tests/ /app/tests/
+
+# Run tests by default
+CMD ["python", "-m", "pytest", "tests/", "-v", "--tb=short", "--cov=src/llamaagent"]

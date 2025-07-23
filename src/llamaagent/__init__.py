@@ -289,6 +289,7 @@ if "pytest" in sys.modules:
 for _missing in ("datasette_llm",):
     if _missing not in sys.modules:  # pragma: no cover
         import types
+
         sys.modules[_missing] = types.ModuleType(_missing)
 
 # Main entry point

@@ -28,7 +28,9 @@ class MetricsCollector:
         self.error_count = 0
         self.total_response_time = 0.0
 
-    def record_http_request(self, method: str, endpoint: str, status_code: int, duration: float):
+    def record_http_request(
+        self, method: str, endpoint: str, status_code: int, duration: float
+    ):
         """Record HTTP request metrics."""
         self.request_count += 1
         self.total_response_time += duration
@@ -56,11 +58,14 @@ class MetricsCollector:
         lines = []
         lines.append(f"# Total requests: {self.request_count}")
         lines.append(f"# Total errors: {self.error_count}")
-        lines.append(f"# Average response time: {self.total_response_time / max(self.request_count, 1):.3f}s")
+        lines.append(
+            f"# Average response time: {self.total_response_time / max(self.request_count, 1):.3f}s"
+        )
 
         for key, data in self.metrics.items():
             lines.append(f"{key}: {data}")
         return "\n".join(lines)
+
     def get_content_type(self) -> str:
         """Get content type for metrics."""
         return "text/plain"
@@ -76,6 +81,8 @@ def get_metrics_collector() -> MetricsCollector:
 
 
 logger = logging.getLogger(__name__)
+
+
 class MetricsMiddleware(BaseHTTPMiddleware):
     """
     Middleware for collecting HTTP request metrics.
@@ -105,7 +112,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             status_code = 500
             response = JSONResponse(
                 status_code=500,
-                content={"error": "Internal server error", "request_id": request_id}
+                content={"error": "Internal server error", "request_id": request_id},
             )
         # Calculate duration
         duration = time.time() - start_time
@@ -115,7 +122,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             method=method,
             endpoint=normalized_path,
             status_code=status_code,
-            duration=duration
+            duration=duration,
         )
         # Add response headers
         response.headers["X-Request-ID"] = request_id
@@ -137,6 +144,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         normalized = path
         for pattern, replacement in normalizations:
             import re
+
             normalized = re.sub(pattern, replacement, normalized)
         return normalized
 
@@ -153,7 +161,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         start_time = time.time()
-        request_id = getattr(request.state, 'request_id', str(uuid.uuid4())
+        request_id = getattr(request.state, 'request_id', str(uuid.uuid4()))
 
         # Log request start
         request_info = {
@@ -171,9 +179,9 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 body = await request.body()
                 if len(body) <= self.max_body_size:
                     try:
-                        request_info["body"] = json.loads(body.decode()
+                        request_info["body"] = json.loads(body.decode())
                     except:
-                        request_info["body"] = body.decode()[:self.max_body_size]
+                        request_info["body"] = body.decode()[: self.max_body_size]
                 else:
                     request_info["body"] = f"[Body too large: {len(body)} bytes]"
             except Exception as e:
@@ -191,7 +199,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             success = False
             response = JSONResponse(
                 status_code=500,
-                content={"error": "Internal server error", "request_id": request_id}
+                content={"error": "Internal server error", "request_id": request_id},
             )
         # Calculate duration
         duration = time.time() - start_time
@@ -225,6 +233,8 @@ class HealthCheckMiddleware(BaseHTTPMiddleware):
         if request.url.path in self.health_check_paths:
             return await call_next(request)
         return await call_next(request)
+
+
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """
     Middleware for rate limiting with metrics integration.
@@ -235,7 +245,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         app: FastAPI,
         requests_per_minute: int = 60,
         burst_size: int = 10,
-        redis_client: Optional[Any] = None
+        redis_client: Optional[Any] = None,
     ):
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
@@ -252,20 +262,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # Check rate limit
         if await self._is_rate_limited(user_id, request.url.path):
             self.metrics.record_rate_limit_exceeded(
-                endpoint=request.url.path,
-                user_id=user_id
+                endpoint=request.url.path, user_id=user_id
             )
             return JSONResponse(
                 status_code=429,
                 content={
                     "error": "Rate limit exceeded",
-                    "message": f"Too many requests. Limit: {self.requests_per_minute} requests per minute"
+                    "message": f"Too many requests. Limit: {self.requests_per_minute} requests per minute",
                 },
                 headers={
                     "Retry-After": "60",
                     "X-RateLimit-Limit": str(self.requests_per_minute),
                     "X-RateLimit-Remaining": "0",
-                }
+                },
             )
 
         response = await call_next(request)
@@ -287,7 +296,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             self.request_counts[user_key] = {
                 "count": 0,
                 "first_request": current_time,
-                "last_request": current_time
+                "last_request": current_time,
             }
 
         user_data = self.request_counts[user_key]
@@ -309,7 +318,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         user_key = f"{user_id}:{minute_window}"
 
         if user_key in self.request_counts:
-            return max(0, self.requests_per_minute - self.request_counts[user_key]["count"])
+            return max(
+                0, self.requests_per_minute - self.request_counts[user_key]["count"]
+            )
         return self.requests_per_minute
 
     def _cleanup_old_entries(self, current_time: float):
@@ -339,7 +350,7 @@ class ErrorTrackingMiddleware(BaseHTTPMiddleware):
         self.last_cleanup = time.time()
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        request_id = getattr(request.state, 'request_id', str(uuid.uuid4()
+        request_id = getattr(request.state, 'request_id', str(uuid.uuid4()))
         try:
             response = await call_next(request)
             # Track client errors (4xx)
@@ -348,7 +359,7 @@ class ErrorTrackingMiddleware(BaseHTTPMiddleware):
                     error_type="client_error",
                     status_code=response.status_code,
                     endpoint=request.url.path,
-                    request_id=request_id
+                    request_id=request_id,
                 )
             return response
 
@@ -359,24 +370,27 @@ class ErrorTrackingMiddleware(BaseHTTPMiddleware):
                 status_code=500,
                 endpoint=request.url.path,
                 request_id=request_id,
-                exception=e
+                exception=e,
             )
-            logger.error(f"Unhandled exception in request {request_id}: {e}", exc_info=True)
+            logger.error(
+                f"Unhandled exception in request {request_id}: {e}", exc_info=True
+            )
             return JSONResponse(
                 status_code=500,
                 content={
                     "error": "Internal server error",
                     "request_id": request_id,
-                    "message": "An unexpected error occurred. Please try again later."
-                }
+                    "message": "An unexpected error occurred. Please try again later.",
+                },
             )
+
     async def _track_error(
         self,
         error_type: str,
         status_code: int,
         endpoint: str,
         request_id: str,
-        exception: Optional[Exception] = None
+        exception: Optional[Exception] = None,
     ):
         """Track error occurrence."""
         current_time = time.time()
@@ -406,8 +420,11 @@ class ErrorTrackingMiddleware(BaseHTTPMiddleware):
         logger.warning(f"Error tracked: {json.dumps(error_info)}")
 
         # Alert if error rate is high
-        if self.enable_alerting and self.error_counts[error_key] > 10:  # More than 10 errors
+        if (
+            self.enable_alerting and self.error_counts[error_key] > 10
+        ):  # More than 10 errors
             await self._send_alert(error_key, self.error_counts[error_key])
+
     def _cleanup_error_counts(self, current_time: float):
         """Clean up old error counts."""
         # Reset counts every 5 minutes for rate calculation
@@ -416,7 +433,11 @@ class ErrorTrackingMiddleware(BaseHTTPMiddleware):
     async def _send_alert(self, error_key: str, count: int):
         """Send alert for high error rate."""
         # This could integrate with alerting systems like PagerDuty, Slack, etc.
-        logger.critical(f"HIGH ERROR RATE ALERT: {error_key} - {count} errors in 5 minutes")
+        logger.critical(
+            f"HIGH ERROR RATE ALERT: {error_key} - {count} errors in 5 minutes"
+        )
+
+
 class SecurityMiddleware(BaseHTTPMiddleware):
     """
     Security middleware for monitoring and protection.
@@ -442,21 +463,36 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Check for common attack patterns
         suspicious_patterns = [
-            "../", "..\\", "<script", "javascript:", "eval(",
-            "union select", "drop table", "insert into",
-            "exec(", "system(", "cmd.exe",
+            "../",
+            "..\\",
+            "<script",
+            "javascript:",
+            "eval(",
+            "union select",
+            "drop table",
+            "insert into",
+            "exec(",
+            "system(",
+            "cmd.exe",
         ]
 
         request_data = str(request.url) + str(request.headers)
         for pattern in suspicious_patterns:
             if pattern.lower() in request_data.lower():
-                self.suspicious_requests[client_ip] = self.suspicious_requests.get(client_ip, 0) + 1
-                logger.warning(f"Suspicious request from {client_ip}: {pattern} detected")
+                self.suspicious_requests[client_ip] = (
+                    self.suspicious_requests.get(client_ip, 0) + 1
+                )
+                logger.warning(
+                    f"Suspicious request from {client_ip}: {pattern} detected"
+                )
                 break
 
         # Alert on repeated suspicious activity
         if self.suspicious_requests.get(client_ip, 0) > 5:
-            logger.critical(f"SECURITY ALERT: Multiple suspicious requests from {client_ip}")
+            logger.critical(
+                f"SECURITY ALERT: Multiple suspicious requests from {client_ip}"
+            )
+
     def _add_security_headers(self, response: Response):
         """Add security headers to response."""
         security_headers = {
@@ -489,15 +525,13 @@ def setup_monitoring_middleware(app: FastAPI, config: Optional[Dict[str, Any]] =
     # Rate limiting middleware
     if config.get("enable_rate_limiting", True):
         app.add_middleware(
-            RateLimitMiddleware,
-            requests_per_minute=config.get("rate_limit_rpm", 60)
+            RateLimitMiddleware, requests_per_minute=config.get("rate_limit_rpm", 60)
         )
 
     # Request logging middleware
     if config.get("enable_request_logging", True):
         app.add_middleware(
-            RequestLoggingMiddleware,
-            log_body=config.get("log_request_body", False)
+            RequestLoggingMiddleware, log_body=config.get("log_request_body", False)
         )
 
     # Health check middleware
@@ -505,11 +539,12 @@ def setup_monitoring_middleware(app: FastAPI, config: Optional[Dict[str, Any]] =
     # Metrics middleware (should be last/first to execute)
     app.add_middleware(MetricsMiddleware)
     logger.info("Monitoring middleware setup completed")
+
+
 # Export metrics endpoint
 async def metrics_endpoint():
     """Endpoint for Prometheus metrics scraping."""
     metrics = get_metrics_collector()
     return Response(
-        content=metrics.export_metrics(),
-        media_type=metrics.get_content_type()
+        content=metrics.export_metrics(), media_type=metrics.get_content_type()
     )

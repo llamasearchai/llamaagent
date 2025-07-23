@@ -186,12 +186,12 @@ class GraphState:
             messages=data.get("messages", []),
             context=data.get("context", {}),
             current_step=data.get("current_step", "start"),
-            task_input=TaskInput(**data["task_input"])
-            if data.get("task_input")
-            else None,
-            task_output=TaskOutput(**data["task_output"])
-            if data.get("task_output")
-            else None,
+            task_input=(
+                TaskInput(**data["task_input"]) if data.get("task_input") else None
+            ),
+            task_output=(
+                TaskOutput(**data["task_output"]) if data.get("task_output") else None
+            ),
             error=data.get("error"),
             metadata=data.get("metadata", {}),
             workflow_status=data.get("workflow_status", "pending"),

@@ -26,7 +26,7 @@ if "--master" in sys.argv or os.environ.get("LLAMAAGENT_MASTER_CLI") == "1":
 
         run_regular()
 else:
-    from .cli import cli
+    from .cli import main
 
     if __name__ == "__main__":
-        cli()
+        main()

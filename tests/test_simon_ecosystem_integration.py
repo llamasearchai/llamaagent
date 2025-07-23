@@ -345,9 +345,10 @@ class TestSimonEcosystemMocks:
         """Test chat with mocked subprocess call."""
         config = SimonEcosystemConfig(log_conversations=False)
 
-        with patch("src.llamaagent.llm.simon_ecosystem.HAS_LLM", True), patch(
-            "subprocess.run"
-        ) as mock_run:
+        with (
+            patch("src.llamaagent.llm.simon_ecosystem.HAS_LLM", True),
+            patch("subprocess.run") as mock_run,
+        ):
             mock_run.return_value.stdout = "Mocked response"
             mock_run.return_value.stderr = ""
             mock_run.return_value.returncode = 0
@@ -365,9 +366,10 @@ class TestSimonEcosystemMocks:
         """Test embedding with mocked subprocess call."""
         config = SimonEcosystemConfig(log_conversations=False)
 
-        with patch("src.llamaagent.llm.simon_ecosystem.HAS_LLM", True), patch(
-            "subprocess.run"
-        ) as mock_run:
+        with (
+            patch("src.llamaagent.llm.simon_ecosystem.HAS_LLM", True),
+            patch("subprocess.run") as mock_run,
+        ):
             mock_embedding = [0.1, 0.2, 0.3, 0.4, 0.5]
             mock_run.return_value.stdout = json.dumps(mock_embedding)
             mock_run.return_value.stderr = ""

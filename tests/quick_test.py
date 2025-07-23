@@ -70,9 +70,11 @@ async def test_math_problems(agent):
         results.append(
             {
                 "task": task,
-                "response": response.content[:200] + "..."
-                if len(response.content) > 200
-                else response.content,
+                "response": (
+                    response.content[:200] + "..."
+                    if len(response.content) > 200
+                    else response.content
+                ),
                 "success": response.success,
                 "time": response.execution_time,
             }

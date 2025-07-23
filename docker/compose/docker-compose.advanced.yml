@@ -1,0 +1,285 @@
+version: '3.8'
+
+services:
+  # Main LlamaAgent API service with advanced features
+  llamaagent-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: llamaagent:advanced
+    container_name: llamaagent-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=LlamaAgent-Advanced
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+      - WORKERS=4
+      - MAX_CONNECTIONS=1000
+      - ENABLE_ADVANCED_REASONING=true
+      - ENABLE_MULTIMODAL=true
+      - ENABLE_PERFORMANCE_OPTIMIZATION=true
+      - CACHE_BACKEND=redis
+      - CACHE_STRATEGY=hybrid
+      - ERROR_RECOVERY_ENABLED=true
+      - CIRCUIT_BREAKER_ENABLED=true
+      - DATABASE_URL=postgresql://llamaagent:secure_password@postgres:5432/llamaagent
+      - REDIS_URL=redis://redis:6379/0
+      - VECTOR_DB_URL=postgresql://llamaagent:secure_password@postgres:5432/llamaagent
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      vector-db:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      - ./models:/app/models
+    networks:
+      - llamaagent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    restart: unless-stopped
+
+  # PostgreSQL with pgvector for vector storage
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: llamaagent-postgres
+    environment:
+      - POSTGRES_DB=llamaagent
+      - POSTGRES_USER=llamaagent
+      - POSTGRES_PASSWORD=secure_password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U llamaagent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - llamaagent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    restart: unless-stopped
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: llamaagent-redis
+    command: redis-server --requirepass redis_password --maxmemory 2gb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - llamaagent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    restart: unless-stopped
+
+  # Vector database service (Qdrant)
+  vector-db:
+    image: qdrant/qdrant:latest
+    container_name: llamaagent-vector-db
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+    networks:
+      - llamaagent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    restart: unless-stopped
+
+  # Nginx reverse proxy with load balancing
+  nginx:
+    image: nginx:alpine
+    container_name: llamaagent-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - nginx-cache:/var/cache/nginx
+    depends_on:
+      - llamaagent-api
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: llamaagent-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: llamaagent-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin_password
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: llamaagent-jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+  # Background worker for async tasks
+  llamaagent-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: llamaagent:advanced
+    container_name: llamaagent-worker
+    command: celery -A src.llamaagent.worker worker --loglevel=info --concurrency=4
+    environment:
+      - APP_ENV=production
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - DATABASE_URL=postgresql://llamaagent:secure_password@postgres:5432/llamaagent
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - llamaagent-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    restart: unless-stopped
+
+  # Celery Beat for scheduled tasks
+  llamaagent-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: llamaagent:advanced
+    container_name: llamaagent-beat
+    command: celery -A src.llamaagent.worker beat --loglevel=info
+    environment:
+      - APP_ENV=production
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+  # Flower for Celery monitoring
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: llamaagent:advanced
+    container_name: llamaagent-flower
+    command: celery -A src.llamaagent.worker flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - redis
+    networks:
+      - llamaagent-network
+    restart: unless-stopped
+
+networks:
+  llamaagent-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  prometheus-data:
+  grafana-data:
+  nginx-cache:

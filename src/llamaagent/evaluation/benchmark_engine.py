@@ -28,6 +28,8 @@ except ImportError:
     GoldenDatasetManager = None
 
 logger = logging.getLogger(__name__)
+
+
 class BenchmarkType(str, Enum):
     """Types of benchmarks"""
 
@@ -68,6 +70,8 @@ class BenchmarkTask:
     metrics_to_collect: List[MetricType]
     timeout_seconds: float = 30.0
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class TaskResult:
     """Result of a single benchmark task"""
@@ -79,6 +83,8 @@ class TaskResult:
     metrics: Dict[str, float] = field(default_factory=dict)
     error_message: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class BenchmarkResult:
     """Complete benchmark execution result"""
@@ -94,10 +100,12 @@ class BenchmarkResult:
     task_results: List[TaskResult]
     overall_metrics: Dict[str, Any] = field(default_factory=dict)
     summary_stats: Dict[str, Any] = field(default_factory=dict)
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate"""
         return self.successful_tasks / max(1, self.total_tasks)
+
     @property
     def execution_time(self) -> float:
         """Total execution time in seconds"""
@@ -118,7 +126,7 @@ class BenchmarkResult:
             "execution_time": self.execution_time,
             "task_results": [asdict(tr) for tr in self.task_results],
             "overall_metrics": self.overall_metrics,
-            "summary_stats": self.summary_stats
+            "summary_stats": self.summary_stats,
         }
 
 
@@ -132,13 +140,13 @@ class BenchmarkSuite:
     benchmarks: List[str]  # Benchmark IDs
     tags: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class BenchmarkEngine:
     """Advanced benchmark execution engine"""
 
     def __init__(
-        self,
-        dataset_manager: Optional[Any] = None,
-        results_path: Optional[Path] = None
+        self, dataset_manager: Optional[Any] = None, results_path: Optional[Path] = None
     ):
         """Initialize benchmark engine"""
         if GoldenDatasetManager and dataset_manager is None:
@@ -164,10 +172,13 @@ class BenchmarkEngine:
         # Results cache
         self.results_cache: Dict[str, BenchmarkResult] = {}
 
-    def register_model(self, model_name: str, model_function: Callable[..., Any]) -> None:
+    def register_model(
+        self, model_name: str, model_function: Callable[..., Any]
+    ) -> None:
         """Register a model for benchmarking"""
         self.model_registry[model_name] = model_function
         logger.info(f"Registered model: {model_name}")
+
     async def register_benchmark(
         self, benchmark_id: str, tasks: List[BenchmarkTask]
     ) -> None:
@@ -180,13 +191,16 @@ class BenchmarkEngine:
         benchmark_id: str,
         dataset_name: str,
         sample_limit: Optional[int] = None,
-        config: Optional[Dict[str, Any]] = None
+        config: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Create benchmark from golden dataset"""
         if not self.dataset_manager:
             raise ValueError("Dataset manager not available")
         # Load dataset if not already loaded
-        if not hasattr(self.dataset_manager, 'datasets') or dataset_name not in self.dataset_manager.datasets:
+        if (
+            not hasattr(self.dataset_manager, 'datasets')
+            or dataset_name not in self.dataset_manager.datasets
+        ):
             if hasattr(self.dataset_manager, 'load_dataset'):
                 await self.dataset_manager.load_dataset(dataset_name)
             else:
@@ -204,14 +218,16 @@ class BenchmarkEngine:
                 input_data=sample.input,
                 expected_output=sample.expected_output,
                 metrics_to_collect=[MetricType.ACCURACY_SCORE, MetricType.LATENCY_MS],
-                metadata=config or {}
+                metadata=config or {},
             )
             tasks.append(task)
-        await self.register_benchmark(
-            benchmark_id, tasks
-        )
+        await self.register_benchmark(benchmark_id, tasks)
+
     async def run_benchmark(
-        self, benchmark_id: str, model_name: str, config: Optional[Dict[str, Any]] = None
+        self,
+        benchmark_id: str,
+        model_name: str,
+        config: Optional[Dict[str, Any]] = None,
     ) -> BenchmarkResult:
         """Run a complete benchmark"""
         if benchmark_id not in self.benchmark_registry:
@@ -244,7 +260,7 @@ class BenchmarkEngine:
                     task_id=task.id,
                     success=False,
                     error_message=str(e),
-                    execution_time=0.0
+                    execution_time=0.0,
                 )
                 task_results.append(failed_result)
                 failed_tasks += 1
@@ -266,7 +282,7 @@ class BenchmarkEngine:
             failed_tasks=failed_tasks,
             task_results=task_results,
             overall_metrics=overall_metrics,
-            summary_stats=summary_stats
+            summary_stats=summary_stats,
         )
 
         # Cache and save result
@@ -301,7 +317,10 @@ class BenchmarkEngine:
         return results
 
     async def compare_models(
-        self, benchmark_id: str, model_names: List[str], config: Optional[Dict[str, Any]] = None
+        self,
+        benchmark_id: str,
+        model_names: List[str],
+        config: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, BenchmarkResult]:
         """Compare multiple models on the same benchmark"""
         results: Dict[str, BenchmarkResult] = {}
@@ -320,7 +339,7 @@ class BenchmarkEngine:
         self,
         benchmark_id: Optional[str] = None,
         model_name: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """Get benchmark execution history"""
         # Load results from storage
@@ -346,7 +365,10 @@ class BenchmarkEngine:
         return all_results[:limit]
 
     async def _execute_task(
-        self, task: BenchmarkTask, model_function: Callable[..., Any], config: Dict[str, Any]
+        self,
+        task: BenchmarkTask,
+        model_function: Callable[..., Any],
+        config: Dict[str, Any],
     ) -> TaskResult:
         """Execute a single benchmark task"""
         start_time = time.time()
@@ -354,8 +376,7 @@ class BenchmarkEngine:
         try:
             # Execute model with timeout
             actual_output = await asyncio.wait_for(
-                model_function(task.input_data, **config),
-                timeout=task.timeout_seconds
+                model_function(task.input_data, **config), timeout=task.timeout_seconds
             )
 
             execution_time = time.time() - start_time
@@ -380,7 +401,7 @@ class BenchmarkEngine:
                 actual_output=str(actual_output),
                 execution_time=execution_time,
                 metrics=metrics,
-                metadata=task.metadata
+                metadata=task.metadata,
             )
 
         except asyncio.TimeoutError:
@@ -388,14 +409,14 @@ class BenchmarkEngine:
                 task_id=task.id,
                 success=False,
                 error_message=f"Task timed out after {task.timeout_seconds} seconds",
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
         except Exception as e:
             return TaskResult(
                 task_id=task.id,
                 success=False,
                 error_message=str(e),
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
 
     async def _calculate_overall_metrics(
@@ -519,7 +540,7 @@ class BenchmarkEngine:
         precision = matches / len(actual_words) if actual_words else 0
 
         # Apply brevity penalty
-        brevity_penalty = min(1.0, len(actual_words) / len(expected_words)
+        brevity_penalty = min(1.0, len(actual_words) / len(expected_words))
         return precision * brevity_penalty
 
     async def _calculate_rouge_score(self, actual: Any, expected: Any) -> float:
@@ -527,14 +548,15 @@ class BenchmarkEngine:
         if not isinstance(actual, str) or not isinstance(expected, str):
             return 0.0
 
-        actual_words = set(actual.lower().split()
-        expected_words = set(expected.lower().split()
+        actual_words = set(actual.lower().split())
+        expected_words = set(expected.lower().split())
 
         if not expected_words:
             return 1.0 if not actual_words else 0.0
 
         intersection = actual_words & expected_words
         return len(intersection) / len(expected_words)
+
     async def _save_result(self, result: BenchmarkResult) -> None:
         """Save benchmark result to storage"""
         result_file = self.results_path / f"{result.benchmark_id}.json"
@@ -548,7 +570,7 @@ class BenchmarkEngine:
         name: str,
         description: str,
         benchmark_ids: List[str],
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
     ) -> None:
         """Create a benchmark suite"""
         suite = BenchmarkSuite(
@@ -556,7 +578,7 @@ class BenchmarkEngine:
             name=name,
             description=description,
             benchmarks=benchmark_ids,
-            tags=tags or []
+            tags=tags or [],
         )
         self.suite_registry[suite_id] = suite
         logger.info(

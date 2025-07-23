@@ -19,8 +19,11 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
+
+
 class AgentSpecialty(Enum):
     """Agent specialization areas."""
+
     CODE = "code"
     RESEARCH = "research"
     ANALYSIS = "analysis"
@@ -31,6 +34,7 @@ class AgentSpecialty(Enum):
 
 class TaskComplexity(Enum):
     """Task complexity levels."""
+
     SIMPLE = "simple"
     MODERATE = "moderate"
     COMPLEX = "complex"
@@ -39,6 +43,7 @@ class TaskComplexity(Enum):
 
 class TaskStatus(Enum):
     """Task execution status."""
+
     PENDING = "pending"
     ASSIGNED = "assigned"
     RUNNING = "running"
@@ -50,6 +55,7 @@ class TaskStatus(Enum):
 @dataclass
 class TaskInput:
     """Input specification for orchestrated tasks."""
+
     id: str
     prompt: str
     task_type: str
@@ -58,9 +64,12 @@ class TaskInput:
     timeout: int = 300
     require_consensus: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class TaskOutput:
     """Output from orchestrated task execution."""
+
     task_id: str
     result: str
     confidence: float
@@ -69,9 +78,12 @@ class TaskOutput:
     status: TaskStatus
     reasoning: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 @dataclass
 class TaskRequirement:
     """Requirements analysis for task execution."""
+
     complexity: float
     required_specialties: List[AgentSpecialty]
     estimated_time: int
@@ -82,6 +94,7 @@ class TaskRequirement:
 @dataclass
 class AgentPerformance:
     """Performance metrics for individual agents."""
+
     agent_id: str
     task_count: int = 0
     success_rate: float = 0.0
@@ -89,10 +102,17 @@ class AgentPerformance:
     average_execution_time: float = 0.0
     specialty_scores: Dict[AgentSpecialty, float] = field(default_factory=dict)
     last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 class BaseAgent:
     """Base class for orchestrated agents."""
 
-    def __init__(self, agent_id: str, specialty: AgentSpecialty, config: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        agent_id: str,
+        specialty: AgentSpecialty,
+        config: Optional[Dict[str, Any]] = None,
+    ):
         self.agent_id = agent_id
         self.specialty = specialty
         self.config = config or {}
@@ -107,8 +127,9 @@ class BaseAgent:
         return TaskOutput(
             result=f"Task executed by {self.agent_id}",
             status=TaskStatus.COMPLETED,
-            metadata={"agent_id": self.agent_id, "specialty": self.specialty.value}
+            metadata={"agent_id": self.agent_id, "specialty": self.specialty.value},
         )
+
     async def estimate_task_fit(self, task_input: TaskInput) -> float:
         """Estimate how well this agent fits the task (0-1 score)."""
         # Basic fitness estimation - can be overridden
@@ -122,12 +143,15 @@ class BaseAgent:
         if self.performance.success_rate > 0:
             base_score += (self.performance.success_rate - 0.5) * 0.4
 
-        return min(1.0, max(0.0, base_score)
+        return min(1.0, max(0.0, base_score))
+
+
 class CodeSpecialistAgent(BaseAgent):
     """Agent specialized in code generation and analysis."""
 
     def __init__(self, agent_id: str, config: Optional[Dict[str, Any]] = None):
         super().__init__(agent_id, AgentSpecialty.CODE, config)
+
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute code-related tasks."""
         start_time = time.time()
@@ -146,7 +170,7 @@ class CodeSpecialistAgent(BaseAgent):
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
                 status=TaskStatus.COMPLETED,
-                reasoning="Applied code generation best practices"
+                reasoning="Applied code generation best practices",
             )
 
         except Exception as e:
@@ -156,7 +180,7 @@ class CodeSpecialistAgent(BaseAgent):
                 confidence=0.0,
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
-                status=TaskStatus.FAILED
+                status=TaskStatus.FAILED,
             )
 
 
@@ -165,6 +189,7 @@ class ResearchSpecialistAgent(BaseAgent):
 
     def __init__(self, agent_id: str, config: Optional[Dict[str, Any]] = None):
         super().__init__(agent_id, AgentSpecialty.RESEARCH, config)
+
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute research-related tasks."""
         start_time = time.time()
@@ -182,7 +207,7 @@ class ResearchSpecialistAgent(BaseAgent):
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
                 status=TaskStatus.COMPLETED,
-                reasoning="Applied systematic research methodology"
+                reasoning="Applied systematic research methodology",
             )
 
         except Exception as e:
@@ -192,7 +217,7 @@ class ResearchSpecialistAgent(BaseAgent):
                 confidence=0.0,
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
-                status=TaskStatus.FAILED
+                status=TaskStatus.FAILED,
             )
 
 
@@ -201,6 +226,7 @@ class AnalysisSpecialistAgent(BaseAgent):
 
     def __init__(self, agent_id: str, config: Optional[Dict[str, Any]] = None):
         super().__init__(agent_id, AgentSpecialty.ANALYSIS, config)
+
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute analysis-related tasks."""
         start_time = time.time()
@@ -218,7 +244,7 @@ class AnalysisSpecialistAgent(BaseAgent):
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
                 status=TaskStatus.COMPLETED,
-                reasoning="Applied statistical analysis and pattern recognition"
+                reasoning="Applied statistical analysis and pattern recognition",
             )
 
         except Exception as e:
@@ -228,7 +254,7 @@ class AnalysisSpecialistAgent(BaseAgent):
                 confidence=0.0,
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
-                status=TaskStatus.FAILED
+                status=TaskStatus.FAILED,
             )
 
 
@@ -237,6 +263,7 @@ class CreativeSpecialistAgent(BaseAgent):
 
     def __init__(self, agent_id: str, config: Optional[Dict[str, Any]] = None):
         super().__init__(agent_id, AgentSpecialty.CREATIVE, config)
+
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute creative tasks."""
         start_time = time.time()
@@ -254,7 +281,7 @@ class CreativeSpecialistAgent(BaseAgent):
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
                 status=TaskStatus.COMPLETED,
-                reasoning="Applied creative problem-solving and innovative thinking"
+                reasoning="Applied creative problem-solving and innovative thinking",
             )
 
         except Exception as e:
@@ -264,7 +291,7 @@ class CreativeSpecialistAgent(BaseAgent):
                 confidence=0.0,
                 agents_used=[self.agent_id],
                 execution_time=time.time() - start_time,
-                status=TaskStatus.FAILED
+                status=TaskStatus.FAILED,
             )
 
 
@@ -282,7 +309,7 @@ class AdaptiveOrchestrator:
             "total_tasks": 0,
             "successful_tasks": 0,
             "failed_tasks": 0,
-            "average_execution_time": 0.0
+            "average_execution_time": 0.0,
         }
         self._initialize_agents()
 
@@ -307,7 +334,9 @@ class AdaptiveOrchestrator:
         """Register a new agent with the orchestrator."""
         self.agents[agent.agent_id] = agent
         self.agent_performance[agent.agent_id] = agent.performance
-        logger.info(f"Registered agent: {agent.agent_id} (specialty: {agent.specialty.value})")
+        logger.info(
+            f"Registered agent: {agent.agent_id} (specialty: {agent.specialty.value})"
+        )
 
     def unregister_agent(self, agent_id: str) -> None:
         """Unregister an agent from the orchestrator."""
@@ -315,6 +344,7 @@ class AdaptiveOrchestrator:
             del self.agents[agent_id]
             del self.agent_performance[agent_id]
             logger.info(f"Unregistered agent: {agent_id}")
+
     async def execute_task(self, task_input: TaskInput) -> TaskOutput:
         """Execute a task using the most appropriate agent(s)."""
 
@@ -330,7 +360,7 @@ class AdaptiveOrchestrator:
                 confidence=0.0,
                 agents_used=[],
                 execution_time=0.0,
-                status=TaskStatus.FAILED
+                status=TaskStatus.FAILED,
             )
         # Execute task with selected agents
         if len(selected_agents) == 1:
@@ -344,7 +374,9 @@ class AdaptiveOrchestrator:
 
         return result
 
-    async def _analyze_task_requirements(self, task_input: TaskInput) -> TaskRequirement:
+    async def _analyze_task_requirements(
+        self, task_input: TaskInput
+    ) -> TaskRequirement:
         """Analyze task to determine requirements and complexity."""
 
         try:
@@ -358,19 +390,39 @@ class AdaptiveOrchestrator:
                 complexity += 0.2
 
             # Check for complexity indicators
-            complex_keywords = ["analyze", "research", "comprehensive", "detailed", "complex"]
-            if any(keyword in task_input.prompt.lower() for keyword in complex_keywords):
+            complex_keywords = [
+                "analyze",
+                "research",
+                "comprehensive",
+                "detailed",
+                "complex",
+            ]
+            if any(
+                keyword in task_input.prompt.lower() for keyword in complex_keywords
+            ):
                 complexity += 0.2
 
             # Determine required specialties
             required_specialties: List[AgentSpecialty] = []
-            if any(word in task_input.prompt.lower() for word in ["code", "programming", "function", "algorithm"]):
+            if any(
+                word in task_input.prompt.lower()
+                for word in ["code", "programming", "function", "algorithm"]
+            ):
                 required_specialties.append(AgentSpecialty.CODE)
-            if any(word in task_input.prompt.lower() for word in ["research", "study", "investigate", "analyze"]):
+            if any(
+                word in task_input.prompt.lower()
+                for word in ["research", "study", "investigate", "analyze"]
+            ):
                 required_specialties.append(AgentSpecialty.RESEARCH)
-            if any(word in task_input.prompt.lower() for word in ["data", "statistics", "analysis", "insights"]):
+            if any(
+                word in task_input.prompt.lower()
+                for word in ["data", "statistics", "analysis", "insights"]
+            ):
                 required_specialties.append(AgentSpecialty.ANALYSIS)
-            if any(word in task_input.prompt.lower() for word in ["creative", "innovative", "design", "brainstorm"]):
+            if any(
+                word in task_input.prompt.lower()
+                for word in ["creative", "innovative", "design", "brainstorm"]
+            ):
                 required_specialties.append(AgentSpecialty.CREATIVE)
             if not required_specialties:
                 required_specialties = [AgentSpecialty.GENERAL]
@@ -380,7 +432,7 @@ class AdaptiveOrchestrator:
                 required_specialties=required_specialties,
                 estimated_time=max(30, len(task_input.prompt) // 10),
                 confidence_threshold=0.7,
-                collaboration_needed=len(required_specialties) > 1
+                collaboration_needed=len(required_specialties) > 1,
             )
 
         except Exception as e:
@@ -391,9 +443,12 @@ class AdaptiveOrchestrator:
                 required_specialties=[AgentSpecialty.GENERAL],
                 estimated_time=60,
                 confidence_threshold=0.7,
-                collaboration_needed=False
+                collaboration_needed=False,
             )
-    async def _select_agents(self, task_input: TaskInput, requirements: TaskRequirement) -> List[BaseAgent]:
+
+    async def _select_agents(
+        self, task_input: TaskInput, requirements: TaskRequirement
+    ) -> List[BaseAgent]:
         """Select the best agents for the task."""
 
         # Calculate fitness scores for all agents
@@ -412,12 +467,12 @@ class AdaptiveOrchestrator:
             if agent.performance.success_rate > 0:
                 fitness_score += (agent.performance.success_rate - 0.5) * 0.2
 
-            agent_scores.append(agent, fitness_score)
+            agent_scores.append((agent, fitness_score))
         # Sort by fitness score
         agent_scores.sort(key=lambda x: x[1], reverse=True)
         # Select top agents
         selected_agents = []
-        max_agents = min(task_input.max_agents, len(agent_scores)
+        max_agents = min(task_input.max_agents, len(agent_scores))
         for i in range(max_agents):
             if agent_scores[i][1] > 0.4:  # Minimum fitness threshold
                 selected_agents.append(agent_scores[i][0])
@@ -427,7 +482,9 @@ class AdaptiveOrchestrator:
 
         return selected_agents
 
-    async def _execute_single_agent(self, agent: BaseAgent, task_input: TaskInput) -> TaskOutput:
+    async def _execute_single_agent(
+        self, agent: BaseAgent, task_input: TaskInput
+    ) -> TaskOutput:
         """Execute task with a single agent."""
 
         agent.is_busy = True
@@ -437,7 +494,9 @@ class AdaptiveOrchestrator:
         finally:
             agent.is_busy = False
 
-    async def _execute_multi_agent(self, agents: List[BaseAgent], task_input: TaskInput) -> TaskOutput:
+    async def _execute_multi_agent(
+        self, agents: List[BaseAgent], task_input: TaskInput
+    ) -> TaskOutput:
         """Execute task with multiple agents and combine results."""
 
         # Mark agents as busy
@@ -451,7 +510,10 @@ class AdaptiveOrchestrator:
             # Filter successful results
             successful_results: List[TaskOutput] = []
             for result in results:
-                if isinstance(result, TaskOutput) and result.status == TaskStatus.COMPLETED:
+                if (
+                    isinstance(result, TaskOutput)
+                    and result.status == TaskStatus.COMPLETED
+                ):
                     successful_results.append(result)
             if not successful_results:
                 # If no successful results, return the first result (even if failed)
@@ -465,10 +527,12 @@ class AdaptiveOrchestrator:
                         confidence=0.0,
                         agents_used=[agent.agent_id for agent in agents],
                         execution_time=0.0,
-                        status=TaskStatus.FAILED
+                        status=TaskStatus.FAILED,
                     )
             # Combine results
-            combined_result = await self._combine_results(successful_results, task_input)
+            combined_result = await self._combine_results(
+                successful_results, task_input
+            )
             return combined_result
 
         finally:
@@ -476,7 +540,9 @@ class AdaptiveOrchestrator:
             for agent in agents:
                 agent.is_busy = False
 
-    async def _combine_results(self, results: List[TaskOutput], task_input: TaskInput) -> TaskOutput:
+    async def _combine_results(
+        self, results: List[TaskOutput], task_input: TaskInput
+    ) -> TaskOutput:
         """Combine multiple agent results into a single output."""
 
         if len(results) == 1:
@@ -501,8 +567,9 @@ class AdaptiveOrchestrator:
             agents_used=all_agents,
             execution_time=total_execution_time,
             status=TaskStatus.COMPLETED,
-            reasoning="Combined insights from multiple specialized agents"
+            reasoning="Combined insights from multiple specialized agents",
         )
+
     async def _update_performance_metrics(self, result: TaskOutput) -> None:
         """Update performance metrics for agents involved in the task."""
 
@@ -513,15 +580,24 @@ class AdaptiveOrchestrator:
 
                 # Update success rate
                 if result.status == TaskStatus.COMPLETED:
-                    perf.success_rate = (perf.success_rate * (perf.task_count - 1) + 1.0) / perf.task_count
+                    perf.success_rate = (
+                        perf.success_rate * (perf.task_count - 1) + 1.0
+                    ) / perf.task_count
                 else:
-                    perf.success_rate = (perf.success_rate * (perf.task_count - 1) / perf.task_count
+                    perf.success_rate = (
+                        perf.success_rate * (perf.task_count - 1)
+                    ) / perf.task_count
 
                 # Update average confidence
-                perf.average_confidence = (perf.average_confidence * (perf.task_count - 1) + result.confidence) / perf.task_count
+                perf.average_confidence = (
+                    perf.average_confidence * (perf.task_count - 1) + result.confidence
+                ) / perf.task_count
 
                 # Update average execution time
-                perf.average_execution_time = (perf.average_execution_time * (perf.task_count - 1) + result.execution_time) / perf.task_count
+                perf.average_execution_time = (
+                    perf.average_execution_time * (perf.task_count - 1)
+                    + result.execution_time
+                ) / perf.task_count
 
                 perf.last_updated = datetime.now(timezone.utc)
         # Update orchestration stats
@@ -534,7 +610,9 @@ class AdaptiveOrchestrator:
         # Update average execution time
         total_tasks = self.orchestration_stats["total_tasks"]
         current_avg = self.orchestration_stats["average_execution_time"]
-        self.orchestration_stats["average_execution_time"] = (current_avg * (total_tasks - 1) + result.execution_time) / total_tasks
+        self.orchestration_stats["average_execution_time"] = (
+            current_avg * (total_tasks - 1) + result.execution_time
+        ) / total_tasks
 
     def get_orchestration_stats(self) -> Dict[str, Any]:
         """Get orchestration statistics."""
@@ -544,12 +622,14 @@ class AdaptiveOrchestrator:
             "busy_agents": len([a for a in self.agents.values() if a.is_busy]),
             "total_agents": len(self.agents),
             "completed_tasks": len(self.completed_tasks),
-            "success_rate": self.orchestration_stats["successful_tasks"] / max(1, self.orchestration_stats["total_tasks"])
+            "success_rate": self.orchestration_stats["successful_tasks"]
+            / max(1, self.orchestration_stats["total_tasks"]),
         }
 
     def get_agent_performance(self, agent_id: str) -> Optional[AgentPerformance]:
         """Get performance metrics for a specific agent."""
         return self.agent_performance.get(agent_id)
+
     def get_all_agent_performance(self) -> Dict[str, AgentPerformance]:
         """Get performance metrics for all agents."""
         return self.agent_performance.copy()
