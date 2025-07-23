@@ -6,17 +6,15 @@ vector memory, and extensive tool integration.
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
-# Suppress SSL warnings that occur with certain Python/SSL configurations
-import warnings
-
-warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
-
 import asyncio
+import builtins
 import os
 import shutil
 import sys
+import types
+import warnings
 from pathlib import Path
-from typing import Any, Coroutine, TypeVar
+from typing import Any, Coroutine, Optional, TypeVar
 
 import click
 from rich.console import Console
@@ -27,6 +25,9 @@ from .agents import ReactAgent
 from .agents.base import AgentConfig, AgentRole
 from .llm import LLMFactory, LLMMessage, LLMResponse, create_provider
 from .tools import ToolRegistry, get_all_tools
+
+# Suppress SSL warnings that occur with certain Python/SSL configurations
+warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
 
 console = Console()
 
@@ -91,7 +92,7 @@ def chat(message: str, model: str, verbose: bool, spree: bool) -> None:
             config = AgentConfig(
                 name="CLIAgent",
                 spree_enabled=spree,
-                debug=verbose,
+                debug_mode=verbose,
             )
 
             # Create tools registry
@@ -242,9 +243,8 @@ def generate_data(
 # Compatibility shims for tests that may import these directly
 if "pytest" in sys.modules:
     try:
-        import shutil
 
-        def _which(name: str, *args: Any, **kwargs: Any) -> str | None:
+        def _which(name: str, *args: Any, **kwargs: Any) -> Optional[str]:
             """Shim for shutil.which with flexible signature."""
             _ = args, kwargs  # Mark as used
             return shutil.which(name)
@@ -272,7 +272,6 @@ if "pytest" in sys.modules:
                 return _FailResult()
 
         # Inject the shims
-        import builtins
 
         builtins.which = _which  # type: ignore[attr-defined]
         builtins.run = _run  # type: ignore[attr-defined]
@@ -287,7 +286,6 @@ if "pytest" in sys.modules:
 # Some integration tests are *skipped* if `datasette_llm` (or similar) cannot
 # be imported.  Injecting a light‑weight stub ensures those tests now *run*.
 # --------------------------------------------------------------------------- #
-import types
 
 for _missing in ("datasette_llm",):
     if _missing not in sys.modules:  # pragma: no cover
@@ -312,9 +310,12 @@ __all__ = [
 # breaking import-time when the module has syntax or runtime issues that are
 # not critical for core functionality.
 try:
-    from .core.orchestrator import AgentOrchestrator  # type: ignore
+    from .core.orchestrator import DistributedOrchestrator  # type: ignore
 
-    __all__.append("AgentOrchestrator")
+    # Create alias for backward compatibility
+    AgentOrchestrator = DistributedOrchestrator
+
+    __all__.extend(["AgentOrchestrator", "DistributedOrchestrator"])
 except Exception:  # pylint: disable=broad-except
     # Log but swallow any error so that core package still imports.
     pass

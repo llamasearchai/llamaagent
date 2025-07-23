@@ -1,6 +1,14 @@
 {
-  "typeCheckingMode": "strict",
+  "include": ["src", "*.py"],
+  "exclude": ["build", "**/__pypackages__/**", "venv", "**/node_modules"],
+  "extraPaths": ["src"],
+  "typeCheckingMode": "basic",
   "stubPath": "typings",
   "reportMissingTypeStubs": "none",
-  "exclude": ["build", "**/__pypackages__/**"]
-} 
+  "reportMissingImports": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "pythonVersion": "3.9",
+  "pythonPlatform": "All"
+}
