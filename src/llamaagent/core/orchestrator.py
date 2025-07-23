@@ -20,7 +20,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from redis import Redis
@@ -55,7 +55,7 @@ except ImportError:
     active_workflows = None
     task_execution_time = None
 
-from ..types import AgentCapability
+from .agent import AgentCapability
 
 
 class TaskPriority(Enum):
@@ -141,34 +141,36 @@ class DistributedOrchestrator:
         self.max_concurrent_workflows = max_concurrent_workflows
         self.agent_timeout_seconds = agent_timeout_seconds
 
-        # Storage
-        self.redis_client = None
+        # Storage - type annotated
+        self.redis_client: Optional[Any] = None
         if Redis:
             try:
                 self.redis_client = Redis.from_url(redis_url, decode_responses=True)
             except Exception:
                 self.redis_client = None
 
-        # Message queue
-        self.kafka_producer = None
+        # Message queue - type annotated
+        self.kafka_producer: Optional[Any] = None
         if KafkaProducer:
             try:
                 self.kafka_producer = KafkaProducer(
                     bootstrap_servers=self.kafka_servers,
-                    value_serializer=lambda v: json.dumps(v).encode("utf-8"),  # type: ignore
+                    value_serializer=lambda v: json.dumps(v).encode(
+                        "utf-8"
+                    ),  # type: ignore
                 )
             except Exception:
                 self.kafka_producer = None
 
         # State management
         self.workflows: Dict[str, Workflow] = {}
-        self.task_queue: List[tuple[int, Task]] = []
+        self.task_queue: List[Tuple[int, Task]] = []
         self.agent_registry: Dict[str, Dict[str, Any]] = {}
         self.active_tasks: Dict[str, Task] = {}
 
         # Monitoring
         self.logger = self._setup_logger()
-        self._running = False
+        self._running: bool = False
         self._scheduler_task: Optional[asyncio.Task[None]] = None
         self._monitor_task: Optional[asyncio.Task[None]] = None
 
@@ -366,7 +368,7 @@ class DistributedOrchestrator:
 
         # Sort by availability and capabilities
         suitable.sort(
-            key=lambda aid: (
+            key=lambda aid: (  # type: ignore
                 len(self.agent_registry[aid]["capabilities"]),
                 -sum(1 for t in self.active_tasks.values() if aid in t.assigned_agents),
             )
@@ -600,7 +602,7 @@ class DistributedOrchestrator:
         return None
 
     async def handle_task_update(
-        self, task_id: str, status: str, result: Any = None, error: str = None
+        self, task_id: str, status: str, result: Any = None, error: Optional[str] = None
     ) -> None:
         """Handle task status update from agent"""
         if task_id not in self.active_tasks:

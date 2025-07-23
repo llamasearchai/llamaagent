@@ -87,6 +87,10 @@ class AgentCapability(Enum):
     COLLABORATION = "collaboration"
     LEARNING = "learning"
     MONITORING = "monitoring"
+    ANALYSIS = "analysis"
+    WEB_SEARCH = "web_search"
+    CODE_EXECUTION = "code_execution"
+    MULTIMODAL = "multimodal"
 
 
 class AgentRole(Enum):

@@ -5,6 +5,22 @@ All notable changes to LlamaAgent will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2025-01-23
+
+### Fixed
+- **Type Safety**: Resolved all Pyright type checking errors in orchestrator.py (30+ issues)
+  - Fixed import paths for AgentCapability enum
+  - Added missing AgentCapability values (ANALYSIS, WEB_SEARCH, CODE_EXECUTION, MULTIMODAL)
+  - Added proper type annotations for optional dependencies (KafkaProducer, Redis)
+  - Fixed lambda parameter type annotations with appropriate type ignore comments
+  - Corrected Optional[str] parameter types in method signatures
+  - Enhanced class attribute type annotations for better IDE support
+
+### Enhanced
+- **Code Quality**: Comprehensive type annotation improvements across distributed orchestration module
+- **Developer Experience**: Better IDE support and error detection with complete type hints
+- **Production Readiness**: Eliminated all type checking warnings for enterprise deployment
+
 ## [0.2.1] - 2025-01-23
 
 ### Fixed
