@@ -365,7 +365,7 @@ class MetricsCollector:
         ]
 
         for name in metric_names:
-            setattr(self, name, MockMetric()
+            setattr(self, name, MockMetric())
             self.metrics[name] = getattr(self, name)
     def record_http_request(self, method: str, endpoint: str, status_code: int, duration: float):
         """Record HTTP request metrics."""

@@ -419,7 +419,7 @@ class BenchmarkEngine:
             # Aggregate other metrics
             all_metric_keys = set()
             for result in successful_results:
-                all_metric_keys.update(result.metrics.keys()
+                all_metric_keys.update(result.metrics.keys())
             for metric_key in all_metric_keys:
                 values = [
                     r.metrics[metric_key]
@@ -487,8 +487,8 @@ class BenchmarkEngine:
     async def _calculate_f1_score(self, actual: Any, expected: Any) -> float:
         """Calculate F1 score for text comparison"""
         if isinstance(actual, str) and isinstance(expected, str):
-            actual_tokens = set(actual.lower().split()
-            expected_tokens = set(expected.lower().split()
+            actual_tokens = set(actual.lower().split())
+            expected_tokens = set(expected.lower().split())
             
             if not expected_tokens:
                 return 1.0 if not actual_tokens else 0.0

@@ -28,23 +28,30 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 
 import uvicorn
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from ..integration.openai_comprehensive import (
-    BudgetExceededError, OpenAIComprehensiveIntegration, OpenAIModelType,
-    create_comprehensive_openai_integration)
+    BudgetExceededError,
+    OpenAIComprehensiveIntegration,
+    OpenAIModelType,
+    create_comprehensive_openai_integration,
+)
 from ..tools.openai_tools import OPENAI_TOOLS, create_openai_tool
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
 # Pydantic models for API
 class ChatMessage(BaseModel):
     role: str = Field(..., description="Message role (system, user, assistant)")
     content: str = Field(..., description="Message content")
+
+
 class ChatCompletionRequest(BaseModel):
     messages: List[ChatMessage] = Field(..., description="List of chat messages")
     model: str = Field(default="gpt-4o-mini", description="Model to use")
@@ -58,11 +65,15 @@ class ChatCompletionRequest(BaseModel):
     tools: Optional[List[Dict[str, Any]]] = Field(
         default=None, description="Function tools"
     )
+
+
 class ReasoningRequest(BaseModel):
     problem: str = Field(..., description="Problem or question to solve")
     model: str = Field(default="o3-mini", description="Reasoning model to use")
     temperature: float = Field(default=0.1, description="Sampling temperature")
     max_tokens: Optional[int] = Field(default=None, description="Maximum tokens")
+
+
 class ImageGenerationRequest(BaseModel):
     prompt: str = Field(..., description="Image description prompt")
     model: str = Field(default="dall-e-3", description="Image generation model")
@@ -78,19 +89,27 @@ class TextToSpeechRequest(BaseModel):
     voice: str = Field(default="alloy", description="Voice to use")
     response_format: str = Field(default="mp3", description="Audio format")
     speed: float = Field(default=1.0, description="Speech speed")
+
+
 class EmbeddingsRequest(BaseModel):
     texts: Union[str, List[str]] = Field(..., description="Text(s) to embed")
     model: str = Field(default="text-embedding-3-large", description="Embedding model")
     dimensions: Optional[int] = Field(default=None, description="Embedding dimensions")
+
+
 class ModerationRequest(BaseModel):
     content: Union[str, List[str]] = Field(..., description="Content to moderate")
     model: str = Field(default="text-moderation-latest", description="Moderation model")
+
+
 class TranscriptionRequest(BaseModel):
     language: Optional[str] = Field(default=None, description="Audio language")
     model: str = Field(default="whisper-1", description="Transcription model")
     response_format: str = Field(default="json", description="Response format")
     temperature: float = Field(default=0.0, description="Sampling temperature")
     prompt: Optional[str] = Field(default=None, description="Transcription prompt")
+
+
 class APIResponse(BaseModel):
     success: bool = Field(..., description="Whether operation succeeded")
     data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
@@ -101,6 +120,8 @@ class APIResponse(BaseModel):
     usage: Optional[Dict[str, Any]] = Field(
         default=None, description="Usage statistics"
     )
+
+
 class HealthResponse(BaseModel):
     model_config = {"protected_namespaces": ()}  # Disable protected namespace warning
 
@@ -126,7 +147,7 @@ def get_integration() -> OpenAIComprehensiveIntegration:
     return integration
 
 
-def get_tool(tool_type: str):
+def get_tool(tool_type: str) -> Any:
     """Get or create OpenAI tool."""
     global tools
     if tool_type not in tools:
@@ -142,6 +163,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -150,9 +172,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 # Error handlers
 @app.exception_handler(BudgetExceededError)
-async def budget_exceeded_handler(request, exc):
+async def budget_exceeded_handler(
+    request: Request, exc: BudgetExceededError
+) -> Any:
     return HTTPException(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         detail=f"Budget exceeded: {str(exc)}",
@@ -161,11 +187,11 @@ async def budget_exceeded_handler(request, exc):
 
 # Health and status endpoints
 @app.get("/", tags=["Status"])
-async def root():
+async def root() -> Dict[str, Any]:
     """Root endpoint with system information."""
     try:
-        integration = get_integration()
-        health = await integration.health_check()
+        integration_instance = get_integration()
+        health = await integration_instance.health_check()
 
         return {
             "message": "LlamaAgent Comprehensive OpenAI API",
@@ -173,7 +199,7 @@ async def root():
             "status": "healthy" if health["api_accessible"] else "degraded",
             "available_model_types": [t.value for t in OpenAIModelType],
             "available_tools": list(OPENAI_TOOLS.keys()),
-            "budget_status": integration.get_budget_status(),
+            "budget_status": integration_instance.get_budget_status(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
@@ -187,16 +213,16 @@ async def root():
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Status"])
-async def health_check():
+async def health_check() -> HealthResponse:
     """Comprehensive health check."""
     try:
-        integration = get_integration()
-        health = await integration.health_check()
+        integration_instance = get_integration()
+        health = await integration_instance.health_check()
 
         return HealthResponse(
             status="healthy" if health["api_accessible"] else "degraded",
             api_accessible=health["api_accessible"],
-            budget_status=integration.get_budget_status(),
+            budget_status=integration_instance.get_budget_status(),
             model_availability=health.get("model_types_available", {}),
         )
     except Exception as e:
@@ -210,11 +236,11 @@ async def health_check():
 
 
 @app.get("/budget", response_model=APIResponse, tags=["Status"])
-async def get_budget_status():
+async def get_budget_status() -> APIResponse:
     """Get current budget status."""
     try:
-        integration = get_integration()
-        budget = integration.get_budget_status()
+        integration_instance = get_integration()
+        budget = integration_instance.get_budget_status()
 
         return APIResponse(success=True, data=budget)
     except Exception as e:
@@ -223,15 +249,15 @@ async def get_budget_status():
 
 
 @app.get("/models", response_model=APIResponse, tags=["Models"])
-async def list_models(model_type: Optional[str] = None):
+async def list_models(model_type: Optional[str] = None) -> APIResponse:
     """List available models."""
     try:
-        integration = get_integration()
+        integration_instance = get_integration()
 
         if model_type:
             try:
                 model_type_enum = OpenAIModelType(model_type)
-                models = integration.get_models_by_type(model_type_enum)
+                models = integration_instance.get_models_by_type(model_type_enum)
                 return APIResponse(
                     success=True,
                     data={
@@ -247,7 +273,7 @@ async def list_models(model_type: Optional[str] = None):
                     data={"available_types": [t.value for t in OpenAIModelType]},
                 )
         else:
-            models = await integration.get_available_models()
+            models = await integration_instance.get_available_models()
             return APIResponse(
                 success=True,
                 data={"models": models, "count": len(models)},
@@ -255,12 +281,14 @@ async def list_models(model_type: Optional[str] = None):
     except Exception as e:
         logger.error(f"List models error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Chat completion endpoints
 @app.post("/chat/completions", response_model=APIResponse, tags=["Chat"])
-async def chat_completions(request: ChatCompletionRequest):
+async def chat_completions(request: ChatCompletionRequest) -> APIResponse:
     """Chat completions with comprehensive model support."""
     try:
-        integration = get_integration()
+        integration_instance = get_integration()
 
         messages = [
             {"role": msg.role, "content": msg.content} for msg in request.messages
@@ -269,7 +297,7 @@ async def chat_completions(request: ChatCompletionRequest):
         if request.stream:
             # For streaming, we'll return the first chunk for now
             # In production, you'd want to use StreamingResponse
-            response = await integration.chat_completion(
+            response = await integration_instance.chat_completion(
                 messages=messages,
                 model=request.model,
                 temperature=request.temperature,
@@ -278,20 +306,32 @@ async def chat_completions(request: ChatCompletionRequest):
                 stream=False,  # Simplified for this example
             )
         else:
-            response = await integration.chat_completion(
+            response = await integration_instance.chat_completion(
                 messages=messages,
                 model=request.model,
                 temperature=request.temperature,
                 max_tokens=request.max_tokens,
                 tools=request.tools,
             )
-        return APIResponse(success=True, data=response, usage=response.get("usage"))
+
+        # Handle both Dict and AsyncGenerator return types
+        if isinstance(response, dict):
+            return APIResponse(success=True, data=response, usage=response.get("usage"))
+        else:
+            # Handle AsyncGenerator case - collect first response
+            async for chunk in response:
+                return APIResponse(success=True, data=chunk, usage=chunk.get("usage") if isinstance(chunk, dict) else None)
+            # If no chunks, return empty response
+            return APIResponse(success=True, data={}, usage=None)
+
     except Exception as e:
         logger.error(f"Chat completion error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Reasoning endpoints
 @app.post("/reasoning/solve", response_model=APIResponse, tags=["Reasoning"])
-async def reasoning_solve(request: ReasoningRequest):
+async def reasoning_solve(request: ReasoningRequest) -> APIResponse:
     """Solve problems using reasoning models."""
     try:
         tool = get_tool("reasoning")
@@ -310,9 +350,11 @@ async def reasoning_solve(request: ReasoningRequest):
     except Exception as e:
         logger.error(f"Reasoning error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Image generation endpoints
 @app.post("/images/generate", response_model=APIResponse, tags=["Images"])
-async def generate_images(request: ImageGenerationRequest):
+async def generate_images(request: ImageGenerationRequest) -> APIResponse:
     """Generate images using DALL-E models."""
     try:
         tool = get_tool("image_generation")
@@ -333,9 +375,11 @@ async def generate_images(request: ImageGenerationRequest):
     except Exception as e:
         logger.error(f"Image generation error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Embeddings endpoints
 @app.post("/embeddings", response_model=APIResponse, tags=["Embeddings"])
-async def create_embeddings(request: EmbeddingsRequest):
+async def create_embeddings(request: EmbeddingsRequest) -> APIResponse:
     """Create text embeddings."""
     try:
         tool = get_tool("embeddings")
@@ -353,9 +397,11 @@ async def create_embeddings(request: EmbeddingsRequest):
     except Exception as e:
         logger.error(f"Embeddings error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Moderation endpoints
 @app.post("/moderations", response_model=APIResponse, tags=["Moderation"])
-async def moderate_content(request: ModerationRequest):
+async def moderate_content(request: ModerationRequest) -> APIResponse:
     """Moderate content for safety."""
     try:
         tool = get_tool("moderation")
@@ -369,9 +415,11 @@ async def moderate_content(request: ModerationRequest):
     except Exception as e:
         logger.error(f"Moderation error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Text-to-speech endpoints
 @app.post("/audio/speech", response_model=APIResponse, tags=["Audio"])
-async def text_to_speech(request: TextToSpeechRequest):
+async def text_to_speech(request: TextToSpeechRequest) -> APIResponse:
     """Convert text to speech."""
     try:
         tool = get_tool("text_to_speech")
@@ -394,8 +442,10 @@ async def text_to_speech(request: TextToSpeechRequest):
     except Exception as e:
         logger.error(f"Text-to-speech error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 @app.get("/audio/speech/{file_id}", tags=["Audio"])
-async def download_speech_file(file_id: str):
+async def download_speech_file(file_id: str) -> FileResponse:
     """Download generated speech file."""
     # This is a simplified implementation
     # In production, you'd want proper file management
@@ -408,6 +458,8 @@ async def download_speech_file(file_id: str):
     except Exception as e:
         logger.error(f"File download error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
 # Transcription endpoints
 @app.post("/audio/transcriptions", response_model=APIResponse, tags=["Audio"])
 async def transcribe_audio(
@@ -417,13 +469,14 @@ async def transcribe_audio(
     prompt: Optional[str] = Form(default=None),
     response_format: str = Form(default="json"),
     temperature: float = Form(default=0.0),
-):
+) -> APIResponse:
     """Transcribe audio to text."""
     try:
         # Save uploaded file temporarily
+        filename = file.filename or "audio.wav"
         with tempfile.NamedTemporaryFile(
             delete=False,
-            suffix=f".{file.filename.split('.')[-1]}",
+            suffix=f".{filename.split('.')[-1]}",
         ) as tmp_file:
             content = await file.read()
             tmp_file.write(content)
@@ -450,20 +503,22 @@ async def transcribe_audio(
     except Exception as e:
         logger.error(f"Transcription error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Batch operations endpoint
 @app.post("/batch/process", response_model=APIResponse, tags=["Batch"])
-async def batch_process(requests: List[Dict[str, Any]]):
+async def batch_process(requests: List[Dict[str, Any]]) -> APIResponse:
     """Process multiple requests in batch."""
     try:
         results: List[Any] = []
 
-        integration = get_integration()
+        integration_instance = get_integration()
 
         for i, request_data in enumerate(requests):
             try:
                 operation_type = request_data.get("type", "chat")
                 if operation_type == "chat":
-                    result = await integration.chat_completion(
+                    result = await integration_instance.chat_completion(
                         **request_data.get("params", {})
                     )
                 elif operation_type == "reasoning":
@@ -481,20 +536,24 @@ async def batch_process(requests: List[Dict[str, Any]]):
                         "error": f"Unknown operation type: {operation_type}",
                     }
 
-                results.append({
-                    "index": i,
-                    "request_id": request_data.get("id", f"batch_{i}"),
-                    "success": result.get("success", True),
-                    "result": result,
-                })
+                results.append(
+                    {
+                        "index": i,
+                        "request_id": request_data.get("id", f"batch_{i}"),
+                        "success": result.get("success", True),
+                        "result": result,
+                    }
+                )
 
             except Exception as e:
-                results.append({
-                    "index": i,
-                    "request_id": request_data.get("id", f"batch_{i}"),
-                    "success": False,
-                    "error": str(e),
-                })
+                results.append(
+                    {
+                        "index": i,
+                        "request_id": request_data.get("id", f"batch_{i}"),
+                        "success": False,
+                        "error": str(e),
+                    }
+                )
 
         # Calculate batch statistics
         successful_requests = sum(1 for r in results if r["success"])
@@ -516,24 +575,28 @@ async def batch_process(requests: List[Dict[str, Any]]):
     except Exception as e:
         logger.error(f"Batch processing error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Usage and analytics endpoints
 @app.get("/usage/summary", response_model=APIResponse, tags=["Analytics"])
-async def get_usage_summary():
+async def get_usage_summary() -> APIResponse:
     """Get comprehensive usage summary."""
     try:
-        integration = get_integration()
-        usage = integration.get_usage_summary()
+        integration_instance = get_integration()
+        usage = integration_instance.get_usage_summary()
 
         return APIResponse(success=True, data=usage)
     except Exception as e:
         logger.error(f"Usage summary error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 @app.get("/usage/by-model", response_model=APIResponse, tags=["Analytics"])
-async def get_usage_by_model():
+async def get_usage_by_model() -> APIResponse:
     """Get usage breakdown by model."""
     try:
-        integration = get_integration()
-        usage = integration.get_usage_summary()
+        integration_instance = get_integration()
+        usage = integration_instance.get_usage_summary()
 
         return APIResponse(
             success=True,
@@ -547,9 +610,11 @@ async def get_usage_by_model():
     except Exception as e:
         logger.error(f"Model usage error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 # Comprehensive tool endpoint
 @app.post("/tools/{tool_type}", response_model=APIResponse, tags=["Tools"])
-async def use_tool(tool_type: str, operation_data: Dict[str, Any]):
+async def use_tool(tool_type: str, operation_data: Dict[str, Any]) -> APIResponse:
     """Use any OpenAI tool with arbitrary parameters."""
     try:
         if tool_type not in OPENAI_TOOLS:
@@ -574,6 +639,8 @@ async def use_tool(tool_type: str, operation_data: Dict[str, Any]):
     except Exception as e:
         logger.error(f"Tool execution error: {e}")
         return APIResponse(success=False, error=str(e))
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "llamaagent.api.openai_comprehensive_api:app",

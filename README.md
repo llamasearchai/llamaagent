@@ -1,6 +1,6 @@
 <div align="center">
 
-![LlamaAgent Logo](logo.png)
+![LlamaAgent Logo](logo.svg)
 
 # LlamaAgent
 

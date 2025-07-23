@@ -200,7 +200,7 @@ class SupervisedFineTuningEngine:
     async def train_model(self, training_data: List[TrainingExample], epochs: int = 3) -> LearningSession:
         """Perform supervised fine-tuning."""
         
-        session_id = f"sft_{int(time.time()}"
+        session_id = f"sft_{int(time.time())}"
         session = LearningSession(
             session_id=session_id,
             strategy=LearningStrategy.SUPERVISED_FINE_TUNING,
@@ -221,7 +221,7 @@ class SupervisedFineTuningEngine:
             for epoch in range(epochs):
                 logger.info(f"Training epoch {epoch + 1}/{epochs}")
                 # Simulate batch processing
-                batch_size = min(32, len(training_data)
+                batch_size = min(32, len(training_data))
                 for i in range(0, len(training_data), batch_size):
                     batch = training_data[i:i + batch_size]
                     await self._process_training_batch(batch)

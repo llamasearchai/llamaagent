@@ -1,39 +1,44 @@
-"""Public re-exports for the *llamaagent.agents* package.
+"""
+LlamaAgent Agents Module
 
-Only a subset of concrete classes are re-exported here to keep the import
-surface small while satisfying the test-suite expectations.
+This module contains all agent implementations for the LlamaAgent system,
+including the base ReactAgent and advanced cognitive agents.
+
+Author: LlamaAgent Development Team
 """
 
-# Core building blocks
-# Advanced agent implementations
-from .advanced_reasoning import (AdvancedReasoningAgent, ReasoningStrategy,
-                                 ReasoningTrace, ThoughtNode)
-from .base import AgentConfig, AgentResponse, AgentRole, BaseAgent
-from .multimodal_advanced import (CrossModalContext, ModalityData,
-                                  ModalityType, MultiModalAdvancedAgent)
-# Concrete agent implementations
+from .base import (
+    BaseAgent,
+    AgentConfig,
+    AgentResponse,
+    AgentRole,
+)
+
+# Import ReactAgent from react module
 from .react import ReactAgent
 
-# (A more fully-featured *Agent* class can be added later; for now we expose
-# *BaseAgent* under that name so external imports don't break.)
+# Make the ReactAgent easily accessible for backward compatibility
+ReactAgentAlias = ReactAgent
 
-Agent = BaseAgent  # type: ignore[assignment]
+# Import task types from types module
+try:
+    from ..types import TaskInput, TaskOutput, TaskResult, TaskStatus
+except ImportError:
+    # Fallback if types not available
+    TaskInput = None
+    TaskOutput = None
+    TaskResult = None
+    TaskStatus = None
 
-# Public API
 __all__ = [
     "BaseAgent",
+    "ReactAgent", 
+    "ReactAgentAlias",
     "AgentConfig",
-    "AgentRole",
     "AgentResponse",
-    "ReactAgent",
-    "Agent",
-    # Advanced agents
-    "AdvancedReasoningAgent",
-    "ReasoningStrategy",
-    "ReasoningTrace",
-    "ThoughtNode",
-    "MultiModalAdvancedAgent",
-    "ModalityType",
-    "ModalityData",
-    "CrossModalContext",
+    "AgentRole",
+    "TaskInput",
+    "TaskOutput", 
+    "TaskResult",
+    "TaskStatus"
 ]

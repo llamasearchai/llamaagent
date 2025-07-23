@@ -243,7 +243,7 @@ STYLE: {request.style}
         
         return list(set(dependencies))
 
-    def get_history(self) -> List[Dict[str, Any]]::
+    def get_history(self) -> List[Dict[str, Any]]:
         """Get generation history."""
         return self.history
 

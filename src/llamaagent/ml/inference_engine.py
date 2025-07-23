@@ -131,7 +131,7 @@ class ModelConfig:
 @dataclass
 class InferenceRequest:
     """Inference request structure"""
-    request_id: str = field(default_factory=lambda: str(uuid.uuid4())
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     model_id: str = ""
     version: Optional[str] = None
     inputs: Any = None
@@ -140,7 +140,7 @@ class InferenceRequest:
     priority: int = 0
     timeout: float = 30.0
     callback: Optional[Callable[..., Any]] = None
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 @dataclass
 class InferenceResult:
     """Inference result structure"""
@@ -340,7 +340,7 @@ class BatchProcessor:
         self.max_batch_size = max_batch_size
         self.max_wait_time = max_wait_time
         self.pending_requests: List[InferenceRequest] = []
-        self.batch_futures: Dict[str, asyncio.Future] = {})
+        self.batch_futures: Dict[str, asyncio.Future] = {}
         self.logger = self._setup_logger()
 
     def _setup_logger(self) -> logging.Logger:

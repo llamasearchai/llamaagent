@@ -142,7 +142,7 @@ class AlertManager:
     def start(self) -> None:
         """Start the alert manager"""
         if self._aggregation_task is None:
-            self._aggregation_task = asyncio.create_task(self._aggregation_loop()
+            self._aggregation_task = asyncio.create_task(self._aggregation_loop())
     def stop(self) -> None:
         """Stop the alert manager"""
         if self._aggregation_task:
@@ -279,7 +279,7 @@ class AlertManager:
         for channel in channels:
             if channel in self.channel_handlers:
                 handler = self.channel_handlers[channel]
-                tasks.append(asyncio.create_task(handler(alert)
+                tasks.append(asyncio.create_task(handler(alert)))
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
     async def _send_log_alert(self, alert: Alert) -> None:

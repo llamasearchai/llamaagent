@@ -322,8 +322,8 @@ Requirements:
         # Match {{variable}} pattern
         variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", template)
         # Match {variable} pattern
-        variables.extend(re.findall(r"\{\s*(\w+)\s*\}", template)
-        return list(set(variables)
+        variables.extend(re.findall(r"\{\s*(\w+)\s*\}", template))
+        return list(set(variables))
     async def _evaluate_candidate(
         self,
         candidate: PromptCandidate,

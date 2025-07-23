@@ -87,7 +87,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         start_time = time.time()
-        request_id = str(uuid.uuid4()
+        request_id = str(uuid.uuid4())
         # Add request ID to headers for tracing
         request.state.request_id = request_id
 

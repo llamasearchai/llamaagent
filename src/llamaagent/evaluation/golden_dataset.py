@@ -150,7 +150,7 @@ class GoldenDatasetManager:
         dataset_type: DatasetType,
         description: str = "",
         difficulty: DifficultyLevel = DifficultyLevel.MEDIUM,
-        config: Optional[Dict[str, Any]] = None)
+        config: Optional[Dict[str, Any]] = None
     ) -> None:
         """Create a new dataset"""
         config = config or {}
@@ -180,7 +180,7 @@ class GoldenDatasetManager:
         if dataset_name not in self.datasets:
             raise ValueError(f"Dataset '{dataset_name}' does not exist")
         # Generate unique ID
-        sample_id = self._generate_sample_id(dataset_name, len(self.datasets[dataset_name])
+        sample_id = self._generate_sample_id(dataset_name, len(self.datasets[dataset_name]))
         sample = DatasetSample(
             id=sample_id,
             input=input_data,

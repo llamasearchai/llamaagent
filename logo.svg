@@ -1,0 +1,28 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Forward-pointing llama hooves -->
+  <g fill="black">
+    <!-- Left hoof -->
+    <path d="M90 60
+             C80 45, 65 40, 55 55
+             C40 75, 60 115, 90 120
+             C100 122, 110 110, 105 95
+             C100 80, 95 70, 90 60Z"/>
+             
+    <!-- Right hoof, rotated slightly outward to imply “pointing” -->
+    <path d="M130 65
+             C140 50, 155 45, 165 60
+             C180 80, 160 120, 130 125
+             C120 126, 115 115, 120 100
+             C125 85, 128 75, 130 65Z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="50%" y="215" text-anchor="middle"
+        font-family="sans-serif"
+        font-size="18"
+        font-weight="300"
+        letter-spacing="2"
+        fill="black">
+    llamaagent
+  </text>
+</svg>

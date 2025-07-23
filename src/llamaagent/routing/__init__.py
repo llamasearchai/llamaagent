@@ -6,7 +6,7 @@ distributing coding tasks between different AI providers based on various
 strategies including task type, language, complexity, performance, and cost.
 """
 
-from .ai_router import AIRouter, RoutingDecision
+from .ai_router import AIRouter
 from .metrics import PerformanceTracker, RoutingMetrics
 from .provider_registry import ProviderCapabilities, ProviderRegistry
 from .strategies import (ComplexityBasedRouting, ConsensusRouting,
@@ -14,6 +14,7 @@ from .strategies import (ComplexityBasedRouting, ConsensusRouting,
                          LanguageBasedRouting, PerformanceBasedRouting,
                          RoutingStrategy, TaskBasedRouting)
 from .task_analyzer import TaskAnalyzer, TaskCharacteristics
+from .types import RoutingConfig, RoutingDecision, RoutingMode
 
 __all__ = [
     "AIRouter",

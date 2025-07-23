@@ -589,12 +589,14 @@ async def get_ecosystem_health(
             healthy_nodes=health_data["healthy_nodes"],
             unhealthy_nodes=health_data["unhealthy_nodes"],
             service_health=health_data["service_health"] if include_services else {},
-            resource_status={"shared_resources": 5, "active_tokens": 12}
-            if include_resources
-            else {},
-            performance_metrics=health_data["performance_metrics"]
-            if include_metrics
-            else {},
+            resource_status=(
+                {"shared_resources": 5, "active_tokens": 12}
+                if include_resources
+                else {}
+            ),
+            performance_metrics=(
+                health_data["performance_metrics"] if include_metrics else {}
+            ),
             last_updated=datetime.now(timezone.utc).isoformat(),
         )
 

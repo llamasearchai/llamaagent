@@ -374,7 +374,7 @@ class RoleManager:
             categories.add(role.category)
         return sorted(list(categories))
     
-    def search_roles(self, query: str) -> List[Role]::
+    def search_roles(self, query: str) -> List[Role]:
         """Search roles by name, description, or tags."""
         query = query.lower()
         results = []

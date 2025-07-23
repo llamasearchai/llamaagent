@@ -1,140 +1,107 @@
 """
-LLM Module for LlamaAgent
+LLM Provider Registry and Factory
 
-Provides unified access to all LLM providers and utilities.
+This module provides a centralized registry for LLM providers and a factory
+for creating provider instances. It supports multiple provider types including
+OpenAI, Anthropic, Cohere, and mock providers for testing.
 
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional, Type
+
+from .base import BaseLLMProvider
+from .providers.mock_provider import MockProvider
+from .providers.openai_provider import OpenAIProvider
+
+# Import optional providers with graceful fallback
+try:
+    from .providers.anthropic import AnthropicProvider
+except ImportError:
+    AnthropicProvider = None
+
+try:
+    from .providers.cohere_provider import CohereProvider
+except ImportError:
+    CohereProvider = None
+
+# Import message types
+from ..types import LLMMessage, LLMResponse
 
 logger = logging.getLogger(__name__)
 
-# Core message and response types
-# Base classes
-from .base import LLMProvider
-# Exceptions
-from .exceptions import (AuthenticationError, ConfigurationError, LLMError,
-                         ModelNotFoundError, NetworkError, ProviderError,
-                         RateLimitError, TokenLimitError)
-# Factory and utilities
-from .factory import LLMFactory
-from .messages import LLMMessage, LLMResponse
-# Provider registry
-from .providers import (MockProvider, ProviderFactory, create_provider,
-                        get_available_providers, get_provider_class,
-                        is_provider_available)
-from .providers.base_provider import BaseLLMProvider
+# Registry of available LLM providers
+llm_provider_registry: Dict[str, Type[BaseLLMProvider]] = {
+    "mock": MockProvider,
+    "openai": OpenAIProvider,
+}
 
-# Global factory instance
-_global_factory = LLMFactory()
+# Aliases for backward compatibility
+MockLLMProvider = MockProvider
+LLMProvider = BaseLLMProvider
 
 
-def get_factory() -> LLMFactory:
-    """Get the global LLM factory instance."""
-    return _global_factory
+def register_provider(name: str, provider_class: Type[BaseLLMProvider]) -> None:
+    """Register a new LLM provider"""
+    llm_provider_registry[name] = provider_class
+    logger.info(f"Registered LLM provider: {name}")
 
 
-def list_providers() -> List[str]:
-    """List all available providers."""
-    return get_available_providers()
+def get_provider(name: str) -> Optional[Type[BaseLLMProvider]]:
+    """Get a provider class by name"""
+    return llm_provider_registry.get(name)
 
 
-def list_models(provider: str) -> List[str]:
-    """List available models for a provider."""
-    return _global_factory.get_available_providers().get(provider, [])
+def create_provider(name: str, **kwargs: Any) -> BaseLLMProvider:
+    """Create a provider instance by name"""
+    provider_class = get_provider(name)
+    if not provider_class:
+        raise ValueError(f"Unknown LLM provider: {name}")
+    
+    try:
+        return provider_class(**kwargs)
+    except Exception as e:
+        logger.error(f"Failed to create provider {name}: {e}")
+        raise
 
 
-def create_llm_provider(
-    provider_type: str,
-    api_key: Optional[str] = None,
-    model_name: Optional[str] = None,
-    **kwargs: Any,
-) -> BaseLLMProvider:
-    """Create an LLM provider instance."""
-    return _global_factory.create_provider(
-        provider_type=provider_type, api_key=api_key, model_name=model_name, **kwargs
-    )
+def list_providers() -> list[str]:
+    """List all available provider names"""
+    return list(llm_provider_registry.keys())
 
 
-async def quick_complete(
-    provider_type: str,
-    prompt: str,
-    api_key: Optional[str] = None,
-    model_name: Optional[str] = None,
-    **kwargs: Any,
-) -> str:
-    """Quick completion without needing to manage provider instances."""
-    provider = create_llm_provider(
-        provider_type, api_key=api_key, model_name=model_name, **kwargs
-    )
-    message = LLMMessage(role="user", content=prompt)
-    response = await provider.complete([message])
-    return response.content
+def is_provider_available(name: str) -> bool:
+    """Check if a provider is available"""
+    return name in llm_provider_registry
 
 
-def get_provider_info() -> Dict[str, Any]:
-    """Get information about all available providers."""
-    info = {
-        "available_providers": get_available_providers(),
-        "total_providers": len(get_available_providers()),
-        "provider_models": _global_factory.get_available_providers(),
-    }
-
-    # Add detailed info for each provider
-    provider_details: Dict[str, Any] = {}
-    for provider_name in get_available_providers():
-        provider_class = get_provider_class(provider_name)
-        if provider_class:
-            provider_details[provider_name] = {
-                "class_name": provider_class.__name__,
-                "module": provider_class.__module__,
-                "available": is_provider_available(provider_name),
-            }
-
-    info["provider_details"] = provider_details
-    return info
-
-
-# Compatibility aliases
-LLM = BaseLLMProvider
-Provider = BaseLLMProvider
-create_provider_direct = create_provider
+# Export main classes and functions
+# Factory function alias
+LLMFactory = create_provider
 
 __all__ = [
-    # Core types
+    "BaseLLMProvider",
+    "LLMProvider",
+    "MockLLMProvider",
+    "OpenAIProvider", 
+    "MockProvider",
     "LLMMessage",
     "LLMResponse",
-    "LLMProvider",
-    "BaseLLMProvider",
-    # Aliases
-    "LLM",
-    "Provider",
-    # Factory
     "LLMFactory",
-    "get_factory",
-    # Providers
-    "MockProvider",
-    "ProviderFactory",
+    "register_provider",
+    "get_provider", 
     "create_provider",
-    "create_provider_direct",
-    "get_available_providers",
-    "get_provider_class",
-    "is_provider_available",
-    # Utilities
-    "create_llm_provider",
-    "quick_complete",
     "list_providers",
-    "list_models",
-    "get_provider_info",
-    # Exceptions
-    "LLMError",
-    "AuthenticationError",
-    "ConfigurationError",
-    "ModelNotFoundError",
-    "NetworkError",
-    "ProviderError",
-    "RateLimitError",
-    "TokenLimitError",
+    "is_provider_available",
+    "llm_provider_registry"
 ]
+
+# Add optional providers if available
+if AnthropicProvider is not None:
+    __all__.append("AnthropicProvider")
+    llm_provider_registry["anthropic"] = AnthropicProvider
+
+if CohereProvider is not None:
+    __all__.append("CohereProvider")
+    llm_provider_registry["cohere"] = CohereProvider

@@ -88,7 +88,7 @@ class AgentPerformance:
     average_confidence: float = 0.0
     average_execution_time: float = 0.0
     specialty_scores: Dict[AgentSpecialty, float] = field(default_factory=dict)
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc)
+    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 class BaseAgent:
     """Base class for orchestrated agents."""
 

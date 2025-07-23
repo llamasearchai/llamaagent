@@ -20,25 +20,32 @@ A complete production-ready AI agent platform with all enterprise features:
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
-import asyncio
 import json
 import logging
 import os
 import time
-import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional
 
-import uvicorn
-from fastapi import (BackgroundTasks, Body, Depends, FastAPI, File,
-                     HTTPException, Request, Response, Security, UploadFile,
-                     WebSocket, WebSocketDisconnect, status)
+from fastapi import (
+    BackgroundTasks,
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Request,
+    Security,
+    UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -80,24 +87,26 @@ except ImportError:
     DatabaseManager = None
 
 try:
-    from ..benchmarks.gaia_benchmark import GAIABenchmark
-except ImportError:
-    GAIABenchmark = None
-
-try:
-    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
-                                             OpenAIAgentsIntegration)
+    from ..integration.openai_agents import (
+        OpenAIAgentsIntegration,
+        OPENAI_AGENTS_AVAILABLE,
+    )
 except ImportError:
     OpenAIAgentsIntegration = None
-    OPENAI_AGENTS_AVAILABLE = False
+    # Use a different variable name to avoid constant redefinition warning
+    openai_agents_available = False
+else:
+    openai_agents_available = OPENAI_AGENTS_AVAILABLE
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 # Security
 security = HTTPBearer(auto_error=False)
+
 # Global application state
 app_state: Dict[str, Any] = {
     "provider_factory": None,
@@ -113,17 +122,23 @@ app_state: Dict[str, Any] = {
     "background_tasks": {},
     "file_uploads": {},
     "cache": {},
+    "start_time": time.time(),
+    "request_log": [],
+    "cache_hits": 0,
+    "cache_misses": 0,
 }
 
 
 # Rate limiting implementation
 class RateLimiter:
-    def __init__(self):
-        self.clients = {}
+    def __init__(self) -> None:
+        self.clients: Dict[str, List[float]] = {}
         self.default_limit = 100  # requests per minute
         self.default_window = 60  # seconds
 
-    async def check_rate_limit(self, client_id: str, limit: int = None, window: int = None) -> bool:
+    async def check_rate_limit(
+        self, client_id: str, limit: Optional[int] = None, window: Optional[int] = None
+    ) -> bool:
         """Check if client is within rate limit."""
         limit = limit or self.default_limit
         window = window or self.default_window
@@ -134,8 +149,7 @@ class RateLimiter:
 
         # Clean old requests
         self.clients[client_id] = [
-            req_time for req_time in self.clients[client_id]
-            if now - req_time < window
+            req_time for req_time in self.clients[client_id] if now - req_time < window
         ]
 
         # Check limit
@@ -149,14 +163,17 @@ class RateLimiter:
 
 # Rate limiting middleware
 class RateLimitingMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, rate_limiter: RateLimiter):
+    def __init__(self, app: Any, rate_limiter: RateLimiter) -> None:
         super().__init__(app)
         self.rate_limiter = rate_limiter
 
-    async def dispatch(self, request: StarletteRequest, call_next):
+    async def dispatch(
+        self, request: StarletteRequest, call_next: Callable[[StarletteRequest], Any]
+    ) -> StarletteResponse:
         # Skip rate limiting for health checks
         if request.url.path in ["/health", "/metrics"]:
             return await call_next(request)
+
         # Get client identifier
         client_id = request.client.host if request.client else "unknown"
 
@@ -164,18 +181,26 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
         if not await self.rate_limiter.check_rate_limit(client_id):
             return JSONResponse(
                 status_code=429,
-                content={"error": "Rate limit exceeded", "retry_after": 60}
+                content={"error": "Rate limit exceeded", "retry_after": 60},
             )
         return await call_next(request)
+
+
 # Request logging middleware
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: StarletteRequest, call_next):
+    async def dispatch(
+        self, request: StarletteRequest, call_next: Callable[[StarletteRequest], Any]
+    ) -> StarletteResponse:
         start_time = time.time()
 
         # Log request
-        logger.info(f"Request: {request.method} {request.url.path} from {request.client.host if request.client else 'unknown'}")
+        logger.info(
+            f"Request: {request.method} {request.url.path} from {request.client.host if request.client else 'unknown'}"
+        )
+
         # Process request
         response = await call_next(request)
+
         # Log response
         process_time = time.time() - start_time
         logger.info(f"Response: {response.status_code} in {process_time:.3f}s")
@@ -184,34 +209,47 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 # Cache middleware
 class CacheMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, cache_ttl: int = 300):
+    def __init__(self, app: Any, cache_ttl: int = 300) -> None:
         super().__init__(app)
         self.cache_ttl = cache_ttl
 
-    async def dispatch(self, request: StarletteRequest, call_next):
+    async def dispatch(
+        self, request: StarletteRequest, call_next: Callable[[StarletteRequest], Any]
+    ) -> StarletteResponse:
         # Only cache GET requests
         if request.method != "GET":
             return await call_next(request)
+
         # Check cache
         cache_key = f"{request.method}:{request.url.path}:{request.url.query}"
         cached_response = app_state["cache"].get(cache_key)
-        if cached_response and time.time() - cached_response["timestamp"] < self.cache_ttl:
+        if (
+            cached_response
+            and time.time() - cached_response["timestamp"] < self.cache_ttl
+        ):
+            app_state["cache_hits"] += 1
             return JSONResponse(
                 content=cached_response["content"],
                 status_code=cached_response["status_code"],
-                headers={"X-Cache": "HIT"}
+                headers={"X-Cache": "HIT"},
             )
+
         # Process request
         response = await call_next(request)
+
         # Cache successful responses
         if response.status_code == 200:
+            app_state["cache_misses"] += 1
             if hasattr(response, "body"):
-                content = json.loads(response.body.decode())
-                app_state["cache"][cache_key] = {
-                    "content": content,
-                    "status_code": response.status_code,
-                    "timestamp": time.time()
-                }
+                try:
+                    content = json.loads(response.body.decode())
+                    app_state["cache"][cache_key] = {
+                        "content": content,
+                        "status_code": response.status_code,
+                        "timestamp": time.time(),
+                    }
+                except (json.JSONDecodeError, AttributeError):
+                    pass
 
         return response
 
@@ -219,6 +257,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
 # Pydantic models for API
 class HealthCheckResponse(BaseModel):
     """Health check response model."""
+
     status: str
     timestamp: str
     version: str
@@ -233,18 +272,24 @@ class HealthCheckResponse(BaseModel):
 
 class AgentCreateRequest(BaseModel):
     """Request model for creating an agent."""
+
     name: str = Field(..., description="Agent name")
-    role: AgentRole = Field(AgentRole.GENERALIST, description="Agent role")
-    description: str = Field("", description="Agent description")
-    provider: str = Field("mock", description="LLM provider")
-    model: str = Field("gpt-4o-mini", description="Model name")
-    spree_enabled: bool = Field(False, description="Enable SPRE methodology")
-    max_iterations: int = Field(5, description="Maximum iterations")
+    role: AgentRole = Field(default=AgentRole.GENERALIST, description="Agent role")
+    description: str = Field(default="", description="Agent description")
+    provider: str = Field(default="mock", description="LLM provider")
+    model: str = Field(default="gpt-4o-mini", description="Model name")
+    spree_enabled: bool = Field(default=False, description="Enable SPRE methodology")
+    max_iterations: int = Field(default=5, description="Maximum iterations")
     tools: List[str] = Field(default_factory=list, description="Available tools")
-    api_key: Optional[str] = Field(None, description="API key for the provider")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    api_key: Optional[str] = Field(default=None, description="API key for the provider")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
+
+
 class AgentResponse(BaseModel):
     """Agent response model."""
+
     agent_id: str
     name: str
     role: str
@@ -260,16 +305,24 @@ class AgentResponse(BaseModel):
 
 class TaskExecuteRequest(BaseModel):
     """Request model for task execution."""
+
     task: str = Field(..., description="Task for the agent to execute")
-    agent_id: Optional[str] = Field(None, description="Specific agent ID to use")
-    context: Optional[Dict[str, Any]] = Field(None, description="Additional context")
-    stream: bool = Field(False, description="Enable streaming response")
-    timeout: Optional[int] = Field(300, description="Execution timeout in seconds")
-    priority: int = Field(0, description="Task priority (0-10)")
+    agent_id: Optional[str] = Field(
+        default=None, description="Specific agent ID to use"
+    )
+    context: Optional[Dict[str, Any]] = Field(
+        default=None, description="Additional context"
+    )
+    stream: bool = Field(default=False, description="Enable streaming response")
+    timeout: Optional[int] = Field(
+        default=300, description="Execution timeout in seconds"
+    )
+    priority: int = Field(default=0, description="Task priority (0-10)")
 
 
 class TaskExecuteResponse(BaseModel):
     """Response model for task execution."""
+
     task_id: str
     status: TaskStatus
     result: Optional[str] = None
@@ -284,20 +337,31 @@ class TaskExecuteResponse(BaseModel):
 
 class ChatMessage(BaseModel):
     """Chat message model."""
+
     role: str = Field(..., description="Message role (user/assistant)")
     content: str = Field(..., description="Message content")
-    timestamp: Optional[str] = Field(None, description="Message timestamp")
+    timestamp: Optional[str] = Field(default=None, description="Message timestamp")
+
+
 class ChatCompletionRequest(BaseModel):
     """OpenAI-compatible chat completion request."""
+
     messages: List[ChatMessage]
-    model: str = Field("gpt-4o-mini", description="Model to use")
-    temperature: Optional[float] = Field(0.7, description="Sampling temperature")
-    max_tokens: Optional[int] = Field(None, description="Maximum tokens")
-    stream: bool = Field(False, description="Enable streaming")
-    agent_name: Optional[str] = Field(None, description="Specific agent to use")
-    tools: Optional[List[Dict[str, Any]]] = Field(None, description="Available tools")
+    model: str = Field(default="gpt-4o-mini", description="Model to use")
+    temperature: Optional[float] = Field(
+        default=0.7, description="Sampling temperature"
+    )
+    max_tokens: Optional[int] = Field(default=None, description="Maximum tokens")
+    stream: bool = Field(default=False, description="Enable streaming")
+    agent_name: Optional[str] = Field(default=None, description="Specific agent to use")
+    tools: Optional[List[Dict[str, Any]]] = Field(
+        default=None, description="Available tools"
+    )
+
+
 class ChatCompletionResponse(BaseModel):
     """OpenAI-compatible chat completion response."""
+
     id: str
     object: str = "chat.completion"
     created: int
@@ -309,6 +373,7 @@ class ChatCompletionResponse(BaseModel):
 
 class FileUploadResponse(BaseModel):
     """File upload response model."""
+
     file_id: str
     filename: str
     size: int
@@ -320,13 +385,19 @@ class FileUploadResponse(BaseModel):
 
 class WebSocketMessage(BaseModel):
     """WebSocket message model."""
+
     type: str = Field(..., description="Message type")
     content: str = Field(..., description="Message content")
-    agent_id: Optional[str] = Field(None, description="Target agent ID")
-    session_id: Optional[str] = Field(None, description="Session ID")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    agent_id: Optional[str] = Field(default=None, description="Target agent ID")
+    session_id: Optional[str] = Field(default=None, description="Session ID")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
+
+
 class MetricsResponse(BaseModel):
     """Metrics response model."""
+
     requests_total: int
     requests_per_minute: float
     active_agents: int
@@ -342,10 +413,14 @@ class MetricsResponse(BaseModel):
 
 class LoginRequest(BaseModel):
     """User login request."""
+
     username: str = Field(..., description="Username")
     password: str = Field(..., description="Password")
+
+
 class LoginResponse(BaseModel):
     """User login response with JWT access token."""
+
     access_token: str
     token_type: str = "bearer"
     expires_in: int
@@ -358,32 +433,39 @@ async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
     # Startup
     await initialize_application()
-    logger.info("Starting LlamaAgent Production API started successfully")
+    logger.info("LlamaAgent Production API started successfully")
     try:
         yield
     finally:
         # Shutdown
         await cleanup_application()
-        logger.info(" LlamaAgent Production API shut down cleanly")
-async def initialize_application():
+        logger.info("LlamaAgent Production API shut down cleanly")
+
+
+async def initialize_application() -> None:
     """Initialize all application components."""
-    logger.info("Initializing Initializing LlamaAgent Production API...")
+    logger.info("Initializing LlamaAgent Production API...")
+
     # Initialize provider factory
     app_state["provider_factory"] = ProviderFactory()
     logger.info("PASS Provider factory initialized")
+
     # Initialize orchestrator
     if AgentOrchestrator:
         app_state["orchestrator"] = AgentOrchestrator()
         await app_state["orchestrator"].initialize()
         logger.info("PASS Agent orchestrator initialized")
+
     # Initialize health monitor
     if HealthChecker:
         app_state["health_monitor"] = HealthChecker()
         logger.info("PASS Health monitor initialized")
+
     # Initialize metrics collector
     if MetricsCollector:
         app_state["metrics"] = MetricsCollector()
         logger.info("PASS Metrics collector initialized")
+
     # Initialize database
     if DatabaseManager:
         try:
@@ -392,54 +474,71 @@ async def initialize_application():
             logger.info("PASS Database initialized")
         except Exception as e:
             logger.warning(f"WARNING: Database initialization failed: {e}")
+
     # Initialize security manager
     if SecurityManager:
         app_state["security_manager"] = SecurityManager()
         logger.info("PASS Security manager initialized")
+
     # Initialize OpenAI integration
-    if OpenAIAgentsIntegration and OPENAI_AGENTS_AVAILABLE:
+    if OpenAIAgentsIntegration and openai_agents_available:
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key and not api_key.startswith("your_api_"):
             try:
-                app_state["openai_integration"] = OpenAIAgentsIntegration(api_key=api_key)
+                # Create basic config for OpenAI integration
+                config = {"api_key": api_key}
+                app_state["openai_integration"] = OpenAIAgentsIntegration(config=config)
                 logger.info("PASS OpenAI integration initialized")
             except Exception as e:
                 logger.warning(f"WARNING: OpenAI integration failed: {e}")
+
     # Initialize tools
     app_state["tools"] = ToolRegistry()
-    app_state["tools"].register_tool(CalculatorTool())
-    app_state["tools"].register_tool(PythonREPLTool())
+    calculator_tool = CalculatorTool()
+    python_tool = PythonREPLTool()
+    app_state["tools"].register(calculator_tool)
+    app_state["tools"].register(python_tool)
     logger.info("PASS Tools registry initialized")
+
     # Create default agent
     await create_default_agent()
     logger.info("PASS Default agent created")
+
     # Initialize file upload directory
     upload_dir = Path("uploads")
     upload_dir.mkdir(exist_ok=True)
     logger.info("PASS Upload directory initialized")
-async def create_default_agent():
+
+
+async def create_default_agent() -> None:
     """Create a default agent for the system."""
     try:
         config = AgentConfig(
             name="DefaultAgent",
             role=AgentRole.GENERALIST,
-            description="Default system agent for general tasks"
+            description="Default system agent for general tasks",
         )
         provider = create_provider("mock")
-        agent = ReactAgent(config=config, llm_provider=provider, tools=app_state["tools"])
+        agent = ReactAgent(
+            config=config, llm_provider=provider, tools=app_state["tools"]
+        )
         app_state["agents"]["default"] = agent
         logger.info("PASS Default agent created successfully")
     except Exception as e:
         logger.error(f"FAIL Failed to create default agent: {e}")
-async def cleanup_application():
+
+
+async def cleanup_application() -> None:
     """Clean up application resources."""
     logger.info("🧹 Cleaning up application resources...")
+
     # Close WebSocket connections
     for ws in app_state["websocket_connections"]:
         try:
             await ws.close()
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error(f"Error closing WebSocket: {e}")
+
     # Shutdown orchestrator
     if app_state["orchestrator"]:
         await app_state["orchestrator"].shutdown()
@@ -452,6 +551,8 @@ async def cleanup_application():
     app_state["cache"].clear()
 
     logger.info("PASS Cleanup completed")
+
+
 # Create FastAPI app
 app = FastAPI(
     title="LlamaAgent Production API",
@@ -460,8 +561,9 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
+
 # Initialize middleware
 rate_limiter = RateLimiter()
 
@@ -470,6 +572,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(CacheMiddleware, cache_ttl=300)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RateLimitingMiddleware, rate_limiter=rate_limiter)
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -478,16 +581,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Add trusted hosts middleware for production
 if os.getenv("ENVIRONMENT") == "production":
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0", "*.example.com"]
+        allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0", "*.example.com"],
     )
+
 # Mount static files if directory exists
 static_dir = Path("static")
 if static_dir.exists():
     app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Authentication and authorization
 async def get_current_user(
@@ -520,7 +626,9 @@ async def get_current_user(
     return None
 
 
-async def require_auth(user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+async def require_auth(
+    user: Optional[Dict[str, Any]] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Require authentication for protected endpoints."""
     if not user:
         raise HTTPException(
@@ -536,27 +644,26 @@ async def get_agent_by_id(agent_id: str) -> ReactAgent:
     agent = app_state["agents"].get(agent_id)
     if not agent:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Agent {agent_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Agent {agent_id} not found"
         )
     return agent
 
 
 # Exception handlers
 @app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle general exceptions."""
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
-        status_code=500,
-        content={"error": "Internal server error", "detail": str(exc)}
+        status_code=500, content={"error": "Internal server error", "detail": str(exc)}
     )
 
 
 # API Endpoints
 
+
 @app.get("/", tags=["Root"])
-async def root():
+async def root() -> Dict[str, Any]:
     """Root endpoint with comprehensive system information."""
     return {
         "message": "LlamaAgent Production API",
@@ -572,7 +679,7 @@ async def root():
             "Rate limiting and security",
             "OpenAI Agents SDK integration",
             "Background task processing",
-            "Caching and performance optimization"
+            "Caching and performance optimization",
         ],
         "endpoints": {
             "health": "/health",
@@ -582,15 +689,15 @@ async def root():
             "websocket": "/ws",
             "files": "/files",
             "metrics": "/metrics",
-            "docs": "/docs"
+            "docs": "/docs",
         },
         "status": "running",
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
 @app.get("/health", response_model=HealthCheckResponse, tags=["Health"])
-async def health_check():
+async def health_check() -> HealthCheckResponse:
     """Comprehensive health check endpoint."""
     import psutil
 
@@ -608,61 +715,62 @@ async def health_check():
     }
 
     # Check providers
-    providers_available = []
+    providers_available: List[str] = []
     for provider_name in ["mock", "openai", "anthropic", "ollama"]:
         try:
             create_provider(provider_name, api_key="test")
             providers_available.append(provider_name)
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error(f"Provider {provider_name} check failed: {e}")
+
     return HealthCheckResponse(
         status="healthy",
         timestamp=datetime.now(timezone.utc).isoformat(),
         version="1.0.0",
         database_connected=app_state["database"] is not None,
         providers_available=providers_available,
-        openai_agents_available=OPENAI_AGENTS_AVAILABLE,
+        openai_agents_available=openai_agents_available,
         components=components,
-        uptime=time.time() - app_state.get("start_time", time.time(),
+        uptime=time.time() - app_state.get("start_time", time.time()),
         memory_usage={
             "total": memory_info.total,
             "available": memory_info.available,
             "percent": memory_info.percent,
-            "used": memory_info.used
+            "used": memory_info.used,
         },
-        active_connections=len(app_state["websocket_connections"])
+        active_connections=len(app_state["websocket_connections"]),
     )
 
 
 @app.get("/metrics", response_model=MetricsResponse, tags=["Monitoring"])
-async def get_metrics():
+async def get_metrics() -> MetricsResponse:
     """Get comprehensive system metrics."""
     import psutil
 
     memory_info = psutil.virtual_memory()
 
     return MetricsResponse(
-        requests_total=len(app_state.get("request_log", []),
+        requests_total=len(app_state.get("request_log", [])),
         requests_per_minute=0.0,  # Calculate from request log
         active_agents=len(app_state["agents"]),
         active_tasks=len(app_state["background_tasks"]),
         memory_usage={
             "total": memory_info.total,
             "available": memory_info.available,
-            "percent": memory_info.percent
+            "percent": memory_info.percent,
         },
         cache_hits=app_state.get("cache_hits", 0),
         cache_misses=app_state.get("cache_misses", 0),
         websocket_connections=len(app_state["websocket_connections"]),
         database_connections=1 if app_state["database"] else 0,
         provider_usage={},
-        error_rates={}
+        error_rates={},
     )
 
 
 # WebSocket endpoint for real-time chat
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket) -> None:
     """WebSocket endpoint for real-time agent chat."""
     await websocket.accept()
     app_state["websocket_connections"].add(websocket)
@@ -671,16 +779,19 @@ async def websocket_endpoint(websocket: WebSocket):
             # Receive message
             data = await websocket.receive_text()
             message = json.loads(data)
+
             # Validate message
             ws_message = WebSocketMessage(**message)
+
             # Get or create agent
             agent_id = ws_message.agent_id or "default"
             agent = app_state["agents"].get(agent_id)
             if not agent:
-                await websocket.send_text(json.dumps({
-                    "type": "error",
-                    "content": f"Agent {agent_id} not found")
-                })
+                await websocket.send_text(
+                    json.dumps(
+                        {"type": "error", "content": f"Agent {agent_id} not found"}
+                    )
+                )
                 continue
 
             # Process message
@@ -689,44 +800,57 @@ async def websocket_endpoint(websocket: WebSocket):
                     # Execute task
                     response = await agent.execute(ws_message.content)
                     # Send response
-                    await websocket.send_text(json.dumps({
-                        "type": "response",
-                        "content": response.content,
-                        "agent_id": agent_id,
-                        "execution_time": response.execution_time,
-                        "tokens_used": response.tokens_used,
-                        "metadata": response.metadata)
-                    })
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "response",
+                                "content": response.content,
+                                "agent_id": agent_id,
+                                "execution_time": response.execution_time,
+                                "tokens_used": response.tokens_used,
+                                "metadata": response.metadata,
+                            }
+                        )
+                    )
 
                 except Exception as e:
-                    await websocket.send_text(json.dumps({
-                        "type": "error",)
-                        "content": f"Error processing message: {str(e)}"
-                    })
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "content": f"Error processing message: {str(e)}",
+                            }
+                        )
+                    )
 
             elif ws_message.type == "ping":
-                await websocket.send_text(json.dumps({
-                    "type": "pong",
-                    "content": "Server is alive")
-                })
+                await websocket.send_text(
+                    json.dumps({"type": "pong", "content": "Server is alive"})
+                )
 
     except WebSocketDisconnect:
         pass
     finally:
         app_state["websocket_connections"].discard(websocket)
+
+
 # File upload endpoints
 @app.post("/files/upload", response_model=FileUploadResponse, tags=["Files"])
 async def upload_file(
     file: UploadFile = File(...),
     description: str = "",
-    user: Dict[str, Any] = Depends(require_auth)
-):
+    user: Dict[str, Any] = Depends(require_auth),
+) -> FileUploadResponse:
     """Upload a file for processing."""
     # Validate file
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
+
     # Generate file ID
+    import uuid
+
     file_id = str(uuid.uuid4())
+
     # Save file
     upload_dir = Path("uploads")
     file_path = upload_dir / f"{file_id}_{file.filename}"
@@ -734,24 +858,37 @@ async def upload_file(
     with open(file_path, "wb") as f:
         content = await file.read()
         f.write(content)
+
     # Store file metadata
     file_metadata = {
         "file_id": file_id,
         "filename": file.filename,
         "size": len(content),
-        "content_type": file.content_type,
+        "content_type": file.content_type or "application/octet-stream",
         "uploaded_at": datetime.now(timezone.utc).isoformat(),
         "uploaded_by": user["user_id"],
         "description": description,
         "file_path": str(file_path),
-        "processing_status": "uploaded"
+        "processing_status": "uploaded",
     }
 
     app_state["file_uploads"][file_id] = file_metadata
 
-    return FileUploadResponse(**file_metadata, metadata={"user_id": user["user_id"]})
+    return FileUploadResponse(
+        file_id=file_id,
+        filename=file.filename,
+        size=len(content),
+        content_type=file.content_type or "application/octet-stream",
+        uploaded_at=datetime.now(timezone.utc).isoformat(),
+        processing_status="uploaded",
+        metadata={"user_id": user["user_id"], "description": description}
+    )
+
+
 @app.get("/files/{file_id}", tags=["Files"])
-async def get_file(file_id: str, user: Dict[str, Any] = Depends(require_auth):
+async def get_file(
+    file_id: str, user: Dict[str, Any] = Depends(require_auth)
+) -> Dict[str, Any]:
     """Get file metadata."""
     file_metadata = app_state["file_uploads"].get(file_id)
     if not file_metadata:
@@ -760,18 +897,22 @@ async def get_file(file_id: str, user: Dict[str, Any] = Depends(require_auth):
 
 
 @app.get("/files/{file_id}/download", tags=["Files"])
-async def download_file(file_id: str, user: Dict[str, Any] = Depends(require_auth):
+async def download_file(
+    file_id: str, user: Dict[str, Any] = Depends(require_auth)
+) -> FileResponse:
     """Download a file."""
     file_metadata = app_state["file_uploads"].get(file_id)
     if not file_metadata:
         raise HTTPException(status_code=404, detail="File not found")
+
     file_path = Path(file_metadata["file_path"])
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found on disk")
+
     return FileResponse(
         path=str(file_path),
         filename=file_metadata["filename"],
-        media_type=file_metadata["content_type"]
+        media_type=file_metadata["content_type"],
     )
 
 
@@ -780,30 +921,32 @@ async def process_file(
     file_id: str,
     task: str,
     background_tasks: BackgroundTasks,
-    user: Dict[str, Any] = Depends(require_auth)
-):
+    user: Dict[str, Any] = Depends(require_auth),
+) -> Dict[str, Any]:
     """Process a file with an agent."""
     file_metadata = app_state["file_uploads"].get(file_id)
     if not file_metadata:
         raise HTTPException(status_code=404, detail="File not found")
+
     # Create background task
+    import uuid
+
     task_id = str(uuid.uuid4())
     background_tasks.add_task(
-        process_file_task,
-        task_id,
-        file_id,
-        task,
-        user["user_id"]
+        process_file_task, task_id, file_id, task, user["user_id"]
     )
+
     return {
         "task_id": task_id,
         "file_id": file_id,
         "status": "processing",
-        "message": "File processing started"
+        "message": "File processing started",
     }
 
 
-async def process_file_task(task_id: str, file_id: str, task: str, user_id: str):
+async def process_file_task(
+    task_id: str, file_id: str, task: str, user_id: str
+) -> None:
     """Background task for file processing."""
     try:
         # Update task status
@@ -812,7 +955,7 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
             "started_at": datetime.now(timezone.utc).isoformat(),
             "file_id": file_id,
             "task": task,
-            "user_id": user_id
+            "user_id": user_id,
         }
 
         # Get file metadata
@@ -827,25 +970,30 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
         full_task = f"{task}\n\nFile content:\n{file_content}"
 
         response = await agent.execute(full_task)
+
         # Update task status
-        app_state["background_tasks"][task_id].update({
-            "status": "completed",
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-            "result": response.content,
-            "execution_time": response.execution_time,
-            "tokens_used": response.tokens_used
-        })
+        app_state["background_tasks"][task_id].update(
+            {
+                "status": "completed",
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "result": response.content,
+                "execution_time": response.execution_time,
+                "tokens_used": response.tokens_used,
+            }
+        )
 
         # Update file processing status
         app_state["file_uploads"][file_id]["processing_status"] = "completed"
 
     except Exception as e:
         # Update task status
-        app_state["background_tasks"][task_id].update({
-            "status": "failed",
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-            "error": str(e)
-        })
+        app_state["background_tasks"][task_id].update(
+            {
+                "status": "failed",
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "error": str(e),
+            }
+        )
 
         # Update file processing status
         app_state["file_uploads"][file_id]["processing_status"] = "failed"
@@ -853,7 +1001,7 @@ async def process_file_task(task_id: str, file_id: str, task: str, user_id: str)
 
 # Enhanced chat completion endpoint with full OpenAI compatibility
 @app.post("/v1/chat/completions", response_model=ChatCompletionResponse, tags=["Chat"])
-async def chat_completions(request: ChatCompletionRequest):
+async def chat_completions(request: ChatCompletionRequest) -> ChatCompletionResponse:
     """OpenAI-compatible chat completions endpoint with full feature support."""
     try:
         # Get or create agent
@@ -868,9 +1016,7 @@ async def chat_completions(request: ChatCompletionRequest):
                 description=f"Agent for {request.model}",
             )
             agent = ReactAgent(
-                config=config,
-                llm_provider=provider,
-                tools=app_state["tools"]
+                config=config, llm_provider=provider, tools=app_state["tools"]
             )
             app_state["agents"][agent_name] = agent
 
@@ -881,24 +1027,21 @@ async def chat_completions(request: ChatCompletionRequest):
             task = "Hello"
 
         # Execute task
-        start_time = time.time()
         response = await agent.execute(task)
-        execution_time = time.time() - start_time
 
         # Format response
         choice = {
             "index": 0,
-            "message": {
-                "role": "assistant",
-                "content": response.content
-            },
+            "message": {"role": "assistant", "content": response.content},
             "finish_reason": "stop",
-            "logprobs": None
+            "logprobs": None,
         }
+
+        import uuid
 
         return ChatCompletionResponse(
             id=f"chatcmpl-{uuid.uuid4().hex[:8]}",
-            created=int(time.time(),
+            created=int(time.time()),
             model=request.model,
             choices=[choice],
             usage={
@@ -906,53 +1049,65 @@ async def chat_completions(request: ChatCompletionRequest):
                 "completion_tokens": response.tokens_used,
                 "total_tokens": (len(task) // 4) + response.tokens_used,
             },
-            system_fingerprint=f"fp_{uuid.uuid4().hex[:8]}"
+            system_fingerprint=f"fp_{uuid.uuid4().hex[:8]}",
         )
 
     except Exception as e:
         logger.error(f"Chat completion error: {e}")
-        raise HTTPException(status_code=500, detail=str(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Additional endpoints for comprehensive functionality
 @app.get("/agents", tags=["Agents"])
-async def list_agents():
+async def list_agents() -> Dict[str, Any]:
     """List all available agents with detailed information."""
-    agents = []
+    agents: List[Dict[str, Any]] = []
     for agent_id, agent in app_state["agents"].items():
-        agents.append({
-            "agent_id": agent_id,
-            "name": agent.config.name,
-            "role": agent.config.role.value if hasattr(agent.config, 'role') else "generalist",
-            "description": getattr(agent.config, 'description', ''),
-            "tools": list(agent.tools.list_names() if hasattr(agent, 'tools') else [],
-            "status": "active",
-            "created_at": datetime.now(timezone.utc).isoformat()
-        })
+        agents.append(
+            {
+                "agent_id": agent_id,
+                "name": agent.config.name,
+                "role": (
+                    agent.config.role.value
+                    if hasattr(agent.config, 'role')
+                    else "generalist"
+                ),
+                "description": getattr(agent.config, 'description', ''),
+                "tools": (
+                    list(agent.tools.list_names())
+                    if hasattr(agent, 'tools') and hasattr(agent.tools, 'list_names')
+                    else []
+                ),
+                "status": "active",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
     return {"agents": agents, "total": len(agents)}
 
 
 @app.post("/agents", tags=["Agents"])
 async def create_agent(
-    request: AgentCreateRequest,
-    user: Dict[str, Any] = Depends(require_auth)
-):
+    request: AgentCreateRequest, user: Dict[str, Any] = Depends(require_auth)
+) -> Dict[str, Any]:
     """Create a new agent with specified configuration."""
     try:
         # Create LLM provider
         provider = create_provider(request.provider, api_key=request.api_key)
+
         # Create agent config
         config = AgentConfig(
-            name=request.name,
-            role=request.role,
-            description=request.description
+            name=request.name, role=request.role, description=request.description
         )
+
         # Create agent
         agent = ReactAgent(
-            config=config,
-            llm_provider=provider,
-            tools=app_state["tools"]
+            config=config, llm_provider=provider, tools=app_state["tools"]
         )
+
         # Store agent
+        import uuid
+
         agent_id = str(uuid.uuid4())
         app_state["agents"][agent_id] = agent
 
@@ -963,21 +1118,27 @@ async def create_agent(
             "provider": request.provider,
             "model": request.model,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": user["user_id"]
+            "created_by": user["user_id"],
         }
 
     except Exception as e:
         logger.error(f"Agent creation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/tasks", tags=["Tasks"])
-async def execute_task(request: TaskExecuteRequest):
+async def execute_task(request: TaskExecuteRequest) -> TaskExecuteResponse:
     """Execute a task with comprehensive options."""
     try:
         # Get agent
         agent_id = request.agent_id or "default"
         agent = await get_agent_by_id(agent_id)
+
         # Generate task ID
+        import uuid
+
         task_id = str(uuid.uuid4())
+
         # Execute task
         start_time = time.time()
         response = await agent.execute(request.task, request.context)
@@ -992,15 +1153,17 @@ async def execute_task(request: TaskExecuteRequest):
             tokens_used=response.tokens_used,
             trace=response.trace if hasattr(response, 'trace') else [],
             metadata=response.metadata,
-            cached=False
+            cached=False,
         )
 
     except Exception as e:
         logger.error(f"Task execution error: {e}")
-        raise HTTPException(status_code=500, detail=str(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Background task management endpoints
 @app.get("/tasks/{task_id}", tags=["Tasks"])
-async def get_task_status(task_id: str):
+async def get_task_status(task_id: str) -> Dict[str, Any]:
     """Get background task status."""
     task = app_state["background_tasks"].get(task_id)
     if not task:
@@ -1009,10 +1172,11 @@ async def get_task_status(task_id: str):
 
 
 @app.get("/tasks", tags=["Tasks"])
-async def list_tasks(user: Dict[str, Any] = Depends(require_auth):
+async def list_tasks(user: Dict[str, Any] = Depends(require_auth)) -> Dict[str, Any]:
     """List all background tasks for the user."""
     user_tasks = {
-        task_id: task for task_id, task in app_state["background_tasks"].items()
+        task_id: task
+        for task_id, task in app_state["background_tasks"].items()
         if task.get("user_id") == user["user_id"]
     }
 
@@ -1021,12 +1185,12 @@ async def list_tasks(user: Dict[str, Any] = Depends(require_auth):
 
 # Advanced monitoring endpoints
 @app.get("/admin/system", tags=["Administration"])
-async def system_info(user: Dict[str, Any] = Depends(require_auth):
+async def system_info(user: Dict[str, Any] = Depends(require_auth)) -> Dict[str, Any]:
     """Get comprehensive system information (admin only)."""
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
-    import sys
 
+    import sys
     import psutil
 
     return {
@@ -1035,32 +1199,33 @@ async def system_info(user: Dict[str, Any] = Depends(require_auth):
             "python_version": sys.version,
             "cpu_count": psutil.cpu_count(),
             "memory_total": psutil.virtual_memory().total,
-            "disk_usage": psutil.disk_usage('/').percent
+            "disk_usage": psutil.disk_usage('/').percent,
         },
         "application": {
             "agents": len(app_state["agents"]),
             "websocket_connections": len(app_state["websocket_connections"]),
             "background_tasks": len(app_state["background_tasks"]),
             "file_uploads": len(app_state["file_uploads"]),
-            "cache_entries": len(app_state["cache"])
+            "cache_entries": len(app_state["cache"]),
         },
         "components": {
             "orchestrator": app_state["orchestrator"] is not None,
             "database": app_state["database"] is not None,
             "security_manager": app_state["security_manager"] is not None,
-            "openai_integration": app_state["openai_integration"] is not None
-        }
+            "openai_integration": app_state["openai_integration"] is not None,
+        },
     }
 
 
 # Development/testing endpoints
 @app.post("/dev/reset", tags=["Development"])
-async def reset_system(user: Dict[str, Any] = Depends(require_auth):
+async def reset_system(user: Dict[str, Any] = Depends(require_auth)) -> Dict[str, str]:
     """Reset system state (development only)."""
     if os.getenv("ENVIRONMENT") == "production":
         raise HTTPException(status_code=403, detail="Not available in production")
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
+
     # Clear state
     app_state["agents"] = {}
     app_state["background_tasks"] = {}
@@ -1075,9 +1240,12 @@ async def reset_system(user: Dict[str, Any] = Depends(require_auth):
 
 # Authentication routes
 @app.post("/auth/login", response_model=LoginResponse, tags=["Authentication"])
-async def login(request: LoginRequest):
+async def login(request: LoginRequest) -> LoginResponse:
     """Authenticate user and return JWT access token."""
-    security_manager: SecurityManager = app_state["security_manager"]
+    security_manager = app_state["security_manager"]
+
+    if not security_manager:
+        raise HTTPException(status_code=501, detail="Security manager not available")
 
     # Authenticate user
     user_obj = await security_manager.authenticate_user(
@@ -1086,6 +1254,7 @@ async def login(request: LoginRequest):
     )
     if not user_obj:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
     # Create JWT token
     token = await security_manager.create_jwt_token(user_obj)
     expires_in = security_manager.jwt_expiry_hours * 3600
@@ -1099,6 +1268,8 @@ async def login(request: LoginRequest):
             "role": user_obj.role.value,
         },
     )
+
+
 def create_production_app() -> FastAPI:
     """Create the production FastAPI application."""
     app_state["start_time"] = time.time()
@@ -1107,11 +1278,13 @@ def create_production_app() -> FastAPI:
 
 # Main entry point
 if __name__ == "__main__":
+    import uvicorn
+
     uvicorn.run(
         "src.llamaagent.api.production_app:app",
         host="0.0.0.0",
         port=8000,
         reload=False,
         workers=1,
-        log_level="info"
+        log_level="info",
     )

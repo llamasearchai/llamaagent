@@ -73,7 +73,7 @@ class SystemValidator:
         if not hasattr(sys, "real_prefix") and not (
             hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
         ):
-            result["issues"].append()
+            result["issues"].append(
                 {
                     "severity": "MEDIUM",
                     "message": "Not running in virtual environment",
@@ -106,7 +106,7 @@ class SystemValidator:
             }
 
             if memory.available < 1024 * 1024 * 1024:  # Less than 1GB available
-                result["issues"].append()
+                result["issues"].append(
                     {
                         "severity": "HIGH",
                         "message": f"Low available memory: {memory.available / (1024**3):.1f}GB",
@@ -116,7 +116,7 @@ class SystemValidator:
                 result["score"] -= 30
 
             # Disk check
-            disk = psutil.disk_usage(str(self.project_root)
+            disk = psutil.disk_usage(str(self.project_root))
             result["disk_info"] = {
                 "total": disk.total,
                 "free": disk.free,

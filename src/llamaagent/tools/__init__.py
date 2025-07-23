@@ -12,6 +12,9 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable, List, Optional
 
+# Logger
+logger = logging.getLogger(__name__)
+
 # Core imports - these are always available
 from .base import BaseTool, ToolRegistry
 
@@ -21,6 +24,34 @@ Tool = BaseTool
 # Built-in tools
 from .calculator import CalculatorTool
 from .python_repl import PythonREPLTool
+
+
+class ToolManager:
+    """Basic tool manager for managing tool instances and execution."""
+    
+    def __init__(self) -> None:
+        """Initialize the tool manager."""
+        self.tools: dict[str, BaseTool] = {}
+        self.logger = logging.getLogger(__name__ + ".ToolManager")
+        
+    def register_tool(self, tool: BaseTool) -> None:
+        """Register a tool."""
+        self.tools[tool.name] = tool
+        self.logger.info(f"Registered tool: {tool.name}")
+    
+    def get_tool(self, name: str) -> Optional[BaseTool]:
+        """Get a tool by name."""
+        return self.tools.get(name)
+    
+    def list_tools(self) -> List[str]:
+        """List all registered tool names."""
+        return list(self.tools.keys())
+    
+    async def cleanup(self) -> None:
+        """Cleanup tool manager resources."""
+        self.tools.clear()
+        self.logger.info("Tool manager cleanup completed")
+
 
 # Optional imports with graceful fallback
 try:
@@ -33,20 +64,32 @@ except (ImportError, SyntaxError):
     create_loader = None
     get_registry = None
 
+# Tool registry imports
+ToolRegistryTool = None
+ToolCategory = None
+ToolExecutionContext = None
+ToolParameter = None
+ToolResult = None
+ToolSecurityLevel = None
+
 try:
-    from .tool_registry import Tool as ToolRegistryTool
-    from .tool_registry import (ToolCategory, ToolExecutionContext,
-                                ToolMetadata, ToolParameter, ToolResult,
-                                ToolSecurityLevel, ToolValidator)
-except (ImportError, SyntaxError):
+    from .tool_registry import (  # type: ignore
+        Tool as ToolRegistryTool,
+        ToolCategory,
+        ToolExecutionContext,
+        ToolParameter,
+        ToolResult,
+        ToolSecurityLevel,
+    )
+except (ImportError, SyntaxError) as e:
+    logger.debug(f"Failed to import tool_registry: {e}")
+    # Ensure variables remain None if import fails
     ToolRegistryTool = None
     ToolCategory = None
     ToolExecutionContext = None
-    ToolMetadata = None
     ToolParameter = None
     ToolResult = None
     ToolSecurityLevel = None
-    ToolValidator = None
 
 try:
     from .dynamic_loader import DynamicToolLoader
@@ -55,21 +98,21 @@ except (ImportError, SyntaxError):
     DynamicToolLoader = None
     DynamicToolMetadata = None
 
-try:
-    from .plugin_framework import (Plugin, PluginFramework, PluginManager,
-                                   PluginState)
-except (ImportError, SyntaxError):
-    Plugin = None
-    PluginFramework = None
-    PluginManager = None
-    PluginState = None
+# Plugin framework imports
+PluginFramework = None
 
-# Logger
-logger = logging.getLogger(__name__)
+try:
+    from .plugin_framework import (  # type: ignore
+        PluginFramework,
+    )
+except (ImportError, SyntaxError) as e:
+    logger.debug(f"Failed to import plugin_framework: {e}")
+    # Ensure variables remain None if import fails
+    PluginFramework = None
 
 
 def create_tool_from_function(
-    func: Callable,
+    func: Callable[..., Any],
     name: Optional[str] = None,
     description: Optional[str] = None,
 ) -> BaseTool:
@@ -104,7 +147,7 @@ def create_tool_from_function(
             # Filter kwargs to only include function parameters
             sig = inspect.signature(func)
             filtered_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
-            return func(**filtered_kwargs)
+            return func(**filtered_kwargs)  # type: ignore
 
     return FunctionTool()
 
@@ -123,16 +166,35 @@ def get_all_tools() -> List[BaseTool]:
 
 # Export list
 __all__ = [
-    # Core
-    "BaseTool",
-    "Tool",  # Backward compatibility alias
-    "ToolRegistry",
+    # Core classes
+    'BaseTool',
+    'Tool', 
+    'ToolRegistry',
+    'ToolManager',
+    
     # Built-in tools
-    "CalculatorTool",
-    "PythonREPLTool",
-    # Utility functions
-    "create_tool_from_function",
-    "get_all_tools",
+    'CalculatorTool',
+    'PythonREPLTool',
+    
+    # Registry system (when available)
+    'ToolLoader',
+    'RegistryToolMetadata',
+    'create_loader',
+    'get_registry',
+    
+    # Tool registry classes (when available)
+    'ToolRegistryTool',
+    'ToolParameter',
+    'ToolResult', 
+    'ToolCategory',
+    'ToolSecurityLevel',
+    'ToolExecutionContext',
+    
+    # Dynamic loading (when available)
+    
+    # Helper functions
+    'get_all_tools',
+    'create_tool_from_function',
 ]
 
 # Add optional exports if available
@@ -147,30 +209,20 @@ if ToolCategory is not None:
         [
             "ToolCategory",
             "ToolExecutionContext",
-            "ToolMetadata",
             "ToolParameter",
             "ToolResult",
             "ToolSecurityLevel",
-            "ToolValidator",
         ]
     )
 
 if DynamicToolLoader is not None:
     __all__.append("DynamicToolLoader")
-    if DynamicToolMetadata is not None and "ToolMetadata" not in __all__:
-        # Only add if not already exported from tool_registry
-        ToolMetadata = DynamicToolMetadata
-        __all__.append("ToolMetadata")
+    if DynamicToolMetadata is not None:
+        # Export as DynamicToolMetadata to avoid confusion
+        __all__.append("DynamicToolMetadata")
 
-if Plugin is not None:
-    __all__.extend(
-        [
-            "Plugin",
-            "PluginFramework",
-            "PluginManager",
-            "PluginState",
-        ]
-    )
+if PluginFramework is not None:
+    __all__.append("PluginFramework")
 
 # Log what's available
 logger.debug(f"LlamaAgent tools module loaded with exports: {__all__}")

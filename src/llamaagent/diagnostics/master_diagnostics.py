@@ -545,7 +545,7 @@ class MasterDiagnostics:
                 content = f.read()
 
             self.total_files_analyzed += 1
-            self.total_lines_analyzed += len(content.split("\n")
+            self.total_lines_analyzed += len(content.split("\n"))
             # Check for common configuration issues
             if (
                 file_path.name == "docker-compose.yml"
@@ -705,7 +705,7 @@ class MasterDiagnostics:
                             estimated_fix_time="5 minutes",
                         )
             except Exception as e:
-        logger.error(f"Error: {e}")
+                logger.error(f"Error: {e}")
     def _analyze_performance(self) -> None:
         """Analyze performance issues."""
         print("Analyzing performance...")
@@ -746,7 +746,7 @@ class MasterDiagnostics:
                             estimated_fix_time="2 minutes",
                         )
             except Exception as e:
-        logger.error(f"Error: {e}")
+                logger.error(f"Error: {e}")
     def _analyze_deployment(self) -> None:
         """Analyze deployment configuration."""
         print("Analyzing deployment configuration...")
@@ -814,7 +814,7 @@ class MasterDiagnostics:
         analysis_summary = {
             "critical_issues": problems_by_severity.get(ProblemSeverity.CRITICAL, 0),
             "high_priority_issues": problems_by_severity.get(ProblemSeverity.HIGH, 0),
-            "total_files_with_issues": len(set(p.location for p in self.problems),
+            "total_files_with_issues": len(set(p.location for p in self.problems)),
             "most_common_category": max(
                 problems_by_category.items(), key=lambda x: x[1]
             )[0].value

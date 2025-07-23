@@ -6,8 +6,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from .ai_router import RoutingDecision
 from .task_analyzer import TaskCharacteristics, TaskComplexity, TaskType
+from .types import RoutingDecision
 
 logger = logging.getLogger(__name__)
 

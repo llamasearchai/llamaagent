@@ -397,9 +397,11 @@ async def list_agents():
             {
                 "agent_id": agent_id,
                 "name": agent.config.name,
-                "role": agent.config.role.value
-                if hasattr(agent.config.role, 'value')
-                else str(agent.config.role),
+                "role": (
+                    agent.config.role.value
+                    if hasattr(agent.config.role, 'value')
+                    else str(agent.config.role)
+                ),
                 "description": agent.config.description,
                 "created_at": datetime.now(timezone.utc).isoformat(),
             }
@@ -418,9 +420,11 @@ async def get_agent(agent_id: str):
     return {
         "agent_id": agent_id,
         "name": agent.config.name,
-        "role": agent.config.role.value
-        if hasattr(agent.config.role, 'value')
-        else str(agent.config.role),
+        "role": (
+            agent.config.role.value
+            if hasattr(agent.config.role, 'value')
+            else str(agent.config.role)
+        ),
         "description": agent.config.description,
         "status": "active",
     }

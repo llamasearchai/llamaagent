@@ -32,6 +32,10 @@ class MemoryManager:
     def retrieve(self, key: str) -> Optional[Any]:
         """Retrieve a value from memory."""
         return self.memory.get(key)
+    
+    async def cleanup(self) -> None:
+        """Cleanup memory resources."""
+        self.memory.clear()
 
 
 __all__ = ['MemoryManager', 'MemoryEntry', 'SimpleMemory']

@@ -299,7 +299,7 @@ class TaskEvaluator:
             # Perform evaluation
             scores = await evaluator(task, agent_response)
             # Calculate total score
-            total_score = sum(scores.values() / len(scores) if scores else 0.0
+            total_score = sum(scores.values()) / len(scores) if scores else 0.0
             
             # Create result
             result = EvaluationResult(
@@ -390,7 +390,7 @@ class TaskEvaluator:
         has_logic = any(
             word in response.lower() for word in ["because", "therefore", "since", "thus", "conclude"]
         )
-        has_structure = len(response.split(".") > 2
+        has_structure = len(response.split(".")) > 2
         
         scores[EvaluationMetric.COHERENCE] = 0.8 if has_logic and has_structure else 0.4
         scores[EvaluationMetric.RELEVANCE] = 0.9 if len(response) > 50 else 0.3
@@ -402,8 +402,8 @@ class TaskEvaluator:
         scores = {}
         
         # Check for language quality
-        word_count = len(response.split()
-        has_variety = len(set(response.lower().split()) / word_count > 0.6 if word_count > 0 else 0
+        word_count = len(response.split())
+        has_variety = len(set(response.lower().split())) / word_count > 0.6 if word_count > 0 else 0
         
         scores[EvaluationMetric.COHERENCE] = 0.8 if word_count > 20 else 0.4
         scores[EvaluationMetric.CREATIVITY] = 0.7 if has_variety else 0.3

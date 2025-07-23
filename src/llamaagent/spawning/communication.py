@@ -394,7 +394,8 @@ class DirectChannel(CommunicationProtocol):
 
     async def receive(self, timeout: Optional[float] = None) -> Optional[Message]:
         """Receive is not implemented for direct channels."""
-        raise NotImplementedError("Use receive_for_agent instead")
+        logger.warning("Direct channels require agent_id. Use receive_for_agent instead.")
+        return None
 
     async def receive_for_agent(
         self,

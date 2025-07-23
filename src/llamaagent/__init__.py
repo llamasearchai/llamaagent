@@ -6,6 +6,10 @@ vector memory, and extensive tool integration.
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
 
+# Suppress SSL warnings that occur with certain Python/SSL configurations
+import warnings
+warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
+
 import asyncio
 import os
 import shutil
@@ -19,7 +23,7 @@ from rich.panel import Panel
 
 from ._version import __version__
 from .agents import ReactAgent
-from .agents.base import AgentConfig
+from .agents.base import AgentConfig, AgentRole
 from .llm import LLMFactory, LLMMessage, LLMResponse, create_provider
 from .tools import ToolRegistry, get_all_tools
 
@@ -296,6 +300,7 @@ __all__ = [
     "__version__",
     "ReactAgent",
     "AgentConfig",
+    "AgentRole",
     "LLMFactory",
     "LLMMessage",
     "LLMResponse",

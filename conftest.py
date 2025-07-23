@@ -70,6 +70,9 @@ def pytest_configure(config: "PyConfig") -> None:
     # Force-load central type definitions so coverage always has data.
     try:
         import importlib
+        import warnings
+        # Suppress the SSL warning
+        warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
         importlib.import_module("llamaagent.types")
     except Exception:  # pragma: no cover
         pass

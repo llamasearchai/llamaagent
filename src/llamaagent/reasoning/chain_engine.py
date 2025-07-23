@@ -50,7 +50,7 @@ class ReasoningType(Enum):
 @dataclass
 class ThoughtNode:
     """Represents a single thought/reasoning step"""
-    id: str = field(default_factory=lambda: str(uuid.uuid4())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
     thought: str = ""
     reasoning_type: ReasoningType = ReasoningType.DEDUCTIVE
     confidence: float = 0.0

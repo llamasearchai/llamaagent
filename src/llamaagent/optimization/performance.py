@@ -210,13 +210,13 @@ class BatchProcessor(ABC):
 
     async def submit(self, item: Any) -> Any:
         """Submit item for batch processing."""
-        item_id = str(id(item)
+        item_id = str(id(item))
         future: asyncio.Future[Any] = asyncio.Future()
         self._results[item_id] = future
 
         await self._batch_queue.put(item_id, item)
         if self._processing_task is None or self._processing_task.done():
-            self._processing_task = asyncio.create_task(self._process_batches()
+            self._processing_task = asyncio.create_task(self._process_batches())
         return await future
 
     async def _process_batches(self) -> None:

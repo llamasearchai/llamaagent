@@ -26,8 +26,16 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import uvicorn
-from fastapi import (BackgroundTasks, Body, Depends, FastAPI, HTTPException,
-                     Request, Response, Security)
+from fastapi import (
+    BackgroundTasks,
+    Body,
+    Depends,
+    FastAPI,
+    HTTPException,
+    Request,
+    Response,
+    Security,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -73,8 +81,10 @@ except ImportError:
     GAIABenchmark = None
 
 try:
-    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
-                                             OpenAIAgentsIntegration)
+    from ..integration.openai_agents import (
+        OPENAI_AGENTS_AVAILABLE,
+        OpenAIAgentsIntegration,
+    )
 except ImportError:
     OpenAIAgentsIntegration = None
     OPENAI_AGENTS_AVAILABLE = False
@@ -941,19 +951,24 @@ async def get_benchmark_status(benchmark_id: str):
         started_at=benchmark_data.get("started_at", ""),
         completed_at=benchmark_data.get("completed_at"),
         results=benchmark_data.get("results"),
-        agents_tested=list(benchmark_data.get("results", {}).keys())
-        if benchmark_data.get("results")
-        else [],
+        agents_tested=(
+            list(benchmark_data.get("results", {}).keys())
+            if benchmark_data.get("results")
+            else []
+        ),
         tasks_completed=sum(
             r.get("tasks_completed", 0)
             for r in benchmark_data.get("results", {}).values()
         ),
-        success_rate=sum(
-            r.get("success_rate", 0) for r in benchmark_data.get("results", {}).values()
-        )
-        / len(benchmark_data.get("results", {}))
-        if benchmark_data.get("results")
-        else 0.0,
+        success_rate=(
+            sum(
+                r.get("success_rate", 0)
+                for r in benchmark_data.get("results", {}).values()
+            )
+            / len(benchmark_data.get("results", {}))
+            if benchmark_data.get("results")
+            else 0.0
+        ),
     )
 
 
@@ -1007,7 +1022,9 @@ async def openai_completions(
     """Direct OpenAI completions with budget tracking."""
     try:
         from ..integration.openai_comprehensive import (
-            OpenAIComprehensiveConfig, OpenAIComprehensiveIntegration)
+            OpenAIComprehensiveConfig,
+            OpenAIComprehensiveIntegration,
+        )
 
         # Get or create OpenAI integration
         integration = app_state.get("openai_comprehensive")
@@ -1243,9 +1260,9 @@ async def get_metrics():
     """Get system metrics."""
     metrics = {
         "agents_count": len(app_state["agents"]),
-        "tools_count": len(app_state["tools"].list_names())
-        if app_state.get("tools")
-        else 0,
+        "tools_count": (
+            len(app_state["tools"].list_names()) if app_state.get("tools") else 0
+        ),
         "uptime": time.time() - app_state.get("start_time", time.time()),
         "memory_usage": "N/A",  # Would implement actual memory monitoring
         "active_tasks": 0,  # Would track active tasks

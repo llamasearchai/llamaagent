@@ -442,10 +442,10 @@ class ModelComparator:
                 # Normalize value (0-1 scale)
                 if comparison_metric == ComparisonMetric.LATENCY:
                     # For latency, lower is better
-                    normalized_value = max(0.0, 1.0 - min(1.0, value / 10.0)
+                    normalized_value = max(0.0, 1.0 - min(1.0, value / 10.0))
                 else:
                     # For most metrics, higher is better
-                    normalized_value = min(1.0, max(0.0, value)
+                    normalized_value = min(1.0, max(0.0, value))
                 score += weight * normalized_value
                 total_weight += weight
         
@@ -457,10 +457,10 @@ class ModelComparator:
         """Perform statistical comparisons between models"""
         comparisons: List[ComparisonResult] = []
         
-        model_names = list(model_performances.keys()
+        model_names = list(model_performances.keys())
         # Compare each pair of models
-        for i in range(len(model_names):
-            for j in range(i + 1, len(model_names):
+        for i in range(len(model_names)):
+            for j in range(i + 1, len(model_names)):
                 model_a = model_names[i]
                 model_b = model_names[j]
                 
