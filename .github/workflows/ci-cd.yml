@@ -110,7 +110,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
@@ -231,7 +231,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Container Registry
+    - name: Login to Container Registry
       if: github.event_name != 'pull_request'
       uses: docker/login-action@v3
       with:
@@ -263,52 +263,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
       continue-on-error: true
-
-  # Release and Deployment
-  release:
-    name: Release & Deploy
-    runs-on: ubuntu-latest
-    needs: [test, build, docs]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: dist
-        path: dist/
-
-    - name: Publish to Test PyPI
-      if: success()
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-      run: |
-        pip install twine
-        twine upload --repository testpypi dist/* --skip-existing
-      continue-on-error: true
-
-    - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ github.ref_name }}
-        generate_release_notes: true
-        files: |
-          dist/*.whl
-          dist/*.tar.gz
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Cleanup and notifications
   cleanup:
