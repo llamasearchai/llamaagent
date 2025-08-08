@@ -214,7 +214,7 @@ class BenchmarkEngine:
             task = BenchmarkTask(
                 id=f"{benchmark_id}_{sample.id}",
                 name=f"Task from {dataset_name}: {sample.id}",
-                description=f"Benchmark task derived from dataset sample",
+                description="Benchmark task derived from dataset sample",
                 input_data=sample.input,
                 expected_output=sample.expected_output,
                 metrics_to_collect=[MetricType.ACCURACY_SCORE, MetricType.LATENCY_MS],

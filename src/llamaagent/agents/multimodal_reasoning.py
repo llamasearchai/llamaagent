@@ -220,7 +220,7 @@ class AdvancedMultimodalAgent(BaseAgent):
         cot_prompt = self._build_cot_prompt(input_data)
         return await self._analyze_text(cot_prompt)
 
-    async def _reflection_reasoning(self, input_data: ModalityInput) -> LLLMResponse:
+    async def _reflection_reasoning(self, input_data: ModalityInput) -> LLMResponse:
         """Execute reasoning with built-in reflection."""
         # First pass
         initial_result = await self._parallel_reasoning(input_data)

@@ -319,10 +319,14 @@ class DynamicToolLoader:
                 )
 
                 # Import our tool classes
-                from .tool_registry import (Tool, ToolCategory,
-                                            ToolExecutionContext,
-                                            ToolParameter, ToolResult,
-                                            ToolSecurityLevel)
+                from .tool_registry import (
+                    Tool,
+                    ToolCategory,
+                    ToolExecutionContext,
+                    ToolParameter,
+                    ToolResult,
+                    ToolSecurityLevel,
+                )
 
                 restricted_globals.update(
                     {

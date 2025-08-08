@@ -9,11 +9,8 @@ This module provides autonomous agent spawning capabilities, including:
 """
 
 from .agent_pool import AgentPool, PoolConfig, PoolStats
-from .agent_spawner import (AgentHierarchy, AgentRelationship, AgentSpawner,
-                            SpawnConfig, SpawnResult)
-from .communication import (AgentChannel, BroadcastChannel,
-                            CommunicationProtocol, DirectChannel, Message,
-                            MessageType)
+from .agent_spawner import AgentHierarchy, AgentRelationship, AgentSpawner, SpawnConfig, SpawnResult
+from .communication import AgentChannel, BroadcastChannel, CommunicationProtocol, DirectChannel, Message, MessageType
 
 __all__ = [
     # Core spawning classes

@@ -17,16 +17,22 @@ import os
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import psutil
 
 try:
-    from prometheus_client import (CONTENT_TYPE_LATEST, CollectorRegistry,
-                                   Counter, Gauge, Histogram, Info, Summary,
-                                   generate_latest)
+    from prometheus_client import (
+        CONTENT_TYPE_LATEST,
+        CollectorRegistry,
+        Counter,
+        Gauge,
+        Histogram,
+        Info,
+        Summary,
+        generate_latest,
+    )
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:

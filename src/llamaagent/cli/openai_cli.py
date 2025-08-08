@@ -32,8 +32,11 @@ from llamaagent.types import TaskInput, TaskStatus
 # Optional imports with fallbacks
 try:
     from llamaagent.integration.openai_agents import (
-        OPENAI_AGENTS_AVAILABLE, OpenAIAgentMode, OpenAIIntegrationConfig,
-        create_openai_integration)
+        OPENAI_AGENTS_AVAILABLE,
+        OpenAIAgentMode,
+        OpenAIIntegrationConfig,
+        create_openai_integration,
+    )
 except ImportError:
     # Fallbacks when the optional OpenAI Agents package is not available.
     OPENAI_AGENTS_AVAILABLE = False  # type: ignore[assignment]

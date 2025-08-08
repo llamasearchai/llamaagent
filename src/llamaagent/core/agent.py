@@ -330,7 +330,7 @@ class Agent(ABC):
         collaboration_data = message.content
 
         # Check if the agent has a 'collaborate' method, else return error response
-        if hasattr(self, "collaborate") and callable(getattr(self, "collaborate")):
+        if hasattr(self, "collaborate") and callable(self.collaborate):
             try:
                 result = await self.collaborate(collaboration_data)
                 response = AgentMessage(

@@ -26,18 +26,13 @@ _opentelemetry_available = False
 try:
     from opentelemetry import trace
     from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
-        OTLPSpanExporter
-    from opentelemetry.instrumentation.aiohttp_client import \
-        AioHttpClientInstrumentor  # type: ignore
-    from opentelemetry.instrumentation.psycopg2 import \
-        Psycopg2Instrumentor  # type: ignore
-    from opentelemetry.instrumentation.redis import \
-        RedisInstrumentor  # type: ignore
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor  # type: ignore
+    from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor  # type: ignore
+    from opentelemetry.instrumentation.redis import RedisInstrumentor  # type: ignore
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import (BatchSpanProcessor,
-                                                ConsoleSpanExporter)
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.trace import SpanKind, Status, StatusCode
 
     _opentelemetry_available = True

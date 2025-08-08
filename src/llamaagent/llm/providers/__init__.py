@@ -1,3 +1,18 @@
+"""Provider exports and convenient aliases.
+
+Author: Nik Jois <nikjois@llamasearch.ai>
+"""
+
+from .base_provider import BaseLLMProvider
+from .mock_provider import MockProvider
+from .openai_provider import OpenAIProvider
+
+__all__ = [
+    "BaseLLMProvider",
+    "MockProvider",
+    "OpenAIProvider",
+]
+
 """
 LLM Providers Module
 
@@ -63,9 +78,8 @@ class LLMResponse:
 
 # Base provider - always available
 from .base import BaseProvider
-from .base_provider import BaseLLMProvider
+
 # Mock provider - always available for testing/fallback
-from .mock_provider import MockProvider
 
 # Provider registry
 _AVAILABLE_PROVIDERS: Dict[str, Type[BaseLLMProvider]] = {

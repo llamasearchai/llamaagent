@@ -21,9 +21,15 @@ from typing import Any, Dict, List
 
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import (BarColumn, MofNCompleteColumn, Progress,
-                           SpinnerColumn, TaskProgressColumn, TextColumn,
-                           TimeElapsedColumn)
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 from rich.prompt import Confirm, IntPrompt, Prompt
 from rich.table import Table
 from rich.text import Text
@@ -32,8 +38,7 @@ from ..agents import ReactAgent
 from ..agents.base import AgentConfig, AgentRole
 from ..llm import create_provider
 from ..memory.base import SimpleMemory
-from ..planning import (ExecutionEngine, Task, TaskPlan, TaskPlanner,
-                        TaskPriority, TaskStatus)
+from ..planning import ExecutionEngine, Task, TaskPlan, TaskPlanner, TaskPriority, TaskStatus
 from ..tools import ToolRegistry, get_all_tools
 
 logger = logging.getLogger(__name__)

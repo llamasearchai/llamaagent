@@ -18,8 +18,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 # Optional imports
 try:
-    from prometheus_client import (CONTENT_TYPE_LATEST, CollectorRegistry,
-                                   Counter, Gauge, Histogram, generate_latest)
+    from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:

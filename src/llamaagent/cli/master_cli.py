@@ -21,8 +21,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
-from ..agents import (AdvancedReasoningAgent, MultiModalAdvancedAgent,
-                      ReactAgent)
+from ..agents import AdvancedReasoningAgent, MultiModalAdvancedAgent, ReactAgent
 from ..agents.base import AgentConfig
 from ..cache import AdvancedCache, CacheStrategy
 from ..core import get_error_handler

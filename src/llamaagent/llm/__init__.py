@@ -13,6 +13,7 @@ from typing import Any, Dict, Optional, Type
 
 from .base import BaseLLMProvider
 from .providers.mock_provider import MockProvider
+from .providers.mock_provider import MockProvider as _MockProvider
 from .providers.openai_provider import OpenAIProvider
 
 # Import optional providers with graceful fallback
@@ -86,6 +87,7 @@ __all__ = [
     "MockLLMProvider",
     "OpenAIProvider",
     "MockProvider",
+    "_MockProvider",
     "LLMMessage",
     "LLMResponse",
     "LLMFactory",

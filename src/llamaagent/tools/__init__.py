@@ -47,6 +47,16 @@ class ToolManager:
         """List all registered tool names."""
         return list(self.tools.keys())
 
+    # Compatibility helpers for tests expecting these names
+    def register(self, tool: BaseTool) -> None:  # pragma: no cover - thin alias
+        self.register_tool(tool)
+
+    def deregister(self, name: str) -> None:  # pragma: no cover - thin alias
+        self.tools.pop(name, None)
+
+    def has_tool(self, name: str) -> bool:  # used by langgraph integration
+        return name in self.tools
+
     async def cleanup(self) -> None:
         """Cleanup tool manager resources."""
         self.tools.clear()
@@ -55,9 +65,8 @@ class ToolManager:
 
 # Optional imports with graceful fallback
 try:
-    from .registry import ToolLoader
+    from .registry import ToolLoader, create_loader, get_registry
     from .registry import ToolMetadata as RegistryToolMetadata
-    from .registry import create_loader, get_registry
 except (ImportError, SyntaxError):
     ToolLoader = None
     RegistryToolMetadata = None
@@ -74,8 +83,7 @@ ToolSecurityLevel = None
 
 try:
     from .tool_registry import Tool as ToolRegistryTool  # type: ignore
-    from .tool_registry import (ToolCategory, ToolExecutionContext,
-                                ToolParameter, ToolResult, ToolSecurityLevel)
+    from .tool_registry import ToolCategory, ToolExecutionContext, ToolParameter, ToolResult, ToolSecurityLevel
 except (ImportError, SyntaxError) as e:
     logger.debug(f"Failed to import tool_registry: {e}")
     # Ensure variables remain None if import fails

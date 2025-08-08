@@ -29,9 +29,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import (BackgroundTasks, Depends, FastAPI, File, HTTPException,
-                     Request, Security, UploadFile, WebSocket,
-                     WebSocketDisconnect, status)
+from fastapi import (
+    BackgroundTasks,
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Request,
+    Security,
+    UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -77,8 +87,7 @@ except ImportError:
     DatabaseManager = None
 
 try:
-    from ..integration.openai_agents import (OPENAI_AGENTS_AVAILABLE,
-                                             OpenAIAgentsIntegration)
+    from ..integration.openai_agents import OPENAI_AGENTS_AVAILABLE, OpenAIAgentsIntegration
 except ImportError:
     OpenAIAgentsIntegration = None
     # Use a different variable name to avoid constant redefinition warning

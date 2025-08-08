@@ -138,6 +138,56 @@ class AgentStats:
         self.last_execution_time = None
 
 
+@dataclass
+class AgentMessage:
+    """Lightweight message used in tests for agent I/O."""
+
+    role: str
+    content: str
+
+
+@dataclass
+class Step:
+    """Represents a single execution step with timing information."""
+
+    step_type: str
+    description: str
+    start_time: float = field(default_factory=lambda: time.time())
+    end_time: Optional[float] = None
+    result: Optional[str] = None
+
+    def complete(self, result: Optional[str] = None) -> None:
+        self.end_time = time.time()
+        self.result = result
+
+    @property
+    def duration(self) -> float:
+        end = self.end_time or time.time()
+        return max(0.0, end - self.start_time)
+
+
+@dataclass
+class AgentTrace:
+    """Execution trace for an agent run."""
+
+    agent_name: str
+    task: str
+    start_time: float
+    end_time: Optional[float] = None
+    success: bool = False
+    steps: List[Step] = field(default_factory=list)
+
+    def add_step(self, step_type: str, description: str) -> Step:
+        step = Step(step_type=step_type, description=description)
+        self.steps.append(step)
+        return step
+
+    @property
+    def execution_time(self) -> float:
+        end = self.end_time or time.time()
+        return max(0.0, end - self.start_time)
+
+
 class BaseAgent:
     """Abstract base class for all agents"""
 

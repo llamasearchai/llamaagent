@@ -29,6 +29,10 @@ except ImportError:
     ToolNode = None
     logger.debug("LangGraph not available. Install with: pip install langgraph")
 
+# Backward-compat error used in tests
+class BudgetExceededError(Exception):
+    pass
+
 
 class LangGraphState(TypedDict):
     """State schema for LangGraph workflows."""

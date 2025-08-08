@@ -28,15 +28,17 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 
 import uvicorn
-from fastapi import (FastAPI, File, Form, HTTPException, Request, UploadFile,
-                     status)
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from ..integration.openai_comprehensive import (
-    BudgetExceededError, OpenAIComprehensiveIntegration, OpenAIModelType,
-    create_comprehensive_openai_integration)
+    BudgetExceededError,
+    OpenAIComprehensiveIntegration,
+    OpenAIModelType,
+    create_comprehensive_openai_integration,
+)
 from ..tools.openai_tools import OPENAI_TOOLS, create_openai_tool
 
 # Configure logging

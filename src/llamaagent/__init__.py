@@ -19,15 +19,16 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 
+from . import tools as tools
 from ._version import __version__
 from .agents import ReactAgent
 from .agents.base import AgentConfig, AgentRole
 from .llm import LLMFactory, LLMMessage, LLMResponse, create_provider
-from . import tools
 from .tools import ToolRegistry, get_all_tools
 
-# Suppress SSL warnings that occur with certain Python/SSL configurations
+# Suppress SSL/OpenSSL warnings in environments with LibreSSL (GitHub/macOS)
 warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
+warnings.filterwarnings("ignore", message="NotOpenSSLWarning")
 
 console = Console()
 
@@ -306,6 +307,7 @@ __all__ = [
     "LLMMessage",
     "LLMResponse",
     "create_provider",
+    "tools",
 ]
 
 # Import orchestrator module (optional).  We catch broad exceptions to avoid

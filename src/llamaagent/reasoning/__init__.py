@@ -11,13 +11,10 @@ Author: Advanced LlamaAgent Development Team
 """
 
 from .cognitive_agent import CognitiveAgent
-from .constitutional_ai import (Constitution, ConstitutionalAgent,
-                                CritiqueSystem)
+from .constitutional_ai import Constitution, ConstitutionalAgent, CritiqueSystem
 from .graph_of_thoughts import Concept, GraphOfThoughtsAgent, ReasoningGraph
-from .meta_reasoning import (ConfidenceSystem, MetaCognitiveAgent,
-                             StrategySelector)
-from .tree_of_thoughts import (SearchStrategy, ThoughtNode, ThoughtTree,
-                               TreeOfThoughtsAgent)
+from .meta_reasoning import ConfidenceSystem, MetaCognitiveAgent, StrategySelector
+from .tree_of_thoughts import SearchStrategy, ThoughtNode, ThoughtTree, TreeOfThoughtsAgent
 
 __all__ = [
     # Tree of Thoughts

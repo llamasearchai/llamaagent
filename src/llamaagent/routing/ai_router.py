@@ -150,7 +150,7 @@ class AIRouter:
         tasks = []
         for provider_id in providers:
             provider = self.provider_registry.get_provider(provider_id)
-            if provider:
+            if provider and hasattr(provider, 'chat_completion'):
                 tasks.append(self._execute_with_provider(task, provider, context))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -223,7 +223,10 @@ class AIRouter:
                 if not provider:
                     continue
 
-                result = await self._execute_with_provider(task, provider, context)
+                if hasattr(provider, 'chat_completion'):
+                    result = await self._execute_with_provider(task, provider, context)
+                else:
+                    result = None
 
                 # Record success
                 self.metrics_tracker.record_execution_result(
@@ -352,7 +355,10 @@ class AIRouter:
     ) -> Any:
         """Execute task with specific provider."""
         # Execute task with the selected provider
-        return await provider.complete(task, context)
+        from llamaagent.types import LLMMessage
+        
+        messages = [LLMMessage(role="user", content=task)]
+        return await provider.chat_completion(messages, max_tokens=1000)
 
     def _get_cache_key(
         self,
@@ -371,7 +377,7 @@ class AIRouter:
         }
 
         key_str = json.dumps(key_data, sort_keys=True)
-        return hashlib.sha256(key_str.encode().hexdigest())
+        return hashlib.sha256(key_str.encode()).hexdigest()
 
     def _is_cache_valid(self, decision: RoutingDecision) -> bool:
         """Check if cached decision is still valid."""
@@ -478,7 +484,7 @@ class AIRouter:
                 provider_id,
                 characteristics,
             )
-            alternatives.append(provider_id, score)
+            alternatives.append((provider_id, score))
 
         # Sort by score descending
         alternatives.sort(key=lambda x: x[1], reverse=True)

@@ -270,7 +270,7 @@ class BatchProcessor(ABC):
             try:
                 results = await self._process_batch(batch_items)
                 # Set results
-                for item_id, result in zip(batch_ids, results):
+                for item_id, result in zip(batch_ids, results, strict=False):
                     if item_id in self._results:
                         self._results[item_id].set_result(result)
                         del self._results[item_id]

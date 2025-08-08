@@ -2,8 +2,7 @@
 Master Diagnostics Module - Comprehensive System Analysis
 
 This module performs deep analysis of the entire LlamaAgent codebase,
-identifying syntax errors, import logging
-import issues, dependency problems, configuration
+identifying syntax errors, import issues, dependency problems, configuration
 errors, security vulnerabilities, and performance bottlenecks.
 
 Author: Nik Jois <nikjois@llamasearch.ai>
@@ -11,6 +10,7 @@ Author: Nik Jois <nikjois@llamasearch.ai>
 
 import ast
 import importlib
+import logging
 import os
 import re
 import sys

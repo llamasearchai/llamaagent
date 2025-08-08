@@ -11,7 +11,7 @@ import json
 import logging
 import random
 from collections import defaultdict
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
@@ -196,7 +196,7 @@ class GoldenDatasetManager:
 
     def _generate_sample_id(self, dataset_name: str, index: int) -> str:
         """Generate unique sample ID"""
-        return f"{dataset_name}_{index:06d}_{int(datetime.now().timestamp()}"
+        return f"{dataset_name}_{index:06d}_{int(datetime.now().timestamp())}"
 
     async def load_dataset(self, dataset_name: str) -> None:
         """Load dataset from storage"""
@@ -227,7 +227,7 @@ class GoldenDatasetManager:
         self,
         dataset_name: str,
         format: str = "json",
-        filter_config: Optional[Dict[str, Any]] = None)
+        filter_config: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Export dataset in specified format"""
         if dataset_name not in self.datasets:
@@ -260,7 +260,7 @@ class GoldenDatasetManager:
         # Filter by tags
         if "tags" in filter_config:
             required_tags = set(filter_config["tags"])
-            filtered = [s for s in filtered if required_tags.issubset(set(s.tags)]
+            filtered = [s for s in filtered if required_tags.issubset(set(s.tags))]
 
         # Filter by quality score
         if "min_quality" in filter_config:
@@ -348,8 +348,16 @@ class GoldenDatasetManager:
         unique_outputs = set()
 
         for sample in samples:
-            input_str = str(sample.input) if isinstance(sample.input, (str, int, float) else str(sample.input)
-            output_str = str(sample.expected_output) if isinstance(sample.expected_output, (str, int, float) else str(sample.expected_output)
+            input_str = (
+                str(sample.input)
+                if isinstance(sample.input, (str, int, float))
+                else str(sample.input)
+            )
+            output_str = (
+                str(sample.expected_output)
+                if isinstance(sample.expected_output, (str, int, float))
+                else str(sample.expected_output)
+            )
             unique_inputs.add(input_str)
             unique_outputs.add(output_str)
         input_diversity = len(unique_inputs) / len(samples)
@@ -378,13 +386,13 @@ class GoldenDatasetManager:
 
         # Check input type consistency
         input_types = [type(sample.input).__name__ for sample in samples]
-        type_consistency = len(set(input_types) / len(input_types)
+        type_consistency = len(set(input_types)) / len(input_types)
         # Check structure consistency for dict inputs
         dict_inputs = [sample.input for sample in samples if isinstance(sample.input, dict)]
         structure_consistency = 1.0
 
         if dict_inputs:
-            key_sets = [set(d.keys() for d in dict_inputs]
+            key_sets = [set(d.keys()) for d in dict_inputs]
             if key_sets:
                 common_keys = set.intersection(*key_sets)
                 avg_keys = np.mean([len(keys) for keys in key_sets])
@@ -408,9 +416,7 @@ class GoldenDatasetManager:
                 "severity": "warning",
                 "message": f"Dataset has only {metrics.total_samples} samples"
             })
-            recommendations.append()
-                "Add more samples to improve statistical significance"
-            )
+            recommendations.append("Add more samples to improve statistical significance")
 
         if metrics.diversity_score < 0.7:
             issues.append({
@@ -474,7 +480,9 @@ class GoldenDatasetManager:
                     new_sample["expected_output"],
                     new_sample.get("metadata", {}),
                     new_sample.get("tags", []),
-                    DifficultyLevel(new_sample.get("difficulty", DifficultyLevel.MEDIUM.value)
+                    DifficultyLevel(
+                        new_sample.get("difficulty", DifficultyLevel.MEDIUM.value)
+                    ),
                 )
 
                 generated_ids.append(sample_id)
@@ -503,12 +511,12 @@ class GoldenDatasetManager:
                 patterns["input_patterns"].append({
                     "type": "text",
                     "length": len(sample.input),
-                    "words": len(sample.input.split()
+                    "words": len(sample.input.split()),
                 })
             elif isinstance(sample.input, dict):
                 patterns["input_patterns"].append({
                     "type": "dict",
-                    "keys": list(sample.input.keys(),
+                    "keys": list(sample.input.keys()),
                     "structure": type(sample.input).__name__
                 })
 
@@ -517,12 +525,12 @@ class GoldenDatasetManager:
                 patterns["output_patterns"].append({
                     "type": "text",
                     "length": len(sample.expected_output),
-                    "words": len(sample.expected_output.split()
+                    "words": len(sample.expected_output.split()),
                 })
             elif isinstance(sample.expected_output, dict):
                 patterns["output_patterns"].append({
                     "type": "dict",
-                    "keys": list(sample.expected_output.keys(),
+                    "keys": list(sample.expected_output.keys()),
                     "structure": type(sample.expected_output).__name__
                 })
 
@@ -544,7 +552,7 @@ class GoldenDatasetManager:
         # For now, we'll create a simplified template-based approach
 
         # Select difficulty level
-        difficulty_levels = list(patterns["difficulty_patterns"].keys()
+        difficulty_levels = list(patterns["difficulty_patterns"].keys())
         if not difficulty_levels:
             difficulty_levels = ["medium"]
 

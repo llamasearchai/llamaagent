@@ -6,9 +6,14 @@ __all__: List[str] = []
 
 # Try to import LangGraph integration
 try:
-    from .langgraph import (LANGGRAPH_AVAILABLE, LangGraphAgent,
-                            LangGraphIntegration, create_langgraph_agent,
-                            get_integration, is_langgraph_available)
+    from .langgraph import (
+        LANGGRAPH_AVAILABLE,
+        LangGraphAgent,
+        LangGraphIntegration,
+        create_langgraph_agent,
+        get_integration,
+        is_langgraph_available,
+    )
 
     __all__.extend(
         [
@@ -28,9 +33,12 @@ except (ImportError, SyntaxError) as e:
 
 # Try to import OpenAI integration
 try:
-    from .openai_agents import (OPENAI_AGENTS_AVAILABLE, OpenAIAgentMode,
-                                OpenAIIntegrationConfig,
-                                create_openai_integration)
+    from .openai_agents import (
+        OPENAI_AGENTS_AVAILABLE,
+        OpenAIAgentMode,
+        OpenAIIntegrationConfig,
+        create_openai_integration,
+    )
 
     __all__.extend(
         [
