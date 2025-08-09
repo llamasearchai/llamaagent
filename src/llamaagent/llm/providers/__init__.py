@@ -1,22 +1,6 @@
-"""Provider exports and convenient aliases.
+"""LLM Providers Module
 
-Author: Nik Jois <nikjois@llamasearch.ai>
-"""
-
-from .base_provider import BaseLLMProvider
-from .mock_provider import MockProvider
-from .openai_provider import OpenAIProvider
-
-__all__ = [
-    "BaseLLMProvider",
-    "MockProvider",
-    "OpenAIProvider",
-]
-
-"""
-LLM Providers Module
-
-Comprehensive provider system with automatic fallbacks and dependency management.
+Provider exports, registry and factory helpers with graceful fallbacks.
 
 Author: Nik Jois <nikjois@llamasearch.ai>
 """
@@ -78,6 +62,8 @@ class LLMResponse:
 
 # Base provider - always available
 from .base import BaseProvider
+from .base_provider import BaseLLMProvider
+from .mock_provider import MockProvider
 
 # Mock provider - always available for testing/fallback
 
@@ -89,7 +75,6 @@ _AVAILABLE_PROVIDERS: Dict[str, Type[BaseLLMProvider]] = {
 # Try to import optional providers
 try:
     from .openai_provider import OpenAIProvider
-
     _AVAILABLE_PROVIDERS["openai"] = OpenAIProvider
     logger.debug("OpenAI provider available")
 except (ImportError, SyntaxError) as e:
@@ -198,7 +183,7 @@ def list_available_providers() -> List[str]:
     return get_available_providers()
 
 
-# Export all available providers and functions
+# Static __all__ list for better type checker support
 __all__ = [
     # New types and configs
     "ProviderType",
@@ -215,16 +200,22 @@ __all__ = [
     "is_provider_available",
     "create_provider",
     "list_available_providers",
+    # Provider classes (conditionally available)
+    "OpenAIProvider",
+    "AnthropicProvider",
+    "CohereProvider",
+    "TogetherProvider",
+    "OllamaProvider",
+    "MLXProvider",
+    "CUDAProvider",
+    # Factory alias
+    "ProviderFactory",
 ]
 
-# Add conditionally available providers to exports
-_exported_providers = []
+# Ensure provider classes are available in module globals when imported
 for provider_name, provider_class in _AVAILABLE_PROVIDERS.items():
-    if provider_name != "mock":
-        globals()[provider_class.__name__] = provider_class
-        _exported_providers.append(provider_class.__name__)
-
-__all__.extend(_exported_providers)
+    cls_name = provider_class.__name__
+    globals()[cls_name] = provider_class
 
 # Provider factory alias for compatibility
 ProviderFactory = create_provider

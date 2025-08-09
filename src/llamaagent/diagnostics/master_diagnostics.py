@@ -912,15 +912,18 @@ class MasterDiagnostics:
         total_minutes = 0
 
         for problem in self.problems:
-            if problem.estimated_fix_time:
-                # Parse time estimates like "5 minutes", "1 hour", "30 minutes"
-                time_str = problem.estimated_fix_time.lower()
+            est = problem.estimated_fix_time
+            if est:
+                # Parse estimates like "5 minutes", "1 hour", "30 minutes"
+                time_str = est.lower()
+                match = re.search(r"(\d+)", time_str)
+                if not match:
+                    continue
+                value = int(match.group(1))
                 if "hour" in time_str:
-                    hours = int(re.search(r"(\d+)", time_str).group(1))
-                    total_minutes += hours * 60
+                    total_minutes += value * 60
                 elif "minute" in time_str:
-                    minutes = int(re.search(r"(\d+)", time_str).group(1))
-                    total_minutes += minutes
+                    total_minutes += value
 
         if total_minutes < 60:
             return f"{total_minutes} minutes"
